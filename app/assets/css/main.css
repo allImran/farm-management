@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 html {
-  font-family: 'Plus Jakarta Sans', Inter, ui-sans-serif, system-ui, sans-serif;
+  @apply font-sans scroll-smooth;
 }
 
 body {

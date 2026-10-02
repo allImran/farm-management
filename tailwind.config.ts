@@ -40,9 +40,40 @@ export default {
           dark: '#0f1320',
           'dark-elevated': '#171c2c',
         },
+        // "Inferno"-style ramp used by thermal-imaging visuals (cold → hot).
+        thermal: {
+          50: '#fcffa4',
+          100: '#f9e46a',
+          200: '#f9cb35',
+          300: '#f98e09',
+          400: '#e45a31',
+          500: '#bc3754',
+          600: '#87216b',
+          700: '#57106e',
+          800: '#320a5e',
+          900: '#1b0c41',
+          950: '#07051a',
+        },
+      },
+      backgroundImage: {
+        'thermal-body':
+          'radial-gradient(circle at center, #f9cb35 0%, #f98e09 18%, #e45a31 36%, #bc3754 52%, rgba(135, 33, 107, 0.5) 66%, transparent 74%)',
+        'thermal-body-hot':
+          'radial-gradient(circle at center, #ffffff 0%, #fcffa4 24%, #f9cb35 38%, #f98e09 52%, #e45a31 64%, rgba(188, 55, 84, 0.6) 74%, transparent 80%)',
+        'thermal-floor':
+          'radial-gradient(ellipse at 50% 110%, #57106e 0%, #320a5e 35%, #1b0c41 65%, #07051a 100%)',
+        'thermal-scale': 'linear-gradient(to right, #1b0c41, #57106e, #bc3754, #f98e09, #f9cb35, #fcffa4)',
+        'scan-beam':
+          'linear-gradient(to bottom, transparent 0%, rgba(252, 255, 164, 0.08) 60%, rgba(252, 255, 164, 0.45) 98%, transparent 100%)',
+        'grid-faint':
+          'linear-gradient(to right, rgba(255, 255, 255, 0.06) 1px, transparent 1px), linear-gradient(to bottom, rgba(255, 255, 255, 0.06) 1px, transparent 1px)',
+      },
+      backgroundSize: {
+        grid: '2rem 2rem',
       },
       fontFamily: {
-        sans: ['"Plus Jakarta Sans"', 'Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        // Hind Siliguri supplies Bengali glyphs that Plus Jakarta Sans lacks.
+        sans: ['"Plus Jakarta Sans"', '"Hind Siliguri"', 'Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
       borderRadius: {
         xl: '1rem',
@@ -59,6 +90,12 @@ export default {
         'slide-up': 'slideUp 0.3s ease-out',
         'slide-in-right': 'slideInRight 0.25s ease-out',
         shimmer: 'shimmer 2s linear infinite',
+        scan: 'scan 4.5s ease-in-out infinite',
+        breathe: 'breathe 3.5s ease-in-out infinite',
+        drift: 'drift 18s ease-in-out infinite',
+        wander: 'wander 10s ease-in-out infinite',
+        dash: 'dash 24s linear infinite',
+        reveal: 'slideUp 0.7s ease-out both',
       },
       keyframes: {
         fadeIn: {
@@ -76,6 +113,27 @@ export default {
         shimmer: {
           '0%': { backgroundPosition: '-1000px 0' },
           '100%': { backgroundPosition: '1000px 0' },
+        },
+        scan: {
+          '0%': { top: '-25%' },
+          '100%': { top: '100%' },
+        },
+        breathe: {
+          '0%, 100%': { transform: 'scale(1)', opacity: '0.85' },
+          '50%': { transform: 'scale(1.08)', opacity: '1' },
+        },
+        drift: {
+          '0%, 100%': { transform: 'translate(0, 0) scale(1)' },
+          '33%': { transform: 'translate(4%, -6%) scale(1.05)' },
+          '66%': { transform: 'translate(-5%, 4%) scale(0.97)' },
+        },
+        wander: {
+          '0%, 100%': { transform: 'translate(0, 0)' },
+          '30%': { transform: 'translate(10px, -6px)' },
+          '65%': { transform: 'translate(-8px, 8px)' },
+        },
+        dash: {
+          to: { strokeDashoffset: '-400' },
         },
       },
     },

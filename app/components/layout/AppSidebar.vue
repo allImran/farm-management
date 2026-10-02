@@ -14,6 +14,7 @@ import {
 } from '@lucide/vue'
 import { useSidebar } from '~/composables/useSidebar'
 import { useRoute } from '#app'
+import { ROUTES } from '~/constants/routes'
 
 type NavLink = {
   label: string
@@ -25,7 +26,7 @@ const { collapsed, mobileOpen, toggleCollapsed, closeMobile } = useSidebar()
 const route = useRoute()
 
 const navLinks: NavLink[] = [
-  { label: 'Dashboard', to: '/', icon: LayoutDashboard },
+  { label: 'Dashboard', to: ROUTES.dashboard, icon: LayoutDashboard },
   { label: 'Flocks', to: '/flocks', icon: Bird },
   { label: 'Health & Vaccination', to: '/health', icon: Syringe },
   { label: 'Feed Management', to: '/feed', icon: Wheat },
@@ -35,10 +36,7 @@ const navLinks: NavLink[] = [
   { label: 'Settings', to: '/settings', icon: Settings },
 ]
 
-const isActive = (to: string) => {
-  if (to === '/') return route.path === '/'
-  return route.path.startsWith(to)
-}
+const isActive = (to: string) => route.path.startsWith(to)
 
 const onNavClick = () => {
   closeMobile()

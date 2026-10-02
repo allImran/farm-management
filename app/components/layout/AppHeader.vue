@@ -4,15 +4,12 @@ import {
   Menu,
   Search,
   Bell,
-  Sun,
-  Moon,
   ChevronDown,
   User,
   Settings,
   LogOut,
 } from '@lucide/vue'
 import { useSidebar } from '~/composables/useSidebar'
-import { useTheme } from '~/composables/useTheme'
 
 withDefaults(
   defineProps<{
@@ -32,7 +29,6 @@ const emit = defineEmits<{
 }>()
 
 const { toggleMobile } = useSidebar()
-const { isDark, toggle: toggleTheme } = useTheme()
 
 const userMenuOpen = ref(false)
 const userMenuRef = ref<HTMLElement | null>(null)
@@ -98,20 +94,7 @@ const initials = (name: string) =>
     </div>
 
     <div class="flex items-center gap-2 sm:gap-3 shrink-0">
-      <button
-        type="button"
-        class="flex items-center justify-center w-10 h-10 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-        aria-label="Toggle theme"
-        @click="toggleTheme"
-      >
-        <ClientOnly>
-          <Moon v-if="!isDark" class="w-5 h-5" />
-          <Sun v-else class="w-5 h-5" />
-          <template #fallback>
-            <Moon class="w-5 h-5" />
-          </template>
-        </ClientOnly>
-      </button>
+      <ThemeToggle />
 
       <button
         type="button"
