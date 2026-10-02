@@ -1,0 +1,17 @@
+{
+  "indexes": [
+    { "collectionGroup": "batches", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "farmId", "order": "ASCENDING" }, { "fieldPath": "startDate", "order": "DESCENDING" }] },
+    { "collectionGroup": "batches", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "status", "order": "ASCENDING" }, { "fieldPath": "startDate", "order": "DESCENDING" }] },
+    { "collectionGroup": "batches", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "farmId", "order": "ASCENDING" }, { "fieldPath": "status", "order": "ASCENDING" }, { "fieldPath": "startDate", "order": "DESCENDING" }] },
+    { "collectionGroup": "contacts", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "types", "arrayConfig": "CONTAINS" }, { "fieldPath": "name", "order": "ASCENDING" }] },
+    { "collectionGroup": "expenses", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "farmId", "order": "ASCENDING" }, { "fieldPath": "batchId", "order": "ASCENDING" }, { "fieldPath": "date", "order": "DESCENDING" }] },
+    { "collectionGroup": "feeds", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "farmId", "order": "ASCENDING" }, { "fieldPath": "batchId", "order": "ASCENDING" }, { "fieldPath": "date", "order": "DESCENDING" }] },
+    { "collectionGroup": "medicines", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "farmId", "order": "ASCENDING" }, { "fieldPath": "batchId", "order": "ASCENDING" }, { "fieldPath": "date", "order": "DESCENDING" }] },
+    { "collectionGroup": "mortalities", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "farmId", "order": "ASCENDING" }, { "fieldPath": "batchId", "order": "ASCENDING" }, { "fieldPath": "date", "order": "DESCENDING" }] },
+    { "collectionGroup": "weights", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "farmId", "order": "ASCENDING" }, { "fieldPath": "batchId", "order": "ASCENDING" }, { "fieldPath": "date", "order": "DESCENDING" }] },
+    { "collectionGroup": "sales", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "farmId", "order": "ASCENDING" }, { "fieldPath": "batchId", "order": "ASCENDING" }, { "fieldPath": "date", "order": "DESCENDING" }] },
+    { "collectionGroup": "paymentRequests", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "status", "order": "ASCENDING" }, { "fieldPath": "createdAt", "order": "DESCENDING" }] },
+    { "collectionGroup": "paymentRequests", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "userId", "order": "ASCENDING" }, { "fieldPath": "createdAt", "order": "DESCENDING" }] }
+  ],
+  "fieldOverrides": []
+}

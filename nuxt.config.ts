@@ -1,13 +1,43 @@
 import { DEFAULT_LOCALE } from './app/constants/i18n'
 
+// Signed-in pages depend on Firebase Auth, which only exists in the browser, so they are
+// rendered on the client. The marketing page is prerendered by `nuxt generate` for SEO;
+// everything else is served by the SPA fallback (see firebase.json).
+const CLIENT_ONLY_ROUTES = [
+  '/login',
+  '/signup',
+  '/dashboard',
+  '/farms/**',
+  '/batches/**',
+  '/contacts/**',
+  '/account',
+  '/admin/**',
+] as const
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  modules: ['@nuxtjs/tailwindcss', '@nuxtjs/i18n'],
+  modules: ['@nuxtjs/tailwindcss', '@nuxtjs/i18n', '@pinia/nuxt'],
   components: [{ path: '~/components', pathPrefix: false }],
   colorMode: {
     classSuffix: '',
+  },
+  routeRules: Object.fromEntries(CLIENT_ONLY_ROUTES.map((route) => [route, { ssr: false }])),
+  runtimeConfig: {
+    // The app is deployed as a static site (`nuxt generate`), so every value here is public.
+    public: {
+      firebaseApiKey: '',
+      firebaseAuthDomain: '',
+      firebaseProjectId: '',
+      firebaseStorageBucket: '',
+      firebaseMessagingSenderId: '',
+      firebaseAppId: '',
+      // 'true' connects the client to the local Emulator Suite.
+      firebaseUseEmulators: '',
+      // Optional Slack incoming webhook for new payment requests. Empty = no notifications.
+      slackWebhookUrl: '',
+    },
   },
   i18n: {
     defaultLocale: DEFAULT_LOCALE,

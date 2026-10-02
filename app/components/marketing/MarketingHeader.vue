@@ -49,7 +49,7 @@ const handleNavigate = () => {
       <div class="flex items-center gap-1 sm:gap-2">
         <LanguageSwitcher />
         <ThemeToggle class="hidden sm:flex" />
-        <BaseButton :as="NuxtLink" :to="ROUTES.dashboard" class="hidden sm:inline-flex">
+        <BaseButton :as="NuxtLink" :to="ROUTES.signup" class="hidden sm:inline-flex">
           {{ t('nav.getStarted') }}
         </BaseButton>
         <BaseButton
@@ -81,7 +81,7 @@ const handleNavigate = () => {
         <LanguageSwitcher />
         <ThemeToggle />
       </div>
-      <BaseButton :as="NuxtLink" :to="ROUTES.dashboard" size="lg" class="mt-6 w-full" @click="handleNavigate">
+      <BaseButton :as="NuxtLink" :to="ROUTES.signup" size="lg" class="mt-6 w-full" @click="handleNavigate">
         {{ t('nav.getStarted') }}
       </BaseButton>
     </BaseDrawer>

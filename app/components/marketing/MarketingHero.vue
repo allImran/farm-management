@@ -45,7 +45,7 @@ const { t } = useI18n()
         </p>
 
         <div class="mt-10 flex flex-col justify-center gap-3 sm:flex-row">
-          <BaseButton :as="NuxtLink" :to="ROUTES.dashboard" size="lg">
+          <BaseButton :as="NuxtLink" :to="ROUTES.signup" size="lg">
             {{ t('hero.primaryCta') }}
             <template #icon-right>
               <ArrowRight class="w-5 h-5" aria-hidden="true" />
