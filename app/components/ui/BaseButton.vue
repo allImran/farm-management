@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import type { Component } from 'vue'
 import { Loader2 } from '@lucide/vue'
 
-type Variant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'dark'
+type Variant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'dark' | 'glass'
 type Size = 'sm' | 'md' | 'lg' | 'icon'
 
 const props = withDefaults(
@@ -11,7 +12,8 @@ const props = withDefaults(
     loading?: boolean
     disabled?: boolean
     pill?: boolean
-    as?: string
+    /** Element or component to render, e.g. 'a' or NuxtLink for navigation. */
+    as?: string | Component
   }>(),
   {
     variant: 'primary',
@@ -32,6 +34,8 @@ const variantClasses: Record<Variant, string> = {
     'bg-transparent text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 focus-visible:ring-slate-300',
   danger: 'bg-red-500 text-white hover:bg-red-600 focus-visible:ring-red-300 shadow-soft',
   dark: 'bg-slate-900 text-white hover:bg-slate-800 focus-visible:ring-slate-500 shadow-soft dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200',
+  // For use on top of dark imagery/media panels, identical in both themes.
+  glass: 'bg-white/10 text-white border border-white/25 backdrop-blur hover:bg-white/20 focus-visible:ring-white/40',
 }
 
 const sizeClasses: Record<Size, string> = {

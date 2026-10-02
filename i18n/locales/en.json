@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "title": "BroilerHQ — Next-generation smart farm management",
+    "description": "Thermal imaging, digital tracking for poultry and cattle, and AI-powered farm management — on one platform."
+  },
+  "common": {
+    "toggleTheme": "Toggle theme",
+    "changeLanguage": "Change language",
+    "openMenu": "Open menu",
+    "menu": "Menu",
+    "home": "Home"
+  },
+  "nav": {
+    "technology": "Technology",
+    "poultry": "Poultry",
+    "cattle": "Cattle",
+    "impact": "Impact",
+    "howItWorks": "How it works",
+    "getStarted": "Get started",
+    "primary": "Primary navigation"
+  },
+  "hero": {
+    "eyebrow": "Next-generation farm intelligence",
+    "titleLead": "See what the eye",
+    "titleHighlight": "can't see",
+    "subtitle": "Thermal imaging, digital livestock tracking and AI-powered farm management. Catch illness before it spreads and keep track of every bird and cow on one platform.",
+    "primaryCta": "Get started",
+    "secondaryCta": "Explore the technology",
+    "visual": {
+      "label": "Live thermal camera view of a poultry shed, with one bird flagged for high body temperature",
+      "live": "Live",
+      "camera": "Shed 03 · Thermal camera",
+      "detected": "Birds detected",
+      "average": "Average temperature",
+      "alertTitle": "Signs of fever",
+      "alertBody": "Bird #B-214 · just now",
+      "fever": "Fever"
+    }
+  },
+  "technology": {
+    "eyebrow": "Our technology",
+    "title": "Three layers of intelligence for your farm",
+    "description": "Cameras, sensors and software working together, so you decide with data instead of guesswork.",
+    "items": {
+      "thermal": {
+        "tag": "Thermal Vision",
+        "title": "Spot sickness from body heat",
+        "description": "Thermal cameras scan every bird's body temperature and alert you the moment signs of fever or heat stress appear."
+      },
+      "tracking": {
+        "tag": "Digital Tracking",
+        "title": "A digital identity for every animal",
+        "description": "Smart tags and GPS collars keep each cow's, or each flock's, location, movement and health history in one place."
+      },
+      "platform": {
+        "tag": "Farm OS",
+        "title": "Your whole farm on one dashboard",
+        "description": "Feed, vaccinations, mortality, sales and costs — every number in real time, right from your phone."
+      }
+    }
+  },
+  "poultry": {
+    "eyebrow": "For poultry",
+    "title": "Catch fever before symptoms show",
+    "description": "A sick bird's body temperature usually rises before visible symptoms appear. Our AI analyses the heat map of every shed around the clock to find abnormal changes.",
+    "points": {
+      "perBird": "Temperature detection for every individual bird",
+      "heatStress": "Shed heat-stress and ventilation monitoring",
+      "alerts": "Instant alerts on your phone, in Bangla or English"
+    },
+    "visual": {
+      "label": "24-hour chart of average body temperature, showing an abnormal rise in the evening",
+      "title": "Shed 03 · Average body temperature",
+      "normalRange": "Normal range",
+      "anomaly": "Abnormal rise detected",
+      "anomalyDetail": "12 birds · north corner"
+    }
+  },
+  "cattle": {
+    "eyebrow": "For cattle",
+    "title": "Know where every cow is, and how it's doing",
+    "description": "GPS collars and smart ear tags record each cow's location, movement, rumination and rest. If an animal leaves its zone or its behaviour changes, you know right away.",
+    "points": {
+      "geofence": "Virtual geofences and anti-theft alerts",
+      "signals": "Early signals for heat (oestrus) and illness",
+      "history": "Complete health and vaccination history per animal"
+    },
+    "visual": {
+      "label": "Pasture map showing one cow that has left its assigned zone",
+      "zone": "Pasture · Zone A",
+      "online": "48 cows online",
+      "outside": "Outside zone",
+      "cow": "Cow #BD-207",
+      "lastSeen": "1.2 km · 2 min ago"
+    }
+  },
+  "impact": {
+    "eyebrow": "Impact",
+    "title": "A data-driven farm, every day",
+    "items": {
+      "monitoring": { "value": "24/7", "label": "Continuous monitoring" },
+      "alert": { "value": "< 1 min", "label": "From problem to alert" },
+      "accuracy": { "value": "±0.5°C", "label": "Thermal measurement accuracy" },
+      "platform": { "value": "1 app", "label": "Every record for the whole farm" }
+    }
+  },
+  "steps": {
+    "eyebrow": "How it works",
+    "title": "A modern farm in three steps",
+    "items": {
+      "connect": {
+        "title": "Connect",
+        "description": "Mount thermal cameras in your sheds and smart tags on your animals — our team helps with setup."
+      },
+      "analyze": {
+        "title": "Analyse",
+        "description": "AI continuously analyses temperature, movement and farm data to surface risks."
+      },
+      "act": {
+        "title": "Act",
+        "description": "Get timely alerts and recommendations, act early and cut your losses."
+      }
+    }
+  },
+  "cta": {
+    "title": "Get your farm ready for the future",
+    "description": "Built for everyone, from family farms to large commercial operations.",
+    "primary": "Open the dashboard",
+    "secondary": "Explore the technology"
+  },
+  "footer": {
+    "tagline": "Smart management for poultry and cattle farms.",
+    "platform": "Platform",
+    "rights": "All rights reserved."
+  }
+}
