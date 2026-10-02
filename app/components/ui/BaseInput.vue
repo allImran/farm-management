@@ -9,13 +9,24 @@ const props = withDefaults(
     placeholder?: string
     error?: string
     disabled?: boolean
+    readonly?: boolean
+    required?: boolean
     size?: Size
+    hint?: string
+    autocomplete?: string
+    inputmode?: 'text' | 'numeric' | 'decimal' | 'tel' | 'email'
+    min?: string | number
+    max?: string | number
+    step?: string | number
+    maxlength?: number
   }>(),
   {
     modelValue: '',
     type: 'text',
     size: 'md',
     disabled: false,
+    readonly: false,
+    required: false,
   }
 )
 
@@ -50,7 +61,16 @@ const sizeClasses: Record<Size, string> = {
         :type="type"
         :placeholder="placeholder"
         :disabled="disabled"
-        class="w-full rounded-xl border bg-white dark:bg-surface-dark-elevated text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 shadow-soft transition-colors focus:outline-none focus:ring-4 focus:ring-primary-300/50 focus:border-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
+        :readonly="readonly"
+        :required="required"
+        :autocomplete="autocomplete"
+        :inputmode="inputmode"
+        :min="min"
+        :max="max"
+        :step="step"
+        :maxlength="maxlength"
+        :aria-invalid="error ? true : undefined"
+        class="w-full rounded-xl border read-only:bg-slate-50 dark:read-only:bg-slate-800/60 bg-white dark:bg-surface-dark-elevated text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 shadow-soft transition-colors focus:outline-none focus:ring-4 focus:ring-primary-300/50 focus:border-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
         :class="[
           sizeClasses[size],
           error
@@ -70,6 +90,9 @@ const sizeClasses: Record<Size, string> = {
     </div>
     <p v-if="error" class="mt-1.5 text-xs font-medium text-red-500 dark:text-red-400">
       {{ error }}
+    </p>
+    <p v-else-if="hint" class="mt-1.5 text-xs text-slate-500 dark:text-slate-400">
+      {{ hint }}
     </p>
   </label>
 </template>

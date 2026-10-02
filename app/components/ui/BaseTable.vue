@@ -9,6 +9,8 @@ withDefaults(
     rows?: Record<string, unknown>[]
     loading?: boolean
     stickyHeader?: boolean
+    /** Row field holding a stable unique id; falls back to the row index. */
+    rowKey?: string
   }>(),
   {
     rows: () => [],
@@ -60,7 +62,7 @@ const emit = defineEmits<{
           <template v-else-if="rows.length">
             <tr
               v-for="(row, index) in rows"
-              :key="index"
+              :key="rowKey ? String(row[rowKey]) : index"
               class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors"
             >
               <td v-for="column in columns" :key="column.key" class="px-4 py-3.5 text-slate-700 dark:text-slate-200">

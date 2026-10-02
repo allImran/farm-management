@@ -24,7 +24,7 @@ const { t } = useI18n()
           <h2 class="text-3xl font-bold leading-tight text-white sm:text-5xl">{{ t('cta.title') }}</h2>
           <p class="mt-5 text-base text-white/80 sm:text-lg">{{ t('cta.description') }}</p>
           <div class="mt-10 flex flex-col justify-center gap-3 sm:flex-row">
-            <BaseButton :as="NuxtLink" :to="ROUTES.dashboard" size="lg">
+            <BaseButton :as="NuxtLink" :to="ROUTES.signup" size="lg">
               {{ t('cta.primary') }}
               <template #icon-right>
                 <ArrowRight class="w-5 h-5" aria-hidden="true" />

@@ -8,7 +8,26 @@
     "changeLanguage": "Change language",
     "openMenu": "Open menu",
     "menu": "Menu",
-    "home": "Home"
+    "home": "Home",
+    "close": "Close",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "edit": "Edit",
+    "retry": "Try again",
+    "loadMore": "Load more",
+    "back": "Back",
+    "optional": "optional",
+    "actions": "Actions",
+    "all": "All",
+    "none": "None",
+    "select": "Select…",
+    "date": "Date",
+    "note": "Note",
+    "noData": "Nothing here yet",
+    "increase": "Increase",
+    "decrease": "Decrease"
   },
   "nav": {
     "technology": "Technology",
@@ -98,10 +117,22 @@
     "eyebrow": "Impact",
     "title": "A data-driven farm, every day",
     "items": {
-      "monitoring": { "value": "24/7", "label": "Continuous monitoring" },
-      "alert": { "value": "< 1 min", "label": "From problem to alert" },
-      "accuracy": { "value": "±0.5°C", "label": "Thermal measurement accuracy" },
-      "platform": { "value": "1 app", "label": "Every record for the whole farm" }
+      "monitoring": {
+        "value": "24/7",
+        "label": "Continuous monitoring"
+      },
+      "alert": {
+        "value": "< 1 min",
+        "label": "From problem to alert"
+      },
+      "accuracy": {
+        "value": "±0.5°C",
+        "label": "Thermal measurement accuracy"
+      },
+      "platform": {
+        "value": "1 app",
+        "label": "Every record for the whole farm"
+      }
     }
   },
   "steps": {
@@ -132,5 +163,382 @@
     "tagline": "Smart management for poultry and cattle farms.",
     "platform": "Platform",
     "rights": "All rights reserved."
+  },
+  "app": {
+    "nav": {
+      "label": "App navigation",
+      "dashboard": "Dashboard",
+      "farms": "Farms",
+      "contacts": "Contacts",
+      "account": "Account",
+      "admin": "Admin",
+      "collapse": "Collapse",
+      "expand": "Expand sidebar"
+    },
+    "header": {
+      "userMenu": "Open user menu",
+      "logout": "Log out",
+      "admin": "Administrator"
+    }
+  },
+  "auth": {
+    "fields": {
+      "name": "Full name",
+      "phone": "Mobile number",
+      "email": "Email",
+      "password": "Password",
+      "confirmPassword": "Confirm password"
+    },
+    "login": {
+      "title": "Log in",
+      "subtitle": "Welcome back. Log in with your mobile number.",
+      "submit": "Log in",
+      "forgot": "Forgot your password? Contact support to reset it.",
+      "noAccount": "New here?",
+      "signupLink": "Create an account"
+    },
+    "signup": {
+      "title": "Create your account",
+      "completeTitle": "Complete your profile",
+      "subtitle": "Free to sign up. You can view everything; adding records needs a subscription.",
+      "phoneHint": "You'll use this number to log in.",
+      "submit": "Create account",
+      "haveAccount": "Already have an account?",
+      "loginLink": "Log in"
+    }
+  },
+  "validation": {
+    "required": "This field is required.",
+    "phone": "Enter a valid Bangladeshi mobile number (01XXXXXXXXX).",
+    "email": "Enter a valid email address.",
+    "passwordLength": "Use at least {min} characters.",
+    "passwordMatch": "Passwords don't match.",
+    "tooLong": "Keep it under {max} characters.",
+    "number": "Enter a number.",
+    "integer": "Enter a whole number.",
+    "min": "Must be at least {min}.",
+    "date": "Enter a valid date."
+  },
+  "errors": {
+    "permissionDenied": "You don't have permission to do this. If your subscription has ended, renew it to keep adding records.",
+    "notFound": "We couldn't find that.",
+    "unauthenticated": "Please log in again.",
+    "unavailable": "The service is temporarily unavailable. Please try again.",
+    "offline": "You're offline. Check your connection and try again.",
+    "tooManyRequests": "Too many attempts. Please wait a moment and try again.",
+    "failedPrecondition": "This can't be done right now.",
+    "alreadyExists": "This already exists.",
+    "invalidCredential": "Wrong mobile number or password.",
+    "phoneInUse": "An account with this mobile number already exists.",
+    "weakPassword": "That password is too weak.",
+    "userDisabled": "This account has been disabled.",
+    "sessionExpired": "Your session has expired. Please log in again.",
+    "unknown": "Something went wrong. Please try again."
+  },
+  "units": {
+    "kg": "kg",
+    "gram": "g",
+    "taka": "৳",
+    "takaPerKg": "৳/kg",
+    "birds": "birds"
+  },
+  "options": {
+    "contactTypes": {
+      "supplier": "Supplier",
+      "customer": "Customer",
+      "doctor": "Vet / doctor",
+      "worker": "Worker",
+      "other": "Other"
+    },
+    "expenseTypes": {
+      "chicks": "Chicks",
+      "feed": "Feed",
+      "medicine": "Medicine",
+      "labor": "Labor",
+      "electricity": "Electricity",
+      "transport": "Transport",
+      "litter": "Litter / bedding",
+      "equipment": "Equipment",
+      "rent": "Rent",
+      "other": "Other"
+    },
+    "medicineTypes": {
+      "vaccine": "Vaccine",
+      "antibiotic": "Antibiotic",
+      "vitamin": "Vitamin / supplement",
+      "disinfectant": "Disinfectant",
+      "other": "Other"
+    }
+  },
+  "billing": {
+    "state": {
+      "lifetime": "Free forever",
+      "active": "Active until {end}",
+      "scheduled": "Starts {start}",
+      "expired": "Expired on {end}",
+      "none": "No subscription"
+    },
+    "requestStatus": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "banner": {
+      "readOnlyTitle": "You're in read-only mode",
+      "readOnlyBody": "Subscribe to add and edit farms, batches and records.",
+      "pendingTitle": "Payment under review",
+      "pendingBody": "We've received your request. Writing will be enabled as soon as it's approved.",
+      "expiringTitle": "Your subscription ends on {date}",
+      "expiringBody": "Renew now to keep adding records without interruption.",
+      "subscribe": "Subscribe",
+      "renew": "Renew"
+    },
+    "request": {
+      "title": "Subscribe with bKash",
+      "intro": "Send the subscription fee by bKash (Send Money), then tell us the last digits of the number you paid from.",
+      "price": "Price",
+      "perMonth": "{price} / month",
+      "sendTo": "bKash number",
+      "digitsLabel": "Last {count} digits of your bKash number",
+      "digitsHint": "From the number you sent the money from, so we can match your payment.",
+      "digitsError": "Enter exactly {count} digits.",
+      "submit": "I've paid — send request",
+      "pendingTitle": "Request received",
+      "pendingBody": "You paid from a number ending in {digits} on {date}. We'll enable writing once the payment is confirmed.",
+      "rejectedTitle": "Your last request wasn't approved",
+      "rejectedBody": "We couldn't match that payment. Check the digits and try again, or contact support."
+    }
+  },
+  "account": {
+    "title": "Account",
+    "subscription": "Subscription",
+    "profile": "Profile",
+    "adminAccess": "Admin — full access",
+    "canWrite": "You can add and edit all your farm data.",
+    "readOnly": "You can view your data. Subscribe to add or edit records.",
+    "latestRequest": "Last request: paid from ••••{digits} on {date}",
+    "phoneHint": "Your mobile number is your login and can't be changed.",
+    "saved": "Profile saved."
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "greeting": "Hello, {name}",
+    "description": "Here's how your farms are doing.",
+    "stats": {
+      "farms": "Farms",
+      "activeBatches": "Active batches",
+      "birds": "Chicks placed (active batches)"
+    },
+    "activeBatches": "Active batches",
+    "allFarms": "All farms",
+    "noActiveTitle": "No active batches",
+    "noActiveDescription": "Start a new batch from one of your farms.",
+    "onboardingTitle": "Add your first farm",
+    "onboardingDescription": "Create a farm, then start a batch to track feed, mortality, weight and sales."
+  },
+  "farms": {
+    "title": "Farms",
+    "description": "Your farms and their batches.",
+    "add": "Add farm",
+    "edit": "Edit farm",
+    "fields": {
+      "name": "Farm name",
+      "location": "Location",
+      "locationHint": "Village, upazila or district",
+      "address": "Address"
+    },
+    "emptyTitle": "No farms yet",
+    "emptyDescription": "Add your first farm to start tracking batches.",
+    "notFound": "Farm not found",
+    "backToFarms": "Back to farms",
+    "farmExpenses": "Farm expenses (not tied to a batch)",
+    "deleteTitle": "Delete this farm?",
+    "deleteMessage": "This can't be undone.",
+    "deleteBlocked": "Delete this farm's batches and expenses first."
+  },
+  "batches": {
+    "title": "Batches",
+    "add": "New batch",
+    "edit": "Edit batch",
+    "fields": {
+      "name": "Batch name",
+      "namePlaceholder": "e.g. Batch 12 — March",
+      "breed": "Breed / strain",
+      "startDate": "Start date",
+      "initialQuantity": "Chicks placed",
+      "status": "Status"
+    },
+    "status": {
+      "active": "Active",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "stats": {
+      "age": "Age",
+      "alive": "Birds alive",
+      "mortality": "Mortality",
+      "feed": "Feed used",
+      "weight": "Latest avg. weight",
+      "fcr": "FCR",
+      "expenses": "Expenses",
+      "profit": "Profit (sales {sales})"
+    },
+    "ageDays": "{days} days",
+    "startedOn": "Started {date}",
+    "placed": "{count} chicks",
+    "emptyTitle": "No batches",
+    "emptyDescription": "Start a batch to record feed, mortality, weight and sales.",
+    "notFound": "Batch not found",
+    "backToFarm": "Back to farm",
+    "deleteTitle": "Delete this batch?",
+    "deleteMessage": "This can't be undone.",
+    "deleteBlocked": "Delete this batch's records first, or mark it as cancelled instead."
+  },
+  "contacts": {
+    "title": "Contacts",
+    "description": "Suppliers, buyers, vets and workers.",
+    "add": "Add contact",
+    "edit": "Edit contact",
+    "fields": {
+      "name": "Name",
+      "phone": "Phone",
+      "address": "Address",
+      "types": "Type",
+      "notes": "Notes"
+    },
+    "emptyTitle": "No contacts",
+    "emptyDescription": "Add the people you buy from and sell to.",
+    "deleteTitle": "Delete contact?",
+    "deleteMessage": "{name} will be removed. Records that mention them are kept.",
+    "unknown": "Deleted contact"
+  },
+  "records": {
+    "add": "Add {name}",
+    "edit": "Edit {name}",
+    "emptyTitle": "No records yet",
+    "deleteTitle": "Delete this record?",
+    "deleteMessage": "This can't be undone.",
+    "expenses": {
+      "title": "Expenses",
+      "singular": "expense",
+      "empty": "Record what you spend on this batch.",
+      "fields": {
+        "type": "Type",
+        "amount": "Amount",
+        "contactId": "Paid to",
+        "note": "Note"
+      }
+    },
+    "feeds": {
+      "title": "Feed",
+      "singular": "feed entry",
+      "empty": "Log how much feed the flock eats each day.",
+      "fields": {
+        "consumption": "Feed used",
+        "note": "Note"
+      }
+    },
+    "medicines": {
+      "title": "Medicine",
+      "singular": "medicine",
+      "empty": "Track vaccines and treatments.",
+      "fields": {
+        "name": "Medicine",
+        "type": "Type",
+        "disease": "For disease",
+        "quantity": "Quantity / dose",
+        "note": "Note"
+      }
+    },
+    "mortalities": {
+      "title": "Mortality",
+      "singular": "mortality entry",
+      "empty": "Record birds lost each day.",
+      "fields": {
+        "count": "Birds died",
+        "cause": "Cause",
+        "note": "Note"
+      }
+    },
+    "weights": {
+      "title": "Weight",
+      "singular": "weight sample",
+      "empty": "Weigh a sample of birds to track growth.",
+      "fields": {
+        "averageWeight": "Average weight",
+        "sampleSize": "Birds weighed",
+        "note": "Note"
+      }
+    },
+    "sales": {
+      "title": "Sales",
+      "singular": "sale",
+      "empty": "Record birds sold from this batch.",
+      "fields": {
+        "quantity": "Birds sold",
+        "weight": "Total weight",
+        "unitPrice": "Price",
+        "totalAmount": "Total",
+        "contactId": "Buyer",
+        "note": "Note"
+      }
+    }
+  },
+  "admin": {
+    "title": "Admin",
+    "description": "Review payments and manage user access.",
+    "tabs": {
+      "requests": "Payment requests",
+      "users": "Users",
+      "plan": "Plan"
+    },
+    "requests": {
+      "user": "User",
+      "digits": "bKash ••••",
+      "submitted": "Submitted",
+      "reviewed": "Reviewed",
+      "empty": "No requests here",
+      "reject": "Reject",
+      "paidFrom": "Paid from a number ending in {digits}",
+      "rejectTitle": "Reject this request?",
+      "rejectMessage": "{name} will be asked to check their payment and try again.",
+      "rejectNote": "Reason shown to the user"
+    },
+    "grant": {
+      "approveTitle": "Approve payment",
+      "manageTitle": "Manage access",
+      "current": "Current access:",
+      "mode": "Grant",
+      "modes": {
+        "months": "Months",
+        "lifetime": "Free forever",
+        "range": "Custom dates"
+      },
+      "months": "Number of months",
+      "monthsSuffix": "month | months",
+      "startDate": "From",
+      "endDate": "Until (inclusive)",
+      "rangeError": "The end date must be on or after the start date.",
+      "previewLifetime": "Unlimited write access, free of charge.",
+      "previewPeriod": "Write access from {start} through {end}.",
+      "approve": "Approve",
+      "revoke": "Revoke access"
+    },
+    "users": {
+      "name": "Name",
+      "joined": "Joined",
+      "access": "Access",
+      "manage": "Manage",
+      "search": "Search by mobile number",
+      "empty": "No users found"
+    },
+    "plan": {
+      "description": "Shown to users when they subscribe.",
+      "monthlyPrice": "Monthly price",
+      "bkashNumber": "bKash number to receive payments",
+      "instructions": "Payment instructions",
+      "instructionsPlaceholder": "e.g. Use Send Money, not Cash Out. Add your mobile number as the reference.",
+      "saved": "Plan saved."
+    }
   }
 }

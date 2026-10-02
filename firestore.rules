@@ -1,0 +1,314 @@
+rules_version = '2';
+
+// Access model
+// - Everyone signed in can read their own data; the admin can read everyone's.
+// - Writing farm data needs an active subscription (granted by the admin) or admin rights.
+// - The admin is whoever has a doc at admins/{uid}; create it by hand in the Firebase console.
+// Keep collection names and field limits in sync with app/constants/*.ts.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------- Helpers ----------
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isSelf(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    // Mirrors utils/subscription.ts. `endsAt` is exclusive.
+    function hasActiveSubscription(uid) {
+      let path = /databases/$(database)/documents/subscriptions/$(uid);
+      return exists(path) && (
+        get(path).data.type == 'lifetime'
+        || (get(path).data.startsAt <= request.time && request.time < get(path).data.endsAt)
+      );
+    }
+
+    function canWriteFarmData(uid) {
+      return isSelf(uid) && (isAdmin() || hasActiveSubscription(uid));
+    }
+
+    // Phone + password accounts sign in with `<phone>@phone.broilerhq.app` (constants/auth.ts),
+    // so this binds a stored phone number to the signed-in account.
+    function isOwnPhone(phone) {
+      return phone is string && request.auth.token.email == phone + '@phone.broilerhq.app';
+    }
+
+    function data() {
+      return request.resource.data;
+    }
+
+    function isText(value, min, max) {
+      return value is string && value.size() >= min && value.size() <= max;
+    }
+
+    // Optional text: may be missing or empty, but never too long.
+    function isOptionalText(key, max) {
+      return !(key in data()) || isText(data()[key], 0, max);
+    }
+
+    function isNullableText(key, max) {
+      return !(key in data()) || data()[key] == null || isText(data()[key], 1, max);
+    }
+
+    function isNumberAtLeast(value, min) {
+      return (value is int || value is float) && value >= min;
+    }
+
+    function isIntAtLeast(value, min) {
+      return value is int && value >= min;
+    }
+
+    function isDate(value) {
+      return value is string && value.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
+    }
+
+    // createdAt is set once by the server; updatedAt moves on every write.
+    function hasValidTimestamps() {
+      return request.method == 'create'
+        ? data().createdAt == request.time && data().updatedAt == request.time
+        : data().createdAt == resource.data.createdAt && data().updatedAt == request.time;
+    }
+
+    function isUnchanged(key) {
+      return request.method == 'create' || data()[key] == resource.data[key];
+    }
+
+    // Lists must be paged (constants/pagination.ts MAX_PAGE_SIZE).
+    function isBoundedQuery() {
+      return request.query.limit != null && request.query.limit <= 101;
+    }
+
+    // ---------- Accounts ----------
+
+    match /admins/{uid} {
+      allow get: if isSelf(uid);
+      allow list, write: if false;
+    }
+
+    match /users/{uid} {
+      allow get: if isSelf(uid) || isAdmin();
+      allow list: if isAdmin() && isBoundedQuery();
+
+      allow create: if isSelf(uid)
+        && data().keys().hasOnly(['name', 'phone', 'email', 'createdAt'])
+        && isText(data().name, 1, 80)
+        && isOwnPhone(data().phone)
+        && isNullableText('email', 120)
+        && data().createdAt == request.time;
+
+      // Phone is the login id and createdAt is history: neither can change.
+      allow update: if isSelf(uid)
+        && data().diff(resource.data).affectedKeys().hasOnly(['name', 'email'])
+        && isText(data().name, 1, 80)
+        && isNullableText('email', 120);
+
+      allow delete: if false;
+
+      // ---------- Farm data (owner writes; owner or admin reads) ----------
+
+      function farmPath(farmId) {
+        return /databases/$(database)/documents/users/$(uid)/farms/$(farmId);
+      }
+
+      function batchPath(batchId) {
+        return /databases/$(database)/documents/users/$(uid)/batches/$(batchId);
+      }
+
+      // A record's batch must be one of this user's batches, on the same farm.
+      function belongsToBatch() {
+        return data().batchId is string
+          && exists(batchPath(data().batchId))
+          && get(batchPath(data().batchId)).data.farmId == data().farmId;
+      }
+
+      function hasRecordBase(extraKeys) {
+        return data().keys().hasOnly(['farmId', 'batchId', 'date', 'note', 'createdAt', 'updatedAt'].concat(extraKeys))
+          && data().keys().hasAll(['farmId', 'batchId', 'date', 'createdAt', 'updatedAt'])
+          && isDate(data().date)
+          && isNullableText('note', 1000)
+          && isUnchanged('farmId')
+          && isUnchanged('batchId')
+          && hasValidTimestamps();
+      }
+
+      function isValidContactRef() {
+        return isNullableText('contactId', 128);
+      }
+
+      match /farms/{farmId} {
+        allow read: if isSelf(uid) || isAdmin();
+        allow create, update: if canWriteFarmData(uid)
+          && data().keys().hasOnly(['name', 'location', 'address', 'createdAt', 'updatedAt'])
+          && isText(data().name, 1, 100)
+          && isOptionalText('location', 100)
+          && isOptionalText('address', 200)
+          && hasValidTimestamps();
+        allow delete: if canWriteFarmData(uid);
+      }
+
+      match /batches/{batchId} {
+        allow read: if isSelf(uid) || isAdmin();
+        allow create, update: if canWriteFarmData(uid)
+          && data().keys().hasOnly(['farmId', 'name', 'breed', 'startDate', 'initialQuantity', 'status', 'note', 'createdAt', 'updatedAt'])
+          && data().farmId is string
+          && exists(farmPath(data().farmId))
+          && isUnchanged('farmId')
+          && isText(data().name, 1, 100)
+          && isOptionalText('breed', 100)
+          && isDate(data().startDate)
+          && isIntAtLeast(data().initialQuantity, 1)
+          && data().status in ['active', 'completed', 'cancelled']
+          && isOptionalText('note', 1000)
+          && hasValidTimestamps();
+        allow delete: if canWriteFarmData(uid);
+      }
+
+      match /contacts/{contactId} {
+        allow read: if isSelf(uid) || isAdmin();
+        allow create, update: if canWriteFarmData(uid)
+          && data().keys().hasOnly(['name', 'phone', 'address', 'types', 'notes', 'createdAt', 'updatedAt'])
+          && isText(data().name, 1, 100)
+          && isOptionalText('phone', 20)
+          && isOptionalText('address', 200)
+          && data().types is list
+          && data().types.size() <= 5
+          && data().types.hasOnly(['supplier', 'customer', 'doctor', 'worker', 'other'])
+          && isOptionalText('notes', 1000)
+          && hasValidTimestamps();
+        allow delete: if canWriteFarmData(uid);
+      }
+
+      // Expenses can belong to a batch or to the farm as a whole (batchId == null).
+      match /expenses/{recordId} {
+        allow read: if isSelf(uid) || isAdmin();
+        allow create, update: if canWriteFarmData(uid)
+          && hasRecordBase(['type', 'amount', 'contactId'])
+          && exists(farmPath(data().farmId))
+          && (data().batchId == null || belongsToBatch())
+          && data().type in ['chicks', 'feed', 'medicine', 'labor', 'electricity', 'transport', 'litter', 'equipment', 'rent', 'other']
+          && isNumberAtLeast(data().amount, 0)
+          && isValidContactRef();
+        allow delete: if canWriteFarmData(uid);
+      }
+
+      match /feeds/{recordId} {
+        allow read: if isSelf(uid) || isAdmin();
+        allow create, update: if canWriteFarmData(uid)
+          && hasRecordBase(['consumption'])
+          && belongsToBatch()
+          && isNumberAtLeast(data().consumption, 0);
+        allow delete: if canWriteFarmData(uid);
+      }
+
+      match /medicines/{recordId} {
+        allow read: if isSelf(uid) || isAdmin();
+        allow create, update: if canWriteFarmData(uid)
+          && hasRecordBase(['name', 'type', 'disease', 'quantity'])
+          && belongsToBatch()
+          && isText(data().name, 1, 100)
+          && data().type in ['vaccine', 'antibiotic', 'vitamin', 'disinfectant', 'other']
+          && isNullableText('disease', 100)
+          && isText(data().quantity, 1, 100);
+        allow delete: if canWriteFarmData(uid);
+      }
+
+      match /mortalities/{recordId} {
+        allow read: if isSelf(uid) || isAdmin();
+        allow create, update: if canWriteFarmData(uid)
+          && hasRecordBase(['count', 'cause'])
+          && belongsToBatch()
+          && isIntAtLeast(data().count, 1)
+          && isNullableText('cause', 100);
+        allow delete: if canWriteFarmData(uid);
+      }
+
+      match /weights/{recordId} {
+        allow read: if isSelf(uid) || isAdmin();
+        allow create, update: if canWriteFarmData(uid)
+          && hasRecordBase(['averageWeight', 'sampleSize'])
+          && belongsToBatch()
+          && isNumberAtLeast(data().averageWeight, 0)
+          && (!('sampleSize' in data()) || data().sampleSize == null || isIntAtLeast(data().sampleSize, 1));
+        allow delete: if canWriteFarmData(uid);
+      }
+
+      match /sales/{recordId} {
+        allow read: if isSelf(uid) || isAdmin();
+        allow create, update: if canWriteFarmData(uid)
+          && hasRecordBase(['quantity', 'weight', 'unitPrice', 'totalAmount', 'contactId'])
+          && belongsToBatch()
+          && isIntAtLeast(data().quantity, 1)
+          && isNumberAtLeast(data().weight, 0)
+          && isNumberAtLeast(data().unitPrice, 0)
+          && isNumberAtLeast(data().totalAmount, 0)
+          && isValidContactRef();
+        allow delete: if canWriteFarmData(uid);
+      }
+    }
+
+    // ---------- Billing ----------
+
+    match /subscriptions/{uid} {
+      allow get: if isSelf(uid) || isAdmin();
+      allow list: if isAdmin() && isBoundedQuery();
+      allow create, update: if isAdmin()
+        && data().keys().hasOnly(['type', 'startsAt', 'endsAt', 'updatedAt', 'updatedBy'])
+        && data().updatedAt == request.time
+        && data().updatedBy == request.auth.uid
+        && (
+          (data().type == 'lifetime' && data().startsAt == null && data().endsAt == null)
+          || (data().type == 'period' && data().startsAt is timestamp && data().endsAt is timestamp
+              && data().startsAt < data().endsAt)
+        );
+      allow delete: if isAdmin();
+    }
+
+    match /paymentRequests/{requestId} {
+      // Users may only query their own requests (the query must filter on userId).
+      allow read: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
+
+      allow create: if isSignedIn()
+        && data().keys().hasOnly(['userId', 'userName', 'userPhone', 'bkashLast4', 'status', 'createdAt', 'reviewedAt', 'reviewedBy', 'reviewNote'])
+        && data().userId == request.auth.uid
+        && data().userName == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.name
+        && isOwnPhone(data().userPhone)
+        && data().bkashLast4 is string
+        && data().bkashLast4.matches('^[0-9]{4}$')
+        && data().status == 'pending'
+        && data().createdAt == request.time
+        && data().reviewedAt == null
+        && data().reviewedBy == null
+        && data().reviewNote == null;
+
+      allow update: if isAdmin()
+        && resource.data.status == 'pending'
+        && data().diff(resource.data).affectedKeys().hasOnly(['status', 'reviewedAt', 'reviewedBy', 'reviewNote'])
+        && data().status in ['approved', 'rejected']
+        && data().reviewedAt == request.time
+        && data().reviewedBy == request.auth.uid
+        && isNullableText('reviewNote', 200);
+
+      allow delete: if false;
+    }
+
+    match /config/plan {
+      allow read: if isSignedIn();
+      allow write: if isAdmin()
+        && data().keys().hasOnly(['monthlyPrice', 'bkashNumber', 'instructions', 'updatedAt', 'updatedBy'])
+        && isNumberAtLeast(data().monthlyPrice, 0)
+        && isText(data().bkashNumber, 0, 20)
+        && isText(data().instructions, 0, 1000)
+        && data().updatedAt == request.time
+        && data().updatedBy == request.auth.uid;
+    }
+  }
+}
