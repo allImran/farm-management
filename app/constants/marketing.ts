@@ -1,3 +1,5 @@
+import { ROUTES } from './routes'
+
 /** Anchor ids of the marketing page sections, in page order. */
 export const MARKETING_SECTION_IDS = {
   technology: 'technology',
@@ -15,3 +17,9 @@ export const MARKETING_NAV_LINKS = [
   { id: MARKETING_SECTION_IDS.impact, labelKey: 'nav.impact' },
   { id: MARKETING_SECTION_IDS.howItWorks, labelKey: 'nav.howItWorks' },
 ] as const
+
+/**
+ * Link to a section of the home page that also works from other pages (e.g. `/guide`).
+ * @param id - Section anchor from `MARKETING_SECTION_IDS`.
+ */
+export const marketingSectionLink = (id: string) => ({ path: ROUTES.home, hash: `#${id}` })

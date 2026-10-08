@@ -20,6 +20,9 @@ Key facts:
 
 - [Home](https://farmxyz.web.app/): product overview covering thermal imaging, poultry and
   cattle tracking, and how to get started
+- [User guide](https://farmxyz.web.app/guide): step-by-step help covering sign-up, the bKash
+  subscription, farms, batches, daily records, charts, profit and loss, contacts, and an FAQ
+  (FCR, mortality, privacy)
 - [Sign up](https://farmxyz.web.app/signup): create an account
 - [Log in](https://farmxyz.web.app/login): sign in to the farm dashboard
 

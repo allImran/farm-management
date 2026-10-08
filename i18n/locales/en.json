@@ -36,7 +36,8 @@
     "impact": "Impact",
     "howItWorks": "How it works",
     "getStarted": "Get started",
-    "primary": "Primary navigation"
+    "primary": "Primary navigation",
+    "guide": "User guide"
   },
   "hero": {
     "eyebrow": "Next-generation farm intelligence",
@@ -173,7 +174,8 @@
       "account": "Account",
       "admin": "Admin",
       "collapse": "Collapse",
-      "expand": "Expand sidebar"
+      "expand": "Expand sidebar",
+      "guide": "User guide"
     },
     "header": {
       "userMenu": "Open user menu",
@@ -602,5 +604,236 @@
     "noWeights": "No weight samples yet.",
     "noMortality": "No deaths recorded.",
     "noFeed": "No feed recorded yet."
+  },
+  "guide": {
+    "meta": {
+      "title": "User guide",
+      "description": "Step-by-step help for FarmXYZ: sign up, subscribe with bKash, add farms and batches, record feed, mortality, weight and sales, and read your profit and loss."
+    },
+    "eyebrow": "User guide",
+    "title": "How to use FarmXYZ",
+    "subtitle": "Everything you need to run your broiler farm in FarmXYZ, from your first login to your profit and loss report. Pick a topic or read from the top.",
+    "toc": "On this page",
+    "tip": "Tip",
+    "sections": {
+      "gettingStarted": {
+        "title": "Get started",
+        "intro": "FarmXYZ works in the browser on your phone or computer. There's nothing to install.",
+        "steps": {
+          "signup": {
+            "title": "Create an account",
+            "body": "Tap Get started and enter your full name, mobile number and a password. No SMS code is needed."
+          },
+          "login": {
+            "title": "Log in",
+            "body": "Next time, log in with the same mobile number and password. Your mobile number is your login."
+          },
+          "preferences": {
+            "title": "Choose language and theme",
+            "body": "Use the language button to switch between Bangla and English, and the sun/moon button for light or dark mode."
+          },
+          "install": {
+            "title": "Add it to your home screen",
+            "body": "On your phone, open the browser menu and choose \"Add to Home screen\" to open FarmXYZ like an app."
+          }
+        },
+        "tip": "Forgot your password? Contact support to reset it. Your mobile number can't be changed."
+      },
+      "subscription": {
+        "title": "Subscription and payment",
+        "intro": "Signing up is free and you can always see your data. To add or edit farms, batches and records you need an active subscription.",
+        "steps": {
+          "readOnly": {
+            "title": "Read-only mode",
+            "body": "Without a subscription, a banner says you're in read-only mode. Everything you've already entered stays visible."
+          },
+          "pay": {
+            "title": "Pay with bKash",
+            "body": "Tap Subscribe and send the monthly fee with bKash Send Money to the number shown."
+          },
+          "request": {
+            "title": "Send the request",
+            "body": "Enter the last {digits} digits of the number you paid from and tap \"I've paid — send request\"."
+          },
+          "approval": {
+            "title": "Wait for approval",
+            "body": "Once we match your payment, adding and editing is turned on. If a request is rejected, check the digits and try again."
+          },
+          "renew": {
+            "title": "Renew on time",
+            "body": "A reminder appears {days} days before your subscription ends. Pay again before then to keep working without a break."
+          }
+        },
+        "tip": "Your subscription includes {included} farms. Each extra farm adds a monthly fee. You'll see the new amount before you add the farm, and the fee goes down again if you delete it."
+      },
+      "farms": {
+        "title": "Farms",
+        "intro": "A farm is a shed or site you run. Each farm holds its batches and its own costs.",
+        "steps": {
+          "add": {
+            "title": "Add a farm",
+            "body": "Go to Farms and tap Add farm. Enter a name and the address (village, upazila, district)."
+          },
+          "open": {
+            "title": "Open a farm",
+            "body": "Tap a farm to see its batches, its farm expenses and its profit and loss."
+          },
+          "farmExpenses": {
+            "title": "Farm expenses",
+            "body": "Costs that don't belong to one batch, like rent or a new feeder, go under Farm expenses."
+          },
+          "delete": {
+            "title": "Delete a farm",
+            "body": "Delete the farm's batches and expenses first. Then the farm itself can be deleted."
+          }
+        }
+      },
+      "batches": {
+        "title": "Batches",
+        "intro": "A batch is one flock of chicks, from the day they're placed until they're sold.",
+        "steps": {
+          "create": {
+            "title": "Start a batch",
+            "body": "Open a farm and tap New batch. Enter a name, the breed, the start date and the number of chicks placed."
+          },
+          "stats": {
+            "title": "Read the numbers",
+            "body": "The batch page shows age, birds alive, mortality, feed used, latest average weight, FCR, expenses and profit. They update as you add records."
+          },
+          "status": {
+            "title": "Close the batch",
+            "body": "When the flock is sold, edit the batch and set the status to Completed. Use Cancelled for a batch that didn't go ahead."
+          },
+          "dashboard": {
+            "title": "Check the dashboard",
+            "body": "The Dashboard lists the active batches of all your farms, so you can see everything at a glance."
+          }
+        }
+      },
+      "records": {
+        "title": "Daily records",
+        "intro": "Records are what make the numbers work. Add them on the batch page under Records. A few minutes a day is enough.",
+        "steps": {
+          "feeds": {
+            "title": "Feed",
+            "body": "How much feed the flock ate. Used for feed used and FCR."
+          },
+          "mortalities": {
+            "title": "Mortality",
+            "body": "How many birds died and why. Keeps the live count and mortality rate correct."
+          },
+          "weights": {
+            "title": "Weight",
+            "body": "Weigh a sample of birds and enter the average weight and how many you weighed. Used for growth charts and FCR."
+          },
+          "medicines": {
+            "title": "Medicine",
+            "body": "Vaccines and treatments, with the dose and the disease they're for."
+          },
+          "expenses": {
+            "title": "Expenses",
+            "body": "Money spent on the batch: chicks, feed, medicine, labour, electricity, transport and more."
+          },
+          "sales": {
+            "title": "Sales",
+            "body": "Birds sold, total weight, price per kg and buyer. The total is worked out for you, and sold birds leave the live count."
+          }
+        },
+        "tip": "Add the cost of chicks and feed as expenses too. Otherwise your profit will look higher than it really is."
+      },
+      "reports": {
+        "title": "Charts and profit & loss",
+        "intro": "FarmXYZ turns your records into charts and a profit and loss report, so you know how each batch really did.",
+        "steps": {
+          "charts": {
+            "title": "Batch charts",
+            "body": "On a batch, open Charts to follow feed, mortality and weight over the life of the flock."
+          },
+          "batch": {
+            "title": "Batch profit & loss",
+            "body": "Open Profit & loss on a batch to see sales minus expenses and where the money went."
+          },
+          "farm": {
+            "title": "Farm and overall reports",
+            "body": "A farm's report adds up all its batches plus farm expenses. The Dashboard shows the total for all your farms."
+          },
+          "whatIf": {
+            "title": "Try a what-if",
+            "body": "Untick a batch or an expense category to see the result without it. Tap Include everything to go back."
+          }
+        }
+      },
+      "contacts": {
+        "title": "Contacts",
+        "intro": "Keep your suppliers, buyers, vets and workers in one place.",
+        "steps": {
+          "add": {
+            "title": "Add a contact",
+            "body": "Go to Contacts, tap Add contact, and enter the name, phone number and type."
+          },
+          "types": {
+            "title": "Set the type",
+            "body": "Only contacts marked as Buyer appear when you record a sale. Any contact can be picked as Paid to on an expense."
+          },
+          "delete": {
+            "title": "Delete a contact",
+            "body": "Deleting a contact doesn't delete the records that mention them."
+          }
+        }
+      },
+      "account": {
+        "title": "Your account",
+        "intro": "Check your subscription and keep your profile up to date.",
+        "steps": {
+          "profile": {
+            "title": "Profile",
+            "body": "Change your name on the Account page. Your mobile number is your login and can't be changed."
+          },
+          "subscription": {
+            "title": "Subscription status",
+            "body": "See whether you can add records and until when, your monthly fee, and your last payment request."
+          },
+          "logout": {
+            "title": "Log out",
+            "body": "Open the user menu at the top right and tap Log out. Always do this on a shared phone."
+          }
+        }
+      }
+    },
+    "faq": {
+      "title": "Frequently asked questions",
+      "items": {
+        "fcr": {
+          "question": "What is FCR?",
+          "answer": "Feed conversion ratio: kg of feed eaten ÷ kg of live weight produced. Lower is better. Live weight is the weight already sold plus birds still alive × the latest average weight, so add weight samples regularly."
+        },
+        "mortality": {
+          "question": "How is mortality calculated?",
+          "answer": "Birds that died ÷ chicks placed, shown as a percentage."
+        },
+        "deleteBatch": {
+          "question": "Why can't I delete a batch?",
+          "answer": "A batch that has records can't be deleted, so data isn't lost by mistake. Delete its records first, or set the batch to Cancelled."
+        },
+        "privacy": {
+          "question": "Can other people see my farm data?",
+          "answer": "No. Your farms, batches and records are linked to your account, and other users can't see them."
+        },
+        "devices": {
+          "question": "Can I use FarmXYZ on more than one device?",
+          "answer": "Yes. Log in with the same mobile number on any phone or computer and you'll see the same data."
+        },
+        "password": {
+          "question": "I forgot my password. What now?",
+          "answer": "Contact support and we'll reset it. Your mobile number stays the same."
+        }
+      }
+    },
+    "cta": {
+      "title": "Ready to start?",
+      "description": "Signing up is free. Add your first farm in under a minute.",
+      "signup": "Create an account",
+      "login": "Log in"
+    }
   }
 }

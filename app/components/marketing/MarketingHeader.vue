@@ -2,11 +2,11 @@
 import { Menu } from '@lucide/vue'
 import { useWindowScroll } from '@vueuse/core'
 import { NuxtLink } from '#components'
-import { MARKETING_NAV_LINKS } from '~/constants/marketing'
 import { ROUTES } from '~/constants/routes'
 
 const { t } = useI18n()
 const { y } = useWindowScroll()
+const { items: navItems } = useMarketingNav()
 
 // The header floats transparently over the hero and gains a surface once content scrolls under it.
 const isScrolled = computed(() => y.value > 12)
@@ -36,14 +36,14 @@ const handleNavigate = () => {
       </NuxtLink>
 
       <nav :aria-label="t('nav.primary')" class="hidden lg:flex items-center gap-1">
-        <a
-          v-for="link in MARKETING_NAV_LINKS"
-          :key="link.id"
-          :href="`#${link.id}`"
+        <NuxtLink
+          v-for="item in navItems"
+          :key="item.key"
+          :to="item.to"
           class="rounded-full px-3.5 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white transition-colors"
         >
-          {{ t(link.labelKey) }}
-        </a>
+          {{ item.label }}
+        </NuxtLink>
       </nav>
 
       <div class="flex items-center gap-1 sm:gap-2">
@@ -67,15 +67,15 @@ const handleNavigate = () => {
 
     <BaseDrawer v-model="isMenuOpen" :title="t('common.menu')">
       <nav :aria-label="t('nav.primary')" class="flex flex-col gap-1">
-        <a
-          v-for="link in MARKETING_NAV_LINKS"
-          :key="link.id"
-          :href="`#${link.id}`"
+        <NuxtLink
+          v-for="item in navItems"
+          :key="item.key"
+          :to="item.to"
           class="rounded-xl px-4 py-3 text-base font-semibold text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800 transition-colors"
           @click="handleNavigate"
         >
-          {{ t(link.labelKey) }}
-        </a>
+          {{ item.label }}
+        </NuxtLink>
       </nav>
       <div class="mt-6 flex items-center justify-between border-t border-slate-100 pt-6 dark:border-slate-800">
         <LanguageSwitcher />
