@@ -58,7 +58,8 @@ export const RECORD_KINDS: Record<RecordKind, RecordKindDef> = {
       { key: 'weight', type: 'number', required: true, unitKey: 'units.kg', isListed: true },
       { key: 'unitPrice', type: 'number', required: true, unitKey: 'units.takaPerKg' },
       { key: 'totalAmount', type: 'number', unitKey: 'units.taka', isDerived: true, isListed: true },
-      { key: 'contactId', type: 'contact', isListed: true },
+      // Birds are sold to buyers, so only contacts marked as buyer (`customer`) are offered.
+      { key: 'contactId', type: 'contact', contactTypes: ['customer'], isListed: true },
       { key: 'note', type: 'textarea' },
     ],
     // Broilers are sold by live weight, so the total is weight (kg) × price per kg.

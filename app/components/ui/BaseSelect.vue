@@ -8,6 +8,8 @@ withDefaults(
     options?: Option[]
     placeholder?: string
     error?: string
+    /** Helper text under the field; hidden while an error is shown. */
+    hint?: string
     disabled?: boolean
   }>(),
   {
@@ -48,6 +50,9 @@ defineEmits<{
     </select>
     <p v-if="error" class="mt-1.5 text-xs font-medium text-red-500 dark:text-red-400">
       {{ error }}
+    </p>
+    <p v-else-if="hint" class="mt-1.5 text-xs text-slate-500 dark:text-slate-400">
+      {{ hint }}
     </p>
   </label>
 </template>

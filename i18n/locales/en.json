@@ -245,7 +245,7 @@
   "options": {
     "contactTypes": {
       "supplier": "Supplier",
-      "customer": "Customer",
+      "customer": "Buyer",
       "doctor": "Vet / doctor",
       "worker": "Worker",
       "other": "Other"
@@ -499,7 +499,8 @@
         "contactId": "Buyer",
         "note": "Note"
       }
-    }
+    },
+    "contactFilterHint": "Only contacts marked as {types} are listed. Set the type in Contacts."
   },
   "admin": {
     "title": "Admin",
