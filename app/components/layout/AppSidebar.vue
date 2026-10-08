@@ -5,6 +5,7 @@ import {
   Warehouse,
   Contact,
   UserRound,
+  BookOpen,
   ShieldCheck,
   ChevronsLeft,
   ChevronsRight,
@@ -30,6 +31,7 @@ const navLinks = computed<NavLink[]>(() => [
   { labelKey: 'app.nav.farms', to: ROUTES.farms, icon: Warehouse, matches: ['/batches'] },
   { labelKey: 'app.nav.contacts', to: ROUTES.contacts, icon: Contact },
   { labelKey: 'app.nav.account', to: ROUTES.account, icon: UserRound },
+  { labelKey: 'app.nav.guide', to: ROUTES.guide, icon: BookOpen },
   ...(isAdmin.value ? [{ labelKey: 'app.nav.admin', to: ROUTES.admin, icon: ShieldCheck }] : []),
 ])
 

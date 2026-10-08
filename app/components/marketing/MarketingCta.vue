@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ArrowRight } from '@lucide/vue'
 import { NuxtLink } from '#components'
-import { MARKETING_SECTION_IDS } from '~/constants/marketing'
+import { MARKETING_SECTION_IDS, marketingSectionLink } from '~/constants/marketing'
 import { ROUTES } from '~/constants/routes'
 
 const { t } = useI18n()
@@ -30,7 +30,7 @@ const { t } = useI18n()
                 <ArrowRight class="w-5 h-5" aria-hidden="true" />
               </template>
             </BaseButton>
-            <BaseButton as="a" :href="`#${MARKETING_SECTION_IDS.technology}`" variant="glass" size="lg">
+            <BaseButton :as="NuxtLink" :to="marketingSectionLink(MARKETING_SECTION_IDS.technology)" variant="glass" size="lg">
               {{ t('cta.secondary') }}
             </BaseButton>
           </div>

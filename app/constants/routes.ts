@@ -3,6 +3,7 @@ export const ROUTES = {
   home: '/',
   login: '/login',
   signup: '/signup',
+  guide: '/guide',
   dashboard: '/dashboard',
   farms: '/farms',
   farm: (farmId: string) => `/farms/${farmId}`,

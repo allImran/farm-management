@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { APP_NAME } from '~/constants/app'
-import { MARKETING_NAV_LINKS } from '~/constants/marketing'
 
 const { t } = useI18n()
 const { formatNumber } = useLocaleNumber()
+const { items: navItems } = useMarketingNav()
 const year = formatNumber(new Date().getFullYear(), { useGrouping: false })
 </script>
 
@@ -18,13 +18,13 @@ const year = formatNumber(new Date().getFullYear(), { useGrouping: false })
         <nav :aria-label="t('footer.platform')">
           <p class="text-sm font-semibold text-slate-900 dark:text-white">{{ t('footer.platform') }}</p>
           <ul class="mt-4 grid grid-cols-2 gap-x-10 gap-y-1 sm:grid-cols-3">
-            <li v-for="link in MARKETING_NAV_LINKS" :key="link.id">
-              <a
-                :href="`#${link.id}`"
+            <li v-for="item in navItems" :key="item.key">
+              <NuxtLink
+                :to="item.to"
                 class="inline-flex min-h-10 items-center rounded-lg text-sm text-slate-600 hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 dark:text-slate-400 dark:hover:text-white"
               >
-                {{ t(link.labelKey) }}
-              </a>
+                {{ item.label }}
+              </NuxtLink>
             </li>
           </ul>
         </nav>
