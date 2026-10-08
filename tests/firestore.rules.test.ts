@@ -9,7 +9,7 @@ import {
   initializeTestEnvironment,
   type RulesTestEnvironment,
 } from '@firebase/rules-unit-testing'
-import { addDoc, collection, deleteDoc, doc, documentId, getDoc, getDocs, limit, orderBy, query, serverTimestamp, setDoc, Timestamp, updateDoc, where, writeBatch } from 'firebase/firestore'
+import { addDoc, collection, deleteDoc, deleteField, doc, documentId, getDoc, getDocs, limit, orderBy, query, serverTimestamp, setDoc, Timestamp, updateDoc, where, writeBatch } from 'firebase/firestore'
 import { afterAll, beforeAll, beforeEach, describe, it } from 'vitest'
 
 const ADMIN = 'admin-uid'
@@ -25,7 +25,7 @@ const alice = () => as(ALICE, '01711111111')
 const bob = () => as(BOB, '01822222222')
 const admin = () => as(ADMIN, '01933333333')
 
-const farmData = () => ({ name: 'North farm', location: 'Gazipur', address: '', createdAt: serverTimestamp(), updatedAt: serverTimestamp() })
+const farmData = () => ({ name: 'North farm', address: 'Gazipur', createdAt: serverTimestamp(), updatedAt: serverTimestamp() })
 
 beforeAll(async () => {
   env = await initializeTestEnvironment({
@@ -151,6 +151,16 @@ describe('farm data', () => {
     await assertSucceeds(getDocs(query(expenses, where('farmId', '==', 'farm1'), orderBy(documentId()), limit(501))))
     await assertSucceeds(getDocs(query(expenses, orderBy(documentId()), limit(501))))
     await assertFails(getDocs(query(collection(bob(), 'users', ALICE, 'expenses'), orderBy(documentId()), limit(501))))
+  })
+
+  it('drops the old farm location field on save and rejects new ones', async () => {
+    const farm = doc(alice(), 'users', ALICE, 'farms', 'farm1')
+    await env.withSecurityRulesDisabled((context) =>
+      updateDoc(doc(context.firestore(), 'users', ALICE, 'farms', 'farm1'), { location: 'Old location' }),
+    )
+    await assertFails(updateDoc(farm, { name: 'Renamed', updatedAt: serverTimestamp() }))
+    await assertSucceeds(updateDoc(farm, { name: 'Renamed', location: deleteField(), updatedAt: serverTimestamp() }))
+    await assertFails(addDoc(collection(alice(), 'users', ALICE, 'farms'), { ...farmData(), location: 'Gazipur' }))
   })
 
   it('validates record fields and batch ownership', async () => {

@@ -147,9 +147,8 @@ service cloud.firestore {
       match /farms/{farmId} {
         allow read: if isSelf(uid) || isAdmin();
         allow create, update: if canWriteFarmData(uid)
-          && data().keys().hasOnly(['name', 'location', 'address', 'createdAt', 'updatedAt'])
+          && data().keys().hasOnly(['name', 'address', 'createdAt', 'updatedAt'])
           && isText(data().name, 1, 100)
-          && isOptionalText('location', 100)
           && isOptionalText('address', 200)
           && hasValidTimestamps();
         allow delete: if canWriteFarmData(uid);

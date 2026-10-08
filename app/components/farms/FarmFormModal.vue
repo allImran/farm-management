@@ -25,8 +25,7 @@ const { t } = useI18n()
   <BaseModal v-model="isOpen" :title="isEditing ? t('farms.edit') : t('farms.add')">
     <form id="farm-form" class="space-y-4" novalidate @submit.prevent="$emit('submit')">
       <BaseInput v-model="values.name" :label="t('farms.fields.name')" :error="errors.name" required />
-      <BaseInput v-model="values.location" :label="t('farms.fields.location')" :hint="t('farms.fields.locationHint')" :error="errors.location" />
-      <BaseTextarea v-model="values.address" :label="t('farms.fields.address')" :error="errors.address" :rows="2" />
+      <BaseTextarea v-model="values.address" :label="t('farms.fields.address')" :hint="t('farms.fields.addressHint')" :error="errors.address" :rows="2" />
       <BaseAlert v-if="error" variant="error">{{ error.message }}</BaseAlert>
     </form>
     <template #footer>

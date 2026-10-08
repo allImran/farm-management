@@ -21,9 +21,9 @@ defineProps<{
         </span>
         <div class="min-w-0">
           <h3 class="font-semibold text-slate-900 dark:text-white truncate">{{ farm.name }}</h3>
-          <p v-if="farm.location || farm.address" class="mt-1 flex items-center gap-1 text-sm text-slate-500 dark:text-slate-400">
+          <p v-if="farm.address" class="mt-1 flex items-center gap-1 text-sm text-slate-500 dark:text-slate-400">
             <MapPin class="w-3.5 h-3.5 shrink-0" />
-            <span class="truncate">{{ farm.location || farm.address }}</span>
+            <span class="truncate">{{ farm.address }}</span>
           </p>
         </div>
       </div>

@@ -70,7 +70,6 @@ export type MedicineType = (typeof MEDICINE_TYPES)[number]
 
 export interface FarmInput {
   name: string
-  location: string
   address: string
 }
 export interface Farm extends FarmInput, Timestamps {

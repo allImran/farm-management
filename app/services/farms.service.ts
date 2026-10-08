@@ -1,6 +1,7 @@
 import {
   addDoc,
   deleteDoc,
+  deleteField,
   doc,
   documentId,
   getDoc,
@@ -22,13 +23,22 @@ import { request } from './network'
 
 const farms = (uid: string) => userCollection(uid, USER_COLLECTIONS.farms)
 
+/**
+ * Farms used to have a separate `location` next to `address`. Older docs are shown with both
+ * merged into the address so nothing disappears; the next save stores the merged address and
+ * drops `location` (see `updateFarm`).
+ */
+const legacyAddress = (data: DocumentData): string =>
+  [data.address, data.location]
+    .filter((part): part is string => typeof part === 'string' && part.trim() !== '')
+    .join(', ')
+
 const toFarm = (snapshot: DocumentSnapshot<DocumentData>): Farm => {
   const data = snapshot.data() ?? {}
   return {
     id: snapshot.id,
     name: data.name ?? '',
-    location: data.location ?? '',
-    address: data.address ?? '',
+    address: legacyAddress(data),
     createdAt: toDate(data.createdAt),
     updatedAt: toDate(data.updatedAt),
   }
@@ -52,7 +62,7 @@ export const createFarm = (uid: string, input: FarmInput) =>
   request(async () => (await addDoc(farms(uid), { ...input, ...creationTimestamps() })).id)
 
 export const updateFarm = (uid: string, farmId: string, input: FarmInput) =>
-  request(() => updateDoc(doc(farms(uid), farmId), { ...input, updatedAt: serverTimestamp() }))
+  request(() => updateDoc(doc(farms(uid), farmId), { ...input, location: deleteField(), updatedAt: serverTimestamp() }))
 
 export const deleteFarm = (uid: string, farmId: string) => request(() => deleteDoc(doc(farms(uid), farmId)))
 

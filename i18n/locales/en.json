@@ -343,9 +343,8 @@
     "edit": "Edit farm",
     "fields": {
       "name": "Farm name",
-      "location": "Location",
-      "locationHint": "Village, upazila or district",
-      "address": "Address"
+      "address": "Address",
+      "addressHint": "Village, upazila, district"
     },
     "emptyTitle": "No farms yet",
     "emptyDescription": "Add your first farm to start tracking batches.",

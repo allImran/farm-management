@@ -25,15 +25,14 @@ export const useFarmForm = (onSaved?: () => void) => {
   const validators = useValidators()
 
   return useEntityForm<FarmInput, Farm>({
-    empty: () => ({ name: '', location: '', address: '' }),
-    fromEntity: ({ name, location, address }) => ({ name, location, address }),
+    empty: () => ({ name: '', address: '' }),
+    fromEntity: ({ name, address }) => ({ name, address }),
     validate: (values) => ({
       name: validators.text(values.name, { required: true, max: TEXT_LIMITS.short }),
-      location: validators.text(values.location, { max: TEXT_LIMITS.short }),
       address: validators.text(values.address, { max: TEXT_LIMITS.medium }),
     }),
     save: (values, editing) => {
-      const input = { name: values.name.trim(), location: values.location.trim(), address: values.address.trim() }
+      const input = { name: values.name.trim(), address: values.address.trim() }
       return editing ? updateFarm(uid(), editing.id, input) : createFarm(uid(), input)
     },
     onSaved,
