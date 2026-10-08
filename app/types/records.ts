@@ -1,5 +1,5 @@
 import type { USER_COLLECTIONS } from '~/constants/collections'
-import type { IsoDate } from './models'
+import type { ContactType, IsoDate } from './models'
 
 /** Day-to-day records attached to a farm and (except farm-level expenses) a batch. */
 export type RecordKind = keyof Pick<
@@ -36,6 +36,8 @@ export interface RecordFieldDef {
   /** For `select` fields: stored values; labels come from `options.<optionsKey>.<value>`. */
   options?: readonly string[]
   optionsKey?: string
+  /** For `contact` fields: only contacts with one of these types are offered. */
+  contactTypes?: readonly ContactType[]
   /** i18n key of a unit shown after the label, e.g. `units.kg`. */
   unitKey?: string
   /** Computed from other fields; shown but not editable. */

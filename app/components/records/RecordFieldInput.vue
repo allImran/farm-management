@@ -20,9 +20,23 @@ const label = computed(() => {
   return props.field.required || props.field.isDerived ? base : `${base} (${t('common.optional')})`
 })
 
+// A record's saved contact stays listed even if its type no longer matches, so editing an
+// older record never silently drops it.
+const allowedContacts = computed(() => {
+  const types = props.field.contactTypes
+  if (!types) return contacts.value
+  return contacts.value.filter((contact) => contact.id === value.value || contact.types.some((type) => types.includes(type)))
+})
+
+const contactHint = computed(() => {
+  const types = props.field.contactTypes
+  if (!types) return undefined
+  return t('records.contactFilterHint', { types: types.map((type) => t(`options.contactTypes.${type}`)).join(', ') })
+})
+
 const selectOptions = computed(() => {
   if (props.field.type === 'contact') {
-    return [{ value: '', label: t('common.none') }, ...contacts.value.map((contact) => ({ value: contact.id, label: contact.name }))]
+    return [{ value: '', label: t('common.none') }, ...allowedContacts.value.map((contact) => ({ value: contact.id, label: contact.name }))]
   }
   return (props.field.options ?? []).map((option) => ({ value: option, label: t(`options.${props.field.optionsKey}.${option}`) }))
 })
@@ -38,6 +52,7 @@ if (props.field.type === 'contact') contactsStore.ensureLoaded()
     :label="label"
     :options="selectOptions"
     :placeholder="field.type === 'select' ? t('common.select') : undefined"
+    :hint="field.type === 'contact' ? contactHint : undefined"
     :error="error"
   />
   <BaseInput
