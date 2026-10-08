@@ -4,6 +4,7 @@ import {
   batchHasRecords,
   createBatch,
   deleteBatch,
+  fetchAllFarmBatches,
   fetchBatch,
   fetchBatchesPage,
   updateBatch,
@@ -22,6 +23,19 @@ export const useBatchList = (filters: () => BatchFilters, pageSize?: number) => 
   const list = usePagination((page) => fetchBatchesPage(uid(), page, filters()), { pageSize })
   watch(filters, () => list.reset(), { immediate: true, deep: true })
   return list
+}
+
+/**
+ * Every batch of a farm (not paged), for the profit & loss batch picker.
+ *
+ * @param farmId getter for the farm; changing it reloads.
+ * @returns `data` (batches, newest first), `status`, `error` and `execute()` to reload.
+ */
+export const useAllFarmBatches = (farmId: () => string) => {
+  const uid = useSessionUid()
+  const state = useAsyncState(() => fetchAllFarmBatches(uid(), farmId()))
+  watch(farmId, () => state.execute(), { immediate: true })
+  return state
 }
 
 /** A single batch by id, for the batch page. */

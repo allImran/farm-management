@@ -52,6 +52,28 @@ export const fetchPage = async <T>(
   }
 }
 
+/** Docs per request when `fetchAll` walks a query; keeps each response a reasonable size. */
+const FETCH_ALL_CHUNK = 500
+
+/**
+ * Reads every doc matching `baseQuery` in bounded chunks. Only for data that is shown in full
+ * (chart series, profit & loss totals), where a cut-off list would give wrong numbers.
+ * `baseQuery` must carry a deterministic `orderBy` (ending in the document id).
+ */
+export const fetchAll = async <T>(
+  baseQuery: Query<DocumentData>,
+  map: (doc: QueryDocumentSnapshot<DocumentData>) => T,
+): Promise<T[]> => {
+  const items: T[] = []
+  let cursor: PageCursor | null = null
+  do {
+    const page: Page<T> = await fetchPage(baseQuery, { pageSize: FETCH_ALL_CHUNK, cursor }, map)
+    items.push(...page.items)
+    cursor = page.nextCursor
+  } while (cursor)
+  return items
+}
+
 /** A subcollection of `users/{uid}` (see `USER_COLLECTIONS`). */
 export const userCollection = (uid: string, name: string) => collection(db(), COLLECTIONS.users, uid, name)
 

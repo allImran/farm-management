@@ -17,12 +17,15 @@ const props = withDefaults(
     centerText?: string
     centerLabel?: string
     cutout?: string
+    /** Formats slice values in the legend, tooltip and center total (e.g. money). */
+    formatValue?: (value: number) => string
   }>(),
   {
     height: '18rem',
     centerText: '',
     centerLabel: '',
     cutout: '72%',
+    formatValue: (value: number) => value.toLocaleString(),
   }
 )
 
@@ -55,6 +58,9 @@ const chartOptions = computed(() => ({
       titleFont: { weight: 'normal' as const, size: 11 },
       bodyColor: '#ffffff',
       bodyFont: { weight: 'bold' as const, size: 14 },
+      callbacks: {
+        label: (context: { label: string; parsed: number }) => `${context.label}: ${props.formatValue(context.parsed)}`,
+      },
     },
   },
 }))
@@ -69,7 +75,7 @@ const total = computed(() => props.data.reduce((sum, slice) => sum + slice.value
       <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
         <slot name="center">
           <span class="text-2xl font-bold text-slate-800 dark:text-slate-100">
-            {{ centerText || total.toLocaleString() }}
+            {{ centerText || formatValue(total) }}
           </span>
           <span v-if="centerLabel" class="text-xs text-slate-400 dark:text-slate-500 mt-1">
             {{ centerLabel }}
@@ -81,7 +87,7 @@ const total = computed(() => props.data.reduce((sum, slice) => sum + slice.value
       <div v-for="slice in data" :key="slice.label" class="flex items-center gap-2 text-sm">
         <span class="w-2.5 h-2.5 rounded-full shrink-0" :style="{ backgroundColor: slice.color }" />
         <span class="text-slate-500 dark:text-slate-400">{{ slice.label }}:</span>
-        <span class="font-semibold text-slate-800 dark:text-slate-100">{{ slice.value.toLocaleString() }}</span>
+        <span class="font-semibold text-slate-800 dark:text-slate-100">{{ formatValue(slice.value) }}</span>
       </div>
     </div>
   </div>

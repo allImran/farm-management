@@ -20,7 +20,7 @@ import { USER_COLLECTIONS } from '~/constants/collections'
 import { BATCH_RECORD_KINDS } from '~/constants/records'
 import type { Batch, BatchInput, BatchStatus } from '~/types/models'
 import type { PageRequest } from '~/types/pagination'
-import { countDocs, creationTimestamps, fetchPage, toDate, userCollection } from './firestore'
+import { countDocs, creationTimestamps, fetchAll, fetchPage, toDate, userCollection } from './firestore'
 import { request } from './network'
 
 /** CRUD for `users/{uid}/batches`. */
@@ -61,6 +61,12 @@ export const fetchBatchesPage = (uid: string, page: PageRequest, filters: BatchF
       page,
       toBatch,
     ),
+  )
+
+/** Every batch of a farm, newest first, for the profit & loss batch picker. */
+export const fetchAllFarmBatches = (uid: string, farmId: string) =>
+  request(() =>
+    fetchAll(query(batches(uid), where('farmId', '==', farmId), orderBy('startDate', 'desc'), orderBy(documentId(), 'desc')), toBatch),
   )
 
 /**

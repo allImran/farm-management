@@ -58,7 +58,7 @@ const makeGradient = (ctx: CanvasRenderingContext2D, area: any, color: string) =
 const chartData = computed(() => ({
   labels: props.labels,
   datasets: props.datasets.map((dataset, i) => {
-    const color = dataset.color ?? props.colors[i % props.colors.length]
+    const color = dataset.color ?? props.colors[i % props.colors.length] ?? '#3b6ef6'
     return {
       label: dataset.label,
       data: dataset.data,

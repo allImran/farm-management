@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Pencil, Trash2 } from '@lucide/vue'
 import { NuxtLink } from '#components'
-import { BATCH_RECORD_KINDS } from '~/constants/records'
+import { BATCH_RECORD_KINDS, BATCH_VIEWS } from '~/constants/records'
 import { ROUTES } from '~/constants/routes'
 import type { RecordKind } from '~/types/records'
 
@@ -16,9 +16,14 @@ const batchId = computed(() => String(route.params.batchId))
 const { data: batch, status, error, execute: reloadBatch } = useBatch(batchId)
 const { stats, status: statsStatus, error: statsError, refresh: refreshStats } = useBatchStats(() => batch.value)
 
+type BatchView = (typeof BATCH_VIEWS)[number]
+const activeView = useQueryParam<BatchView>('view', BATCH_VIEWS, BATCH_VIEWS[0])
+const viewTabs = computed(() => BATCH_VIEWS.map((view) => ({ value: view, label: t(`batches.views.${view}`) })))
+
 const activeKind = useQueryParam<RecordKind>('tab', BATCH_RECORD_KINDS, BATCH_RECORD_KINDS[0]!)
 const tabs = computed(() => BATCH_RECORD_KINDS.map((kind) => ({ value: kind, label: t(`records.${kind}.title`) })))
 const scope = computed(() => ({ farmId: batch.value?.farmId ?? '', batchId: batchId.value }))
+const financeScope = computed(() => (batch.value ? { farmId: batch.value.farmId, batchId: batch.value.id } : undefined))
 
 const handleBatchSaved = async () => {
   await reloadBatch()
@@ -70,10 +75,18 @@ useSeoMeta({ title: () => batch.value?.name ?? t('batches.title') })
           </BaseAsyncState>
         </div>
 
-        <div class="mb-5 -mx-4 px-4 overflow-x-auto scrollbar-none">
-          <BaseTabs v-model="activeKind" :tabs="tabs" class="whitespace-nowrap" />
+        <div class="mb-6 -mx-4 px-4 overflow-x-auto scrollbar-none">
+          <BaseTabs v-model="activeView" :tabs="viewTabs" class="whitespace-nowrap" />
         </div>
-        <RecordSection :key="activeKind" :kind="activeKind" :scope="scope" @changed="refreshStats" />
+
+        <template v-if="activeView === 'records'">
+          <div class="mb-5 -mx-4 px-4 overflow-x-auto scrollbar-none">
+            <BaseTabs v-model="activeKind" :tabs="tabs" class="whitespace-nowrap" />
+          </div>
+          <RecordSection :key="activeKind" :kind="activeKind" :scope="scope" @changed="refreshStats" />
+        </template>
+        <BatchChartsSection v-else-if="activeView === 'charts'" :batch="batch" />
+        <ProfitLossSection v-else :scope="financeScope" :description="t('reports.batchDescription')" />
       </template>
     </BaseAsyncState>
 

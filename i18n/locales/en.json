@@ -354,7 +354,8 @@
     "farmExpenses": "Farm expenses (not tied to a batch)",
     "deleteTitle": "Delete this farm?",
     "deleteMessage": "This can't be undone.",
-    "deleteBlocked": "Delete this farm's batches and expenses first."
+    "deleteBlocked": "Delete this farm's batches and expenses first.",
+    "expenseHint": "Costs that belong to a running batch, such as the electricity bill during the batch, are best added on that batch's page so its profit is right. Add costs here when no batch is running."
   },
   "batches": {
     "title": "Batches",
@@ -392,7 +393,12 @@
     "backToFarm": "Back to farm",
     "deleteTitle": "Delete this batch?",
     "deleteMessage": "This can't be undone.",
-    "deleteBlocked": "Delete this batch's records first, or mark it as cancelled instead."
+    "deleteBlocked": "Delete this batch's records first, or mark it as cancelled instead.",
+    "views": {
+      "records": "Records",
+      "charts": "Charts",
+      "profit": "Profit & loss"
+    }
   },
   "contacts": {
     "title": "Contacts",
@@ -540,5 +546,45 @@
       "instructionsPlaceholder": "e.g. Use Send Money, not Cash Out. Add your mobile number as the reference.",
       "saved": "Plan saved."
     }
+  },
+  "reports": {
+    "title": "Profit & loss",
+    "sales": "Sales",
+    "expenses": "Expenses",
+    "profit": "Profit",
+    "loss": "Loss",
+    "allFarmsDescription": "All farms and batches, from the start until today.",
+    "farmDescription": "All batches of this farm plus farm-level expenses, from the start until today.",
+    "batchDescription": "Sales and expenses of this batch.",
+    "whatIf": "What-if result: some items are left out. With everything included: {amount}",
+    "includeAll": "Include everything",
+    "expenseBreakdown": "Where the money went",
+    "byBatch": "Result per batch",
+    "byMonth": "Sales and expenses by month",
+    "farmLevel": "Farm-level expenses",
+    "batchFilterTitle": "Batches in this result",
+    "batchFilterHint": "Untick a batch to see the farm's result without it.",
+    "categoryFilterTitle": "Advanced: filter by expense category",
+    "categoryFilterHint": "Untick a category, e.g. medicine, to see the result without it.",
+    "leftOut": "{count} left out",
+    "selectAll": "Select all",
+    "selectNone": "Clear all",
+    "emptyTitle": "No sales or expenses yet",
+    "emptyDescription": "Add expenses and sales to see profit and loss.",
+    "nothingToChart": "Nothing to show for the current selection."
+  },
+  "charts": {
+    "title": "Batch progress",
+    "day": "Day {day}",
+    "growth": "Growth (average weight)",
+    "mortality": "Mortality",
+    "dailyDeaths": "Deaths that day",
+    "cumulativeMortality": "Total mortality",
+    "feed": "Feed",
+    "dailyFeed": "Feed that day",
+    "cumulativeFeed": "Total feed",
+    "noWeights": "No weight samples yet.",
+    "noMortality": "No deaths recorded.",
+    "noFeed": "No feed recorded yet."
   }
 }

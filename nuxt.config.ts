@@ -20,9 +20,6 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ['@nuxtjs/tailwindcss', '@nuxtjs/i18n', '@pinia/nuxt'],
   components: [{ path: '~/components', pathPrefix: false }],
-  colorMode: {
-    classSuffix: '',
-  },
   routeRules: Object.fromEntries(CLIENT_ONLY_ROUTES.map((route) => [route, { ssr: false }])),
   runtimeConfig: {
     // The app is deployed as a static site (`nuxt generate`), so every value here is public.

@@ -11,7 +11,8 @@
     "emulators": "npx firebase-tools emulators:start",
     "deploy:firestore": "npx firebase-tools deploy --only firestore",
     "test:rules": "vitest run tests/firestore.rules.test.ts",
-    "deploy": "nuxt generate && npx firebase-tools deploy --only hosting,firestore"
+    "deploy": "nuxt generate && npx firebase-tools deploy --only hosting,firestore",
+    "test:unit": "vitest run tests/unit"
   },
   "dependencies": {
     "@lucide/vue": "^1.48.0",
