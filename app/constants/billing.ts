@@ -10,3 +10,8 @@ export const EXPIRY_WARNING_DAYS = 5
 
 export const SUBSCRIPTION_TYPES = ['lifetime', 'period'] as const
 export const PAYMENT_REQUEST_STATUSES = ['pending', 'approved', 'rejected'] as const
+
+/** Farms included in every subscription; each farm beyond this adds the extra-farm fee. */
+export const INCLUDED_FARMS = 2
+/** Monthly price of each extra farm (BDT) until the admin sets one in the plan settings. */
+export const DEFAULT_EXTRA_FARM_PRICE = 100

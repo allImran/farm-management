@@ -6,13 +6,14 @@ import {
   fetchSubscription,
   notifyPaymentRequest,
 } from '~/services/billing.service'
+import { countFarms } from '~/services/farms.service'
 import type { PaymentRequest, PlanConfig, Subscription } from '~/types/models'
 import type { AppError, RequestStatus } from '~/types/network'
-import { getSubscriptionState, hasWriteAccess } from '~/utils/subscription'
+import { extraFarmCount, getSubscriptionState, hasWriteAccess, monthlyFee as calculateMonthlyFee, needsExtraFarmConsent } from '~/utils/subscription'
 
 /**
- * The signed-in user's write access: subscription, latest payment request and plan details.
- * Reloads whenever the signed-in account changes.
+ * The signed-in user's write access: subscription, latest payment request, plan details and
+ * the farm count that sets the monthly fee. Reloads whenever the signed-in account changes.
  */
 export const useBillingStore = defineStore('billing', () => {
   const authStore = useAuthStore()
@@ -22,6 +23,7 @@ export const useBillingStore = defineStore('billing', () => {
   const subscription = ref<Subscription | null>(null)
   const latestRequest = ref<PaymentRequest | null>(null)
   const plan = ref<PlanConfig | null>(null)
+  const farmCount = ref(0)
   const status = ref<RequestStatus>('idle')
   const error = ref<AppError | null>(null)
   const submitStatus = ref<RequestStatus>('idle')
@@ -36,17 +38,25 @@ export const useBillingStore = defineStore('billing', () => {
   /** UX hint only; `firestore.rules` is the real check. */
   const canWrite = computed(() => isAdmin.value || hasWriteAccess(subscriptionState.value))
   const hasPendingRequest = computed(() => latestRequest.value?.status === 'pending')
+  /** Free-forever users and the admin never pay, so they have no monthly fee. */
+  const isPaying = computed(() => !isAdmin.value && subscriptionState.value !== 'lifetime')
+  const extraFarms = computed(() => (isPaying.value ? extraFarmCount(farmCount.value) : 0))
+  /** `null` until the plan is loaded, or for users who don't pay. */
+  const monthlyFee = computed(() => (plan.value && isPaying.value ? calculateMonthlyFee(plan.value, farmCount.value) : null))
+  /** Whether the next farm raises the monthly fee (the user must agree first). */
+  const isNextFarmExtra = computed(() => needsExtraFarmConsent(farmCount.value, subscriptionState.value, isAdmin.value))
 
   const load = async () => {
     if (!uid.value) return
     status.value = 'loading'
     error.value = null
-    const [subscriptionResult, requestResult, planResult] = await Promise.all([
+    const [subscriptionResult, requestResult, planResult, farmCountResult] = await Promise.all([
       fetchSubscription(uid.value),
       fetchLatestPaymentRequest(uid.value),
       fetchPlanConfig(),
+      countFarms(uid.value),
     ])
-    const firstError = subscriptionResult.error ?? requestResult.error ?? planResult.error
+    const firstError = subscriptionResult.error ?? requestResult.error ?? planResult.error ?? farmCountResult.error
     if (firstError) {
       error.value = firstError
       status.value = 'error'
@@ -55,13 +65,25 @@ export const useBillingStore = defineStore('billing', () => {
     subscription.value = subscriptionResult.data
     latestRequest.value = requestResult.data
     plan.value = planResult.data
+    farmCount.value = farmCountResult.data!
     status.value = 'success'
+  }
+
+  /**
+   * Re-counts the user's farms (after adding or deleting one, or right before deciding whether
+   * a new farm is an extra one). Keeps the last known count if the count can't be read.
+   */
+  const refreshFarmCount = async () => {
+    if (!uid.value) return
+    const result = await countFarms(uid.value)
+    if (!result.error) farmCount.value = result.data
   }
 
   const reset = () => {
     subscription.value = null
     latestRequest.value = null
     plan.value = null
+    farmCount.value = 0
     status.value = 'idle'
     error.value = null
   }
@@ -90,6 +112,10 @@ export const useBillingStore = defineStore('billing', () => {
     subscription,
     latestRequest,
     plan,
+    farmCount,
+    extraFarms,
+    monthlyFee,
+    isNextFarmExtra,
     status,
     error,
     submitStatus,
@@ -98,6 +124,7 @@ export const useBillingStore = defineStore('billing', () => {
     canWrite,
     hasPendingRequest,
     load,
+    refreshFarmCount,
     submitPaymentRequest,
   }
 })

@@ -163,6 +163,16 @@ describe('farm data', () => {
     await assertFails(addDoc(collection(alice(), 'users', ALICE, 'farms'), { ...farmData(), location: 'Gazipur' }))
   })
 
+  it('records the extra-farm fee agreement once, with the server time', async () => {
+    const farms = collection(alice(), 'users', ALICE, 'farms')
+    const ref = await assertSucceeds(addDoc(farms, { ...farmData(), extraFeeAcceptedAt: serverTimestamp() }))
+    // The agreement time can't be back-dated or changed later.
+    await assertFails(addDoc(farms, { ...farmData(), extraFeeAcceptedAt: Timestamp.fromMillis(Date.now() - DAY) }))
+    await assertSucceeds(updateDoc(ref, { name: 'Renamed', updatedAt: serverTimestamp() }))
+    await assertFails(updateDoc(ref, { extraFeeAcceptedAt: serverTimestamp(), updatedAt: serverTimestamp() }))
+    await assertFails(updateDoc(doc(farms, 'farm1'), { extraFeeAcceptedAt: serverTimestamp(), updatedAt: serverTimestamp() }))
+  })
+
   it('validates record fields and batch ownership', async () => {
     const feeds = collection(alice(), 'users', ALICE, 'feeds')
     const base = { farmId: 'farm1', batchId: 'batch1', date: '2026-09-10', note: null, createdAt: serverTimestamp(), updatedAt: serverTimestamp() }
@@ -225,6 +235,14 @@ describe('billing', () => {
     await assertFails(getDocs(query(collection(alice(), 'paymentRequests'), where('userId', '==', BOB), limit(1))))
     await assertSucceeds(getDoc(doc(alice(), 'subscriptions', ALICE)))
     await assertFails(getDoc(doc(bob(), 'subscriptions', ALICE)))
+  })
+
+  it('lets only the admin set plan prices, including the extra-farm price', async () => {
+    const plan = { monthlyPrice: 300, extraFarmPrice: 100, bkashNumber: '01900000000', instructions: '', updatedAt: serverTimestamp() }
+    await assertSucceeds(setDoc(doc(admin(), 'config', 'plan'), { ...plan, updatedBy: ADMIN }))
+    await assertFails(setDoc(doc(admin(), 'config', 'plan'), { ...plan, extraFarmPrice: -1, updatedBy: ADMIN }))
+    await assertFails(setDoc(doc(bob(), 'config', 'plan'), { ...plan, updatedBy: BOB }))
+    await assertSucceeds(getDoc(doc(bob(), 'config', 'plan')))
   })
 
   it('lets only the admin review requests', async () => {

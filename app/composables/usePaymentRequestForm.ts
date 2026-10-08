@@ -5,12 +5,14 @@ import { toAsciiDigits } from '~/utils/phone'
  * The "I've paid" form: the user enters the last digits of the bKash number they paid from.
  *
  * @returns `last4` model, field `fieldError`, store-backed `submitStatus`/`submitError`, plan
- *          details, `latestRequest`, `hasPendingRequest` and `handleSubmit()`.
+ *          details, the user's `monthlyFee` and `extraFarms`, `latestRequest`,
+ *          `hasPendingRequest` and `handleSubmit()`.
  */
 export const usePaymentRequestForm = () => {
   const { t } = useI18n()
   const billingStore = useBillingStore()
-  const { plan, latestRequest, hasPendingRequest, submitStatus, submitError, status, error } = storeToRefs(billingStore)
+  const { plan, monthlyFee, extraFarms, latestRequest, hasPendingRequest, submitStatus, submitError, status, error } =
+    storeToRefs(billingStore)
 
   const last4 = ref('')
   const fieldError = ref<string | undefined>()
@@ -31,6 +33,8 @@ export const usePaymentRequestForm = () => {
     last4,
     fieldError,
     plan,
+    monthlyFee,
+    extraFarms,
     latestRequest,
     hasPendingRequest,
     loadStatus: status,

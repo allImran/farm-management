@@ -306,7 +306,8 @@
       "pendingTitle": "Request received",
       "pendingBody": "You paid from a number ending in {digits} on {date}. We'll enable writing once the payment is confirmed.",
       "rejectedTitle": "Your last request wasn't approved",
-      "rejectedBody": "We couldn't match that payment. Check the digits and try again, or contact support."
+      "rejectedBody": "We couldn't match that payment. Check the digits and try again, or contact support.",
+      "feeBreakdown": "{base} + {count} extra farm × {price}"
     }
   },
   "account": {
@@ -318,7 +319,9 @@
     "readOnly": "You can view your data. Subscribe to add or edit records.",
     "latestRequest": "Last request: paid from ••••{digits} on {date}",
     "phoneHint": "Your mobile number is your login and can't be changed.",
-    "saved": "Profile saved."
+    "saved": "Profile saved.",
+    "monthlyFee": "Monthly fee",
+    "farmsSummary": "{farms} farms: {included} included + {extra} extra × {price}"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -354,7 +357,16 @@
     "deleteTitle": "Delete this farm?",
     "deleteMessage": "This can't be undone.",
     "deleteBlocked": "Delete this farm's batches and expenses first.",
-    "expenseHint": "Costs that belong to a running batch, such as the electricity bill during the batch, are best added on that batch's page so its profit is right. Add costs here when no batch is running."
+    "expenseHint": "Costs that belong to a running batch, such as the electricity bill during the batch, are best added on that batch's page so its profit is right. Add costs here when no batch is running.",
+    "extraFee": {
+      "title": "Add an extra farm?",
+      "message": "Your subscription includes {included} farms and you already have {count}. Each extra farm adds a monthly fee.",
+      "pricePerFarm": "Extra farm",
+      "currentFee": "Your monthly fee now",
+      "newFee": "Monthly fee with this farm",
+      "whenCharged": "The new amount applies from your next bKash payment. If you delete a farm later, the fee goes down again.",
+      "confirm": "I agree, add farm"
+    }
   },
   "batches": {
     "title": "Batches",
@@ -507,7 +519,9 @@
       "paidFrom": "Paid from a number ending in {digits}",
       "rejectTitle": "Reject this request?",
       "rejectMessage": "{name} will be asked to check their payment and try again.",
-      "rejectNote": "Reason shown to the user"
+      "rejectNote": "Reason shown to the user",
+      "farms": "Farms / due",
+      "expected": "{farms} farms · {fee}/month"
     },
     "grant": {
       "approveTitle": "Approve payment",
@@ -543,7 +557,9 @@
       "bkashNumber": "bKash number to receive payments",
       "instructions": "Payment instructions",
       "instructionsPlaceholder": "e.g. Use Send Money, not Cash Out. Add your mobile number as the reference.",
-      "saved": "Plan saved."
+      "saved": "Plan saved.",
+      "extraFarmPrice": "Price per extra farm / month",
+      "extraFarmPriceHint": "Added to the monthly fee for each farm beyond {included}."
     }
   },
   "reports": {

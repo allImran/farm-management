@@ -11,6 +11,7 @@ import {
   saveSubscription,
   savePlanConfig,
 } from '~/services/billing.service'
+import { countFarmsByUser } from '~/services/farms.service'
 import { fetchUsersPage } from '~/services/users.service'
 import type { PaymentRequest, PaymentRequestStatus, PlanConfig, Subscription, SubscriptionGrant, UserProfile } from '~/types/models'
 import type { AppError, RequestStatus } from '~/types/network'
@@ -27,7 +28,17 @@ import { resolveGrantPeriod } from '~/utils/subscription'
 export const useAdminPaymentRequests = (status: () => PaymentRequestStatus) => {
   const list = usePagination((page) => fetchPaymentRequestsPage(page, status()), { mode: 'pages' })
   watch(status, () => list.reset(), { immediate: true })
-  return list
+
+  // Each requester's current farm count, so the admin can check the paid amount covers extra farms.
+  const farmCounts = shallowRef<Record<string, number>>({})
+  watch(list.items, async (requests) => {
+    farmCounts.value = {}
+    if (!requests.length) return
+    const result = await countFarmsByUser(requests.map((request) => request.userId))
+    if (!result.error) farmCounts.value = result.data
+  })
+
+  return { ...list, farmCounts }
 }
 
 /**
@@ -221,7 +232,8 @@ export const usePlanSettings = () => {
   const { uid } = storeToRefs(useAuthStore())
   const validators = useValidators()
 
-  const values = reactive({ monthlyPrice: '', bkashNumber: '', instructions: '' })
+  const billingStore = useBillingStore()
+  const values = reactive({ monthlyPrice: '', extraFarmPrice: '', bkashNumber: '', instructions: '' })
   const errors = ref<Record<string, string | undefined>>({})
   const load = useAsyncState(fetchPlanConfig)
   const save = useAsyncState((plan: PlanConfig, adminId: string) => savePlanConfig(plan, adminId))
@@ -231,6 +243,7 @@ export const usePlanSettings = () => {
     const result = await load.execute()
     if (!result.data) return
     values.monthlyPrice = result.data.monthlyPrice ? String(result.data.monthlyPrice) : ''
+    values.extraFarmPrice = String(result.data.extraFarmPrice)
     values.bkashNumber = result.data.bkashNumber
     values.instructions = result.data.instructions
   }
@@ -239,6 +252,7 @@ export const usePlanSettings = () => {
   const handleSubmit = async () => {
     errors.value = {
       monthlyPrice: validators.number(values.monthlyPrice, { required: true, min: 0 }),
+      extraFarmPrice: validators.number(values.extraFarmPrice, { required: true, min: 0 }),
       bkashNumber: normalizeBdPhone(values.bkashNumber) ? undefined : t('validation.phone'),
       instructions: validators.text(values.instructions, { max: TEXT_LIMITS.note }),
     }
@@ -247,12 +261,16 @@ export const usePlanSettings = () => {
     const result = await save.execute(
       {
         monthlyPrice: Number(values.monthlyPrice),
+        extraFarmPrice: Number(values.extraFarmPrice),
         bkashNumber: normalizeBdPhone(values.bkashNumber) ?? '',
         instructions: values.instructions.trim(),
       },
       uid.value,
     )
-    if (!result.error) isSaved.value = true
+    if (result.error) return
+    isSaved.value = true
+    // The admin's own copy of the plan feeds the expected amounts on payment requests.
+    billingStore.load()
   }
 
   return {
