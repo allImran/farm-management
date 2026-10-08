@@ -1,2 +1,14 @@
-User-Agent: *
-Disallow:
+# FarmXYZ — https://farmxyz.web.app
+# Only the marketing page is public; the signed-in app is rendered client-side and has
+# nothing useful to index.
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /farms/
+Disallow: /batches/
+Disallow: /contacts/
+Disallow: /account
+Disallow: /admin/
+Disallow: /components
+
+Sitemap: https://farmxyz.web.app/sitemap.xml
