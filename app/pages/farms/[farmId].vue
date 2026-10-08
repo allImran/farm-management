@@ -73,9 +73,9 @@ useSeoMeta({ title: () => farm.value?.name ?? t('farms.title') })
             </BaseButton>
           </template>
         </PageHeader>
-        <p v-if="farm.location || farm.address" class="-mt-3 mb-6 flex items-start gap-1.5 text-sm text-slate-500 dark:text-slate-400">
+        <p v-if="farm.address" class="-mt-3 mb-6 flex items-start gap-1.5 text-sm text-slate-500 dark:text-slate-400">
           <MapPin class="w-4 h-4 mt-0.5 shrink-0" />
-          <span>{{ [farm.location, farm.address].filter(Boolean).join(' · ') }}</span>
+          <span class="whitespace-pre-line">{{ farm.address }}</span>
         </p>
 
         <section class="mb-10">
