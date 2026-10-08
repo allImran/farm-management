@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { type Component } from 'vue'
+import { NuxtLink } from '#components'
 
 const props = withDefaults(
   defineProps<{
@@ -27,9 +28,9 @@ const onClick = () => {
 
 <template>
   <component
-    :is="to ? 'NuxtLink' : 'button'"
+    :is="to ? NuxtLink : 'button'"
     :to="to"
-    type="button"
+    :type="to ? undefined : 'button'"
     class="group relative flex items-center rounded-xl transition-all duration-200 outline-none focus-visible:ring-4 focus-visible:ring-primary-300"
     :class="[
       collapsed ? 'justify-center px-3 py-3' : 'gap-3 px-3.5 py-2.5',

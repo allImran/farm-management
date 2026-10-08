@@ -69,6 +69,7 @@ export const fetchLatestRecord = (uid: string, kind: RecordKind, scope: RecordSc
 
 /**
  * Sums numeric fields across all records in scope with one aggregate query.
+ * Each summed field needs a (farmId, batchId, field) index in firestore.indexes.json.
  *
  * @returns totals keyed by field name (0 when there are no records).
  */
