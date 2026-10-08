@@ -24,8 +24,20 @@ const batches = useBatchList(() => ({
   status: statusFilter.value === 'all' ? null : statusFilter.value,
 }))
 
+// Every batch (not just the visible page) for the profit & loss batch picker.
+const allBatches = useAllFarmBatches(() => farmId.value)
+const batchOptions = computed(() => (allBatches.data.value ?? []).map((batch) => ({ id: batch.id, name: batch.name })))
+const financeScope = computed(() => ({ farmId: farmId.value }))
+const profitSection = useTemplateRef<{ reload: () => Promise<void> }>('profitSection')
+const reloadProfit = () => profitSection.value?.reload()
+
+const handleBatchCreated = () => {
+  batches.reset()
+  allBatches.execute()
+}
+
 const farmForm = useFarmForm(reloadFarm)
-const batchForm = useBatchForm(() => farmId.value, batches.reset)
+const batchForm = useBatchForm(() => farmId.value, handleBatchCreated)
 const farmDelete = useFarmDelete()
 const { isOpen: isFarmFormOpen, values: farmValues, errors: farmErrors } = farmForm
 const { isOpen: isBatchFormOpen, values: batchValues, errors: batchErrors } = batchForm
@@ -98,7 +110,29 @@ useSeoMeta({ title: () => farm.value?.name ?? t('farms.title') })
           </BaseAsyncState>
         </section>
 
-        <RecordSection kind="expenses" :scope="expenseScope" :title="t('farms.farmExpenses')" />
+        <div class="mb-10">
+          <BaseAsyncState :status="allBatches.status.value" :error="allBatches.error.value" @retry="allBatches.execute()">
+            <template #loading>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <BaseSkeleton v-for="i in 3" :key="i" variant="rect" height="6rem" />
+              </div>
+            </template>
+            <ProfitLossSection
+              ref="profitSection"
+              :scope="financeScope"
+              :description="t('reports.farmDescription')"
+              :batches="batchOptions"
+            />
+          </BaseAsyncState>
+        </div>
+
+        <RecordSection
+          kind="expenses"
+          :scope="expenseScope"
+          :title="t('farms.farmExpenses')"
+          :description="t('farms.expenseHint')"
+          @changed="reloadProfit"
+        />
       </template>
     </BaseAsyncState>
 

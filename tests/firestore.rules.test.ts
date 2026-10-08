@@ -9,7 +9,7 @@ import {
   initializeTestEnvironment,
   type RulesTestEnvironment,
 } from '@firebase/rules-unit-testing'
-import { addDoc, collection, doc, getDoc, getDocs, limit, query, serverTimestamp, setDoc, Timestamp, updateDoc, where, writeBatch } from 'firebase/firestore'
+import { addDoc, collection, deleteDoc, doc, documentId, getDoc, getDocs, limit, orderBy, query, serverTimestamp, setDoc, Timestamp, updateDoc, where, writeBatch } from 'firebase/firestore'
 import { afterAll, beforeAll, beforeEach, describe, it } from 'vitest'
 
 const ADMIN = 'admin-uid'
@@ -29,7 +29,8 @@ const farmData = () => ({ name: 'North farm', location: 'Gazipur', address: '', 
 
 beforeAll(async () => {
   env = await initializeTestEnvironment({
-    projectId: 'demo-broiler',
+    // Own project id, so the tests never clear data of a dev emulator running `demo-broiler`.
+    projectId: 'demo-rules-test',
     firestore: { rules: readFileSync('firestore.rules', 'utf8'), host: '127.0.0.1', port: 8080 },
   })
 })
@@ -123,6 +124,33 @@ describe('farm data', () => {
       updateDoc(doc(context.firestore(), 'subscriptions', ALICE), { endsAt: Timestamp.fromMillis(Date.now() - 1000) }),
     )
     await assertFails(addDoc(collection(alice(), 'users', ALICE, 'farms'), farmData()))
+  })
+
+  it('denies writes before a scheduled subscription starts', async () => {
+    await env.withSecurityRulesDisabled((context) =>
+      updateDoc(doc(context.firestore(), 'subscriptions', ALICE), { startsAt: Timestamp.fromMillis(Date.now() + DAY) }),
+    )
+    await assertFails(addDoc(collection(alice(), 'users', ALICE, 'farms'), farmData()))
+  })
+
+  it('denies writes, edits and deletes once the admin revokes access', async () => {
+    const farm = doc(alice(), 'users', ALICE, 'farms', 'farm1')
+    await assertSucceeds(updateDoc(farm, { name: 'Renamed', updatedAt: serverTimestamp() }))
+    await deleteDoc(doc(admin(), 'subscriptions', ALICE))
+    await assertFails(updateDoc(farm, { name: 'Again', updatedAt: serverTimestamp() }))
+    await assertFails(deleteDoc(farm))
+    await assertSucceeds(getDoc(farm))
+  })
+
+  it('lets the admin write their own farm data without a subscription', async () => {
+    await assertSucceeds(addDoc(collection(admin(), 'users', ADMIN, 'farms'), farmData()))
+  })
+
+  it('allows the farm-wide and all-farm reads used by the profit & loss charts', async () => {
+    const expenses = collection(alice(), 'users', ALICE, 'expenses')
+    await assertSucceeds(getDocs(query(expenses, where('farmId', '==', 'farm1'), orderBy(documentId()), limit(501))))
+    await assertSucceeds(getDocs(query(expenses, orderBy(documentId()), limit(501))))
+    await assertFails(getDocs(query(collection(bob(), 'users', ALICE, 'expenses'), orderBy(documentId()), limit(501))))
   })
 
   it('validates record fields and batch ownership', async () => {

@@ -70,3 +70,6 @@ export const RECORD_KINDS: Record<RecordKind, RecordKindDef> = {
 
 /** Record kinds shown as tabs on the batch page, in order. */
 export const BATCH_RECORD_KINDS: RecordKind[] = ['feeds', 'mortalities', 'weights', 'medicines', 'expenses', 'sales']
+
+/** Views on the batch page, in tab order (`?view=` in the URL). */
+export const BATCH_VIEWS = ['records', 'charts', 'profit'] as const

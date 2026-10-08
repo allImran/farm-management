@@ -32,6 +32,8 @@ useSeoMeta({ title: () => t('dashboard.title') })
       </div>
     </BaseAsyncState>
 
+    <ProfitLossSection v-if="summary && !hasNoFarms" :scope="null" :description="t('reports.allFarmsDescription')" show-monthly />
+
     <BaseCard v-if="hasNoFarms">
       <BaseEmptyState :title="t('dashboard.onboardingTitle')" :description="t('dashboard.onboardingDescription')">
         <template #icon><Warehouse class="w-7 h-7" /></template>

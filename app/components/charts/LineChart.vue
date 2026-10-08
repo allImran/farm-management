@@ -9,14 +9,18 @@ import {
   Filler,
   Tooltip,
   Legend,
+  type TooltipItem,
 } from 'chart.js'
 
 Chart.register(CategoryScale, LinearScale, PointElement, LineElement, Filler, Tooltip, Legend)
 
 interface ChartDataset {
   label: string
-  data: number[]
+  /** `null` leaves a gap that the line bridges (e.g. days without a weight sample). */
+  data: (number | null)[]
   color?: string
+  /** Formats this dataset's values in the tooltip and on the y-axis. */
+  format?: (value: number) => string
 }
 
 const props = withDefaults(
@@ -58,7 +62,7 @@ const makeGradient = (ctx: CanvasRenderingContext2D, area: any, color: string) =
 const chartData = computed(() => ({
   labels: props.labels,
   datasets: props.datasets.map((dataset, i) => {
-    const color = dataset.color ?? props.colors[i % props.colors.length]
+    const color = dataset.color ?? props.colors[i % props.colors.length] ?? '#3b6ef6'
     return {
       label: dataset.label,
       data: dataset.data,
@@ -71,7 +75,10 @@ const chartData = computed(() => ({
           }
         : color,
       fill: props.filled,
+      spanGaps: true,
       tension: 0.4,
+      // Monotone smoothing never overshoots the data (e.g. a growth curve never dips).
+      cubicInterpolationMode: 'monotone' as const,
       borderWidth: 2.5,
       pointRadius: 0,
       pointHoverRadius: 5,
@@ -82,6 +89,15 @@ const chartData = computed(() => ({
     }
   }),
 }))
+
+const axisFormat = computed(() => props.datasets[0]?.format)
+
+const tooltipLabel = (context: TooltipItem<'line'>) => {
+  const dataset = props.datasets[context.datasetIndex]
+  const value = typeof context.parsed.y === 'number' ? context.parsed.y : 0
+  const formatted = dataset?.format ? dataset.format(value) : `${props.valuePrefix}${context.formattedValue}`
+  return props.datasets.length > 1 ? `${dataset?.label ?? ''}: ${formatted}` : formatted
+}
 
 const chartOptions = computed(() => ({
   responsive: true,
@@ -111,7 +127,7 @@ const chartOptions = computed(() => ({
       bodyColor: '#ffffff',
       bodyFont: { weight: 'bold' as const, size: 14 },
       callbacks: {
-        label: (context: any) => `${props.valuePrefix}${context.formattedValue}`,
+        label: tooltipLabel,
       },
     },
   },
@@ -124,7 +140,10 @@ const chartOptions = computed(() => ({
     y: {
       grid: { color: gridColor },
       border: { display: false },
-      ticks: { color: tickColor.value },
+      ticks: {
+        color: tickColor.value,
+        ...(axisFormat.value ? { callback: (value: string | number) => axisFormat.value!(Number(value)) } : {}),
+      },
     },
   },
 }))

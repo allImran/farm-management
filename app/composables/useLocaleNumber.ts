@@ -14,7 +14,9 @@ export const useLocaleNumber = () => {
     new Intl.NumberFormat(localeProperties.value.language, options).format(value)
 
   // A fixed `৳` prefix reads the same in both languages; Intl's BDT currency style doesn't.
-  const formatMoney = (value: number) => `৳${formatNumber(value, { maximumFractionDigits: 2 })}`
+  // The sign goes before the symbol (-৳500), not between symbol and digits (৳-500).
+  const formatMoney = (value: number) =>
+    `${value < 0 ? '-' : ''}৳${formatNumber(Math.abs(value), { maximumFractionDigits: 2 })}`
 
   return { formatNumber, formatMoney }
 }
