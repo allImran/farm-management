@@ -1,5 +1,7 @@
 <script setup lang="ts">
-/** Price, bKash number and instructions shown to users in the payment modal. */
+import { INCLUDED_FARMS } from '~/constants/billing'
+
+/** Prices, bKash number and instructions shown to users in the payment modal. */
 const { t } = useI18n()
 const { values, errors, loadStatus, loadError, saveStatus, saveError, isSaved, reload, handleSubmit } = usePlanSettings()
 </script>
@@ -18,6 +20,17 @@ const { values, errors, loadStatus, loadError, saveStatus, saveError, isSaved, r
             step="any"
             :label="`${t('admin.plan.monthlyPrice')} (${t('units.taka')})`"
             :error="errors.monthlyPrice"
+            required
+          />
+          <BaseInput
+            v-model="values.extraFarmPrice"
+            type="number"
+            inputmode="decimal"
+            min="0"
+            step="any"
+            :label="`${t('admin.plan.extraFarmPrice')} (${t('units.taka')})`"
+            :hint="t('admin.plan.extraFarmPriceHint', { included: INCLUDED_FARMS })"
+            :error="errors.extraFarmPrice"
             required
           />
           <BaseInput

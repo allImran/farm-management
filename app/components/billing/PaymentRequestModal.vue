@@ -4,13 +4,15 @@ import { BKASH_DIGITS_LENGTH } from '~/constants/billing'
 
 /** Explains how to pay via bKash and collects the last digits of the payer's number. */
 const { t } = useI18n()
-const { formatMoney } = useLocaleNumber()
+const { formatMoney, formatNumber } = useLocaleNumber()
 const { formatDate } = useLocaleDate()
 const { isPaymentModalOpen } = useWriteAccess()
 const {
   last4,
   fieldError,
   plan,
+  monthlyFee,
+  extraFarms,
   latestRequest,
   hasPendingRequest,
   loadStatus,
@@ -22,6 +24,16 @@ const {
 } = usePaymentRequestForm()
 
 const wasRejected = computed(() => latestRequest.value?.status === 'rejected')
+// The plan price plus any extra farms, e.g. "৳300 + 1 extra farm × ৳100".
+const feeBreakdown = computed(() =>
+  plan.value && extraFarms.value > 0
+    ? t('billing.request.feeBreakdown', {
+        base: formatMoney(plan.value.monthlyPrice),
+        count: formatNumber(extraFarms.value),
+        price: formatMoney(plan.value.extraFarmPrice),
+      })
+    : '',
+)
 </script>
 
 <template>
@@ -48,10 +60,13 @@ const wasRejected = computed(() => latestRequest.value?.status === 'rejected')
         <p class="text-sm text-slate-600 dark:text-slate-300">{{ t('billing.request.intro') }}</p>
 
         <div class="rounded-2xl border border-slate-100 dark:border-slate-800 bg-surface-light dark:bg-surface-dark p-4 space-y-3">
-          <div class="flex items-center justify-between gap-3">
+          <div class="flex items-start justify-between gap-3">
             <span class="text-sm text-slate-500 dark:text-slate-400">{{ t('billing.request.price') }}</span>
-            <span class="text-lg font-bold text-slate-900 dark:text-white">
-              {{ plan?.monthlyPrice ? t('billing.request.perMonth', { price: formatMoney(plan.monthlyPrice) }) : '—' }}
+            <span class="text-right">
+              <span class="block text-lg font-bold text-slate-900 dark:text-white">
+                {{ monthlyFee ? t('billing.request.perMonth', { price: formatMoney(monthlyFee) }) : '—' }}
+              </span>
+              <span v-if="feeBreakdown" class="block text-xs text-slate-500 dark:text-slate-400">{{ feeBreakdown }}</span>
             </span>
           </div>
           <div class="flex items-center justify-between gap-3">

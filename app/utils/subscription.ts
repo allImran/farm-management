@@ -1,4 +1,5 @@
-import type { Subscription, SubscriptionGrant, SubscriptionState, SubscriptionType } from '~/types/models'
+import { INCLUDED_FARMS } from '~/constants/billing'
+import type { PlanConfig, Subscription, SubscriptionGrant, SubscriptionState, SubscriptionType } from '~/types/models'
 import { addDays, addMonths, parseIsoDate } from './date'
 
 /** Where a user's write access stands at `now`. */
@@ -46,3 +47,20 @@ export const resolveGrantPeriod = (
   const base = isExtending && current?.endsAt ? current.endsAt : now
   return { type: 'period', startsAt, endsAt: addMonths(base, grant.months) }
 }
+
+/** Farms beyond the ones every subscription includes. */
+export const extraFarmCount = (farmCount: number) => Math.max(0, farmCount - INCLUDED_FARMS)
+
+/**
+ * What a paying user owes per month: the plan price plus the extra-farm fee for every farm
+ * beyond `INCLUDED_FARMS`. Free-forever users and the admin owe nothing, so callers skip them.
+ */
+export const monthlyFee = (plan: Pick<PlanConfig, 'monthlyPrice' | 'extraFarmPrice'>, farmCount: number) =>
+  plan.monthlyPrice + extraFarmCount(farmCount) * plan.extraFarmPrice
+
+/**
+ * Whether adding one more farm raises the user's monthly fee, so they must agree to it first.
+ * Free-forever users and the admin are never charged for extra farms.
+ */
+export const needsExtraFarmConsent = (farmCount: number, state: SubscriptionState, isAdmin: boolean) =>
+  !isAdmin && state !== 'lifetime' && farmCount >= INCLUDED_FARMS

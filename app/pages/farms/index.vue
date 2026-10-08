@@ -6,7 +6,8 @@ definePageMeta({ layout: 'app', middleware: 'auth' })
 const { t } = useI18n()
 const { items, status, error, isEmpty, hasMore, loadMoreStatus, loadMoreError, loadMore, reset } = useFarmList()
 const form = useFarmForm(reset)
-const { isOpen, values, errors } = form
+const { isOpen, values, errors, isExtraFeeOpen, isCheckingFarms } = form
+const { plan, farmCount } = storeToRefs(useBillingStore())
 
 useSeoMeta({ title: () => t('farms.title') })
 </script>
@@ -15,7 +16,7 @@ useSeoMeta({ title: () => t('farms.title') })
   <div class="max-w-6xl mx-auto">
     <PageHeader :title="t('farms.title')" :description="t('farms.description')">
       <template #actions>
-        <BaseButton @click="form.openCreate">
+        <BaseButton :loading="isCheckingFarms" @click="form.openCreate">
           <template #icon-left><Plus class="w-4 h-4" /></template>
           {{ t('farms.add') }}
         </BaseButton>
@@ -32,7 +33,7 @@ useSeoMeta({ title: () => t('farms.title') })
     >
       <template #empty-icon><Warehouse class="w-7 h-7" /></template>
       <template #empty-action>
-        <BaseButton @click="form.openCreate">{{ t('farms.add') }}</BaseButton>
+        <BaseButton :loading="isCheckingFarms" @click="form.openCreate">{{ t('farms.add') }}</BaseButton>
       </template>
       <ul class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
         <li v-for="farm in items" :key="farm.id"><FarmCard :farm="farm" /></li>
@@ -48,6 +49,13 @@ useSeoMeta({ title: () => t('farms.title') })
       :error="form.error.value"
       :loading="form.status.value === 'loading'"
       @submit="form.handleSubmit"
+    />
+    <ExtraFarmConsentDialog
+      v-if="plan"
+      v-model="isExtraFeeOpen"
+      :farm-count="farmCount"
+      :plan="plan"
+      @confirm="form.confirmExtraFee"
     />
   </div>
 </template>

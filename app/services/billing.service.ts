@@ -17,6 +17,7 @@ import {
   type DocumentData,
   type DocumentSnapshot,
 } from 'firebase/firestore'
+import { DEFAULT_EXTRA_FARM_PRICE } from '~/constants/billing'
 import { COLLECTIONS, CONFIG_DOCS } from '~/constants/collections'
 import type { PaymentRequest, PaymentRequestStatus, PlanConfig, Subscription } from '~/types/models'
 import type { PageRequest } from '~/types/pagination'
@@ -214,7 +215,7 @@ export const notifyPaymentRequest = (webhookUrl: string, input: NewPaymentReques
 
 // ---- Plan settings ----
 
-const DEFAULT_PLAN: PlanConfig = { monthlyPrice: 0, bkashNumber: '', instructions: '' }
+const DEFAULT_PLAN: PlanConfig = { monthlyPrice: 0, extraFarmPrice: DEFAULT_EXTRA_FARM_PRICE, bkashNumber: '', instructions: '' }
 
 /** @returns the plan, or defaults when the admin hasn't saved one yet. */
 export const fetchPlanConfig = () =>
@@ -224,6 +225,8 @@ export const fetchPlanConfig = () =>
     if (!data) return { ...DEFAULT_PLAN }
     return {
       monthlyPrice: data.monthlyPrice ?? 0,
+      // Plans saved before extra-farm pricing existed fall back to the default price.
+      extraFarmPrice: data.extraFarmPrice ?? DEFAULT_EXTRA_FARM_PRICE,
       bkashNumber: data.bkashNumber ?? '',
       instructions: data.instructions ?? '',
     } satisfies PlanConfig

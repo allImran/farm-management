@@ -144,11 +144,21 @@ service cloud.firestore {
         return isNullableText('contactId', 128);
       }
 
+      // When a farm beyond the included ones is added, the app records when the user agreed to
+      // the monthly extra-farm fee. It is set by the server clock once and never changes.
+      function hasValidExtraFeeConsent() {
+        return !('extraFeeAcceptedAt' in data())
+          || (request.method == 'create'
+            ? data().extraFeeAcceptedAt == request.time
+            : 'extraFeeAcceptedAt' in resource.data && data().extraFeeAcceptedAt == resource.data.extraFeeAcceptedAt);
+      }
+
       match /farms/{farmId} {
         allow read: if isSelf(uid) || isAdmin();
         allow create, update: if canWriteFarmData(uid)
-          && data().keys().hasOnly(['name', 'address', 'createdAt', 'updatedAt'])
+          && data().keys().hasOnly(['name', 'address', 'extraFeeAcceptedAt', 'createdAt', 'updatedAt'])
           && isText(data().name, 1, 100)
+          && hasValidExtraFeeConsent()
           && isOptionalText('address', 200)
           && hasValidTimestamps();
         allow delete: if canWriteFarmData(uid);
@@ -302,8 +312,9 @@ service cloud.firestore {
     match /config/plan {
       allow read: if isSignedIn();
       allow write: if isAdmin()
-        && data().keys().hasOnly(['monthlyPrice', 'bkashNumber', 'instructions', 'updatedAt', 'updatedBy'])
+        && data().keys().hasOnly(['monthlyPrice', 'extraFarmPrice', 'bkashNumber', 'instructions', 'updatedAt', 'updatedBy'])
         && isNumberAtLeast(data().monthlyPrice, 0)
+        && isNumberAtLeast(data().extraFarmPrice, 0)
         && isText(data().bkashNumber, 0, 20)
         && isText(data().instructions, 0, 1000)
         && data().updatedAt == request.time

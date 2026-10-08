@@ -2,6 +2,7 @@
 import { Check, Inbox, X } from '@lucide/vue'
 import { PAYMENT_REQUEST_STATUSES } from '~/constants/billing'
 import type { PaymentRequest, PaymentRequestStatus } from '~/types/models'
+import { monthlyFee } from '~/utils/subscription'
 
 /** bKash payment requests, filtered by status, with approve / reject actions. */
 const { t } = useI18n()
@@ -11,7 +12,19 @@ const statusFilter = useQueryParam<PaymentRequestStatus>('status', PAYMENT_REQUE
 const tabs = computed(() => PAYMENT_REQUEST_STATUSES.map((value) => ({ value, label: t(`billing.requestStatus.${value}`) })))
 
 const list = useAdminPaymentRequests(() => statusFilter.value)
-const { items, status, error, isEmpty, currentPage, totalPages, goToPage, refresh } = list
+const { items, status, error, isEmpty, currentPage, totalPages, goToPage, refresh, farmCounts } = list
+const { plan } = storeToRefs(useBillingStore())
+const { formatMoney, formatNumber } = useLocaleNumber()
+
+/** "3 farms · ৳400 / month", or empty while the count is loading. */
+const expectedFor = (userId: string) => {
+  const farmCount = farmCounts.value[userId]
+  if (farmCount === undefined || !plan.value) return ''
+  return t('admin.requests.expected', {
+    farms: formatNumber(farmCount),
+    fee: formatMoney(monthlyFee(plan.value, farmCount)),
+  })
+}
 
 const grant = useSubscriptionGrant(() => refresh())
 const reject = useRejectRequest(() => refresh())
@@ -21,6 +34,8 @@ const isPending = computed(() => statusFilter.value === 'pending')
 const columns = computed(() => [
   { key: 'user', label: t('admin.requests.user') },
   { key: 'bkashLast4', label: t('admin.requests.digits') },
+  // Today's farm count only says what a payment should cover while it is being reviewed.
+  ...(isPending.value ? [{ key: 'farms', label: t('admin.requests.farms') }] : []),
   { key: 'createdAt', label: t('admin.requests.submitted') },
   ...(isPending.value ? [{ key: 'actions', label: t('common.actions') }] : [{ key: 'reviewedAt', label: t('admin.requests.reviewed') }]),
 ])
@@ -45,6 +60,9 @@ const approve = (request: PaymentRequest) =>
         </template>
         <template #cell-bkashLast4="{ row }">
           <span class="font-mono font-semibold tracking-widest">{{ row.bkashLast4 }}</span>
+        </template>
+        <template #cell-farms="{ row }">
+          <span class="whitespace-nowrap">{{ expectedFor(row.userId as string) || '…' }}</span>
         </template>
         <template #cell-createdAt="{ row }">
           <span class="whitespace-nowrap">{{ formatDate(row.createdAt as Date, { dateStyle: 'medium', timeStyle: 'short' }) }}</span>

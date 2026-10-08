@@ -57,9 +57,24 @@ export const fetchFarm = (uid: string, farmId: string) =>
 
 export const countFarms = (uid: string) => request(() => countDocs(farms(uid)))
 
-/** @returns the new farm's id. */
-export const createFarm = (uid: string, input: FarmInput) =>
-  request(async () => (await addDoc(farms(uid), { ...input, ...creationTimestamps() })).id)
+/** Admin only: farm counts for several users (one aggregate query each), keyed by user id. */
+export const countFarmsByUser = (userIds: string[]) =>
+  request(async () => {
+    const unique = [...new Set(userIds)]
+    const counts = await Promise.all(unique.map((uid) => countDocs(farms(uid))))
+    return Object.fromEntries(unique.map((uid, index) => [uid, counts[index] ?? 0])) as Record<string, number>
+  })
+
+/**
+ * @param hasAcceptedExtraFee the user agreed to the monthly extra-farm fee for this farm; the
+ *        time of that agreement is stored on the farm (`extraFeeAcceptedAt`) as a record.
+ * @returns the new farm's id.
+ */
+export const createFarm = (uid: string, input: FarmInput, hasAcceptedExtraFee = false) =>
+  request(async () => {
+    const consent = hasAcceptedExtraFee ? { extraFeeAcceptedAt: serverTimestamp() } : {}
+    return (await addDoc(farms(uid), { ...input, ...consent, ...creationTimestamps() })).id
+  })
 
 export const updateFarm = (uid: string, farmId: string, input: FarmInput) =>
   request(() => updateDoc(doc(farms(uid), farmId), { ...input, location: deleteField(), updatedAt: serverTimestamp() }))

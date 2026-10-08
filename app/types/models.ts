@@ -50,6 +50,8 @@ export interface PaymentRequest {
 export interface PlanConfig {
   /** Price of one month of write access, in BDT. */
   monthlyPrice: number
+  /** Monthly price of each farm beyond `INCLUDED_FARMS`, in BDT. */
+  extraFarmPrice: number
   /** bKash number users send the payment to. */
   bkashNumber: string
   instructions: string
