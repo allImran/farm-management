@@ -63,7 +63,10 @@ export const fetchBatchesPage = (uid: string, page: PageRequest, filters: BatchF
     ),
   )
 
-/** Number of matching batches and the chicks placed in them, from one aggregate query. */
+/**
+ * Number of matching batches and the chicks placed in them, from one aggregate query.
+ * A filtered `sum()` needs a composite index (filters + summed field) in firestore.indexes.json.
+ */
 export const summarizeBatches = (uid: string, filters: BatchFilters = {}) =>
   request(async () => {
     const snapshot = await getAggregateFromServer(query(batches(uid), ...filterConstraints(filters)), {

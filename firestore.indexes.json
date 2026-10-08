@@ -11,7 +11,14 @@
     { "collectionGroup": "weights", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "farmId", "order": "ASCENDING" }, { "fieldPath": "batchId", "order": "ASCENDING" }, { "fieldPath": "date", "order": "DESCENDING" }] },
     { "collectionGroup": "sales", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "farmId", "order": "ASCENDING" }, { "fieldPath": "batchId", "order": "ASCENDING" }, { "fieldPath": "date", "order": "DESCENDING" }] },
     { "collectionGroup": "paymentRequests", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "status", "order": "ASCENDING" }, { "fieldPath": "createdAt", "order": "DESCENDING" }] },
-    { "collectionGroup": "paymentRequests", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "userId", "order": "ASCENDING" }, { "fieldPath": "createdAt", "order": "DESCENDING" }] }
+    { "collectionGroup": "paymentRequests", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "userId", "order": "ASCENDING" }, { "fieldPath": "createdAt", "order": "DESCENDING" }] },
+    { "collectionGroup": "batches", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "status", "order": "ASCENDING" }, { "fieldPath": "initialQuantity", "order": "ASCENDING" }] },
+    { "collectionGroup": "mortalities", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "farmId", "order": "ASCENDING" }, { "fieldPath": "batchId", "order": "ASCENDING" }, { "fieldPath": "count", "order": "ASCENDING" }] },
+    { "collectionGroup": "feeds", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "farmId", "order": "ASCENDING" }, { "fieldPath": "batchId", "order": "ASCENDING" }, { "fieldPath": "consumption", "order": "ASCENDING" }] },
+    { "collectionGroup": "expenses", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "farmId", "order": "ASCENDING" }, { "fieldPath": "batchId", "order": "ASCENDING" }, { "fieldPath": "amount", "order": "ASCENDING" }] },
+    { "collectionGroup": "sales", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "farmId", "order": "ASCENDING" }, { "fieldPath": "batchId", "order": "ASCENDING" }, { "fieldPath": "quantity", "order": "ASCENDING" }] },
+    { "collectionGroup": "sales", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "farmId", "order": "ASCENDING" }, { "fieldPath": "batchId", "order": "ASCENDING" }, { "fieldPath": "weight", "order": "ASCENDING" }] },
+    { "collectionGroup": "sales", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "farmId", "order": "ASCENDING" }, { "fieldPath": "batchId", "order": "ASCENDING" }, { "fieldPath": "totalAmount", "order": "ASCENDING" }] }
   ],
   "fieldOverrides": []
 }
