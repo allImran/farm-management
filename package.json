@@ -11,7 +11,8 @@
     "emulators": "npx firebase-tools emulators:start",
     "deploy:firestore": "npx firebase-tools deploy --only firestore",
     "test:rules": "vitest run tests/firestore.rules.test.ts",
-    "deploy": "nuxt generate && npx firebase-tools deploy --only hosting,firestore",
+    "generate:prod": "NUXT_PUBLIC_FIREBASE_USE_EMULATORS=false nuxt generate",
+    "deploy": "npm run generate:prod && npx firebase-tools deploy --only hosting,firestore",
     "test:unit": "vitest run tests/unit"
   },
   "dependencies": {
