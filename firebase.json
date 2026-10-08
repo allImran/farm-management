@@ -6,6 +6,7 @@
   "hosting": {
     "site": "farmxyz",
     "public": ".output/public",
+    "trailingSlash": false,
     "ignore": ["firebase.json", "**/.*"],
     "rewrites": [{ "source": "**", "destination": "/200.html" }],
     "headers": [
