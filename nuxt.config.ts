@@ -1,3 +1,4 @@
+import { APP_NAME, APP_THEME_COLOR } from './app/constants/app'
 import { DEFAULT_LOCALE } from './app/constants/i18n'
 
 // Signed-in pages depend on Firebase Auth, which only exists in the browser, so they are
@@ -50,8 +51,18 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
-      title: 'Solvex Broiler Management',
+      // Per-page titles, descriptions and social tags are set in app.vue and the pages.
+      title: APP_NAME,
+      meta: [
+        { name: 'application-name', content: APP_NAME },
+        { name: 'apple-mobile-web-app-title', content: APP_NAME },
+        { name: 'theme-color', content: APP_THEME_COLOR },
+      ],
       link: [
+        { rel: 'icon', href: '/favicon.ico', sizes: '48x48' },
+        { rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' },
+        { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
+        { rel: 'manifest', href: '/site.webmanifest' },
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
         {

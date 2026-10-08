@@ -1,4 +1,4 @@
-# BroilerHQ — Broiler Farm Management
+# FarmXYZ — Broiler Farm Management
 
 Nuxt 4 + Firebase (Auth + Firestore) app for managing broiler farms: farms, batches, feed,
 medicine, mortality, weight, expenses, sales and contacts. Bangla by default, English available.

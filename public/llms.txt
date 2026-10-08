@@ -1,0 +1,28 @@
+# FarmXYZ
+
+> FarmXYZ is a farm management platform for broiler poultry farms in Bangladesh, with thermal
+> imaging and digital livestock tracking for poultry and cattle. The app is in Bangla by default,
+> with English available.
+
+FarmXYZ helps farmers run broiler batches from day one to sale. They record feed, medicine,
+mortality, weight, expenses and sales for each batch, and see profit and loss per farm and per
+batch.
+
+Key facts:
+
+- Website: https://farmxyz.web.app
+- Sign-up: name, mobile number and password. No SMS verification.
+- Pricing: paid subscription by bKash. Signed-in users can always view their own data. Adding or
+  editing records needs an active subscription.
+- Languages: Bangla (default) and English.
+
+## Pages
+
+- [Home](https://farmxyz.web.app/): product overview covering thermal imaging, poultry and
+  cattle tracking, and how to get started
+- [Sign up](https://farmxyz.web.app/signup): create an account
+- [Log in](https://farmxyz.web.app/login): sign in to the farm dashboard
+
+## Optional
+
+- [Sitemap](https://farmxyz.web.app/sitemap.xml)
