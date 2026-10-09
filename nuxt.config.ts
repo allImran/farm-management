@@ -7,6 +7,7 @@ import { DEFAULT_LOCALE } from './app/constants/i18n'
 const CLIENT_ONLY_ROUTES = [
   '/login',
   '/signup',
+  '/forgot-password',
   '/dashboard',
   '/farms/**',
   '/batches/**',

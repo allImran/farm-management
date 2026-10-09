@@ -1,6 +1,6 @@
 import type { AuthUser } from '~/services/auth.service'
 import { changeUserPassword, signInWithPhone, signOutUser, signUpWithPhone, watchAuthUser } from '~/services/auth.service'
-import { createUserProfile, fetchIsAdmin, fetchUserProfile, updateUserProfile, type NewProfile } from '~/services/users.service'
+import { clearMustChangePassword, createUserProfile, fetchIsAdmin, fetchUserProfile, updateUserProfile, type NewProfile } from '~/services/users.service'
 import type { UserProfile } from '~/types/models'
 import { phoneToAuthEmail } from '~/utils/phone'
 import type { AppError, RequestStatus } from '~/types/network'
@@ -23,6 +23,8 @@ export const useAuthStore = defineStore('auth', () => {
   /** Signed in, but the profile doc is missing (sign-up was interrupted). */
   const needsProfile = computed(() => isSignedIn.value && status.value === 'success' && !profile.value)
   const uid = computed(() => user.value?.uid ?? null)
+  /** Logged in with the temporary password the admin's reset set; must pick a new one first. */
+  const mustChangePassword = computed(() => profile.value?.mustChangePassword === true)
 
   let resolveReady: () => void = () => {}
   const ready = new Promise<void>((resolve) => {
@@ -96,7 +98,15 @@ export const useAuthStore = defineStore('auth', () => {
     return result
   }
 
-  const changePassword = (currentPassword: string, newPassword: string) => changeUserPassword(currentPassword, newPassword)
+  /** Changes the password and, after an admin reset, clears the "must change" flag. */
+  const changePassword = async (currentPassword: string, newPassword: string) => {
+    const result = await changeUserPassword(currentPassword, newPassword)
+    if (result.error || !uid.value || !profile.value?.mustChangePassword) return result
+    // The password did change, so a failure to clear the flag only means another prompt later.
+    const cleared = await clearMustChangePassword(uid.value)
+    if (!cleared.error) profile.value = { ...profile.value, mustChangePassword: false }
+    return result
+  }
 
   const signOut = async () => {
     const result = await signOutUser()
@@ -113,6 +123,7 @@ export const useAuthStore = defineStore('auth', () => {
     error,
     isSignedIn,
     needsProfile,
+    mustChangePassword,
     init,
     whenReady,
     signIn,

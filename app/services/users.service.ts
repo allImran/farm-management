@@ -2,6 +2,8 @@ import {
   collection,
   doc,
   getDoc,
+  getDocs,
+  limit,
   orderBy,
   query,
   serverTimestamp,
@@ -15,7 +17,7 @@ import {
 import { COLLECTIONS } from '~/constants/collections'
 import type { UserProfile } from '~/types/models'
 import type { PageRequest } from '~/types/pagination'
-import { db, fetchPage, toDate } from './firestore'
+import { db, fetchPage, inQueryChunks, toDate } from './firestore'
 import { request } from './network'
 
 /** Profile and admin-membership reads/writes for `users/{uid}` and `admins/{uid}`. */
@@ -28,6 +30,7 @@ const toProfile = (snapshot: DocumentSnapshot<DocumentData>): UserProfile => {
     phone: data.phone ?? '',
     email: data.email ?? null,
     createdAt: toDate(data.createdAt),
+    mustChangePassword: data.mustChangePassword === true,
   }
 }
 
@@ -52,9 +55,30 @@ export const createUserProfile = (uid: string, profile: NewProfile) =>
 export const updateUserProfile = (uid: string, changes: Pick<NewProfile, 'name' | 'email'>) =>
   request(() => updateDoc(userRef(uid), changes))
 
+/** Clears the "change your temporary password" flag after the user picked a new password. */
+export const clearMustChangePassword = (uid: string) => request(() => updateDoc(userRef(uid), { mustChangePassword: false }))
+
 /** Whether `uid` has an `admins/{uid}` doc. Rules only allow reading your own. */
 export const fetchIsAdmin = (uid: string) =>
   request(async () => (await getDoc(doc(db(), COLLECTIONS.admins, uid))).exists())
+
+/** Admin only: profiles for a page of (normalized) phone numbers, keyed by phone. */
+export const fetchUsersByPhones = (phones: string[]) =>
+  request(async () => {
+    const snapshots = await Promise.all(
+      inQueryChunks(phones).map((chunk) =>
+        getDocs(query(collection(db(), COLLECTIONS.users), where('phone', 'in', chunk), orderBy(documentId()), limit(chunk.length))),
+      ),
+    )
+    const byPhone: Record<string, UserProfile> = {}
+    for (const snapshot of snapshots) {
+      for (const docSnapshot of snapshot.docs) {
+        const profile = toProfile(docSnapshot)
+        byPhone[profile.phone] = profile
+      }
+    }
+    return byPhone
+  })
 
 /** Admin only: newest accounts first, optionally narrowed to one (normalized) phone number. */
 export const fetchUsersPage = (page: PageRequest, filters: { phone?: string | null } = {}) =>

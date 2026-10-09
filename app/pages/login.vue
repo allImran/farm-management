@@ -39,7 +39,11 @@ useSeoMeta({ title: () => t('auth.login.title') })
       </BaseInput>
       <BaseAlert v-if="error" variant="error">{{ error.message }}</BaseAlert>
       <BaseButton type="submit" size="lg" class="w-full" :loading="isSubmitting">{{ t('auth.login.submit') }}</BaseButton>
-      <p class="text-xs text-center text-slate-500 dark:text-slate-400">{{ t('auth.login.forgot') }}</p>
+      <p class="text-sm text-center">
+        <NuxtLink :to="ROUTES.forgotPassword" class="font-semibold text-primary-700 dark:text-primary-400 hover:underline">
+          {{ t('auth.login.forgot') }}
+        </NuxtLink>
+      </p>
     </form>
     <template #footer>
       {{ t('auth.login.noAccount') }}

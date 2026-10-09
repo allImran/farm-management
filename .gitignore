@@ -22,3 +22,7 @@ logs
 .env
 .env.*
 !.env.example
+
+# Firebase CLI cache and Cloud Functions build output
+.firebase
+functions/lib

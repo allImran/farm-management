@@ -197,7 +197,7 @@
       "title": "Log in",
       "subtitle": "Welcome back. Log in with your mobile number.",
       "submit": "Log in",
-      "forgot": "Forgot your password? Contact support to reset it.",
+      "forgot": "Forgot your password?",
       "noAccount": "New here?",
       "signupLink": "Create an account"
     },
@@ -209,6 +209,14 @@
       "submit": "Create account",
       "haveAccount": "Already have an account?",
       "loginLink": "Log in"
+    },
+    "forgot": {
+      "title": "Reset your password",
+      "subtitle": "Enter your mobile number. The admin will check with you and reset your password.",
+      "submit": "Send reset request",
+      "sentTitle": "Request sent",
+      "sent": "The admin will call you on this number to confirm it is you and tell you a temporary password. Log in with it and choose a new password right away.",
+      "backToLogin": "Back to log in"
     }
   },
   "validation": {
@@ -237,7 +245,8 @@
     "weakPassword": "That password is too weak.",
     "userDisabled": "This account has been disabled.",
     "sessionExpired": "Your session has expired. Please log in again.",
-    "unknown": "Something went wrong. Please try again."
+    "unknown": "Something went wrong. Please try again.",
+    "invalidArgument": "Some of the details are invalid. Please check and try again."
   },
   "units": {
     "kg": "kg",
@@ -333,7 +342,8 @@
       "submit": "Change password",
       "saved": "Password changed. Use the new one next time you log in.",
       "wrongCurrent": "Current password is wrong.",
-      "sameAsCurrent": "Choose a password different from the current one."
+      "sameAsCurrent": "Choose a password different from the current one.",
+      "mustChange": "You logged in with a temporary password. Choose a new password now: enter the temporary password the admin gave you as the current password."
     }
   },
   "dashboard": {
@@ -521,7 +531,8 @@
     "tabs": {
       "requests": "Payment requests",
       "users": "Users",
-      "plan": "Plan"
+      "plan": "Plan",
+      "resets": "Password resets"
     },
     "requests": {
       "user": "User",
@@ -574,6 +585,18 @@
       "saved": "Plan saved.",
       "extraFarmPrice": "Price per extra farm / month",
       "extraFarmPriceHint": "Added to the monthly fee for each farm beyond {included}."
+    },
+    "resets": {
+      "noAccount": "No account uses this number",
+      "notPending": "This request has already been handled. Refresh the list.",
+      "approveTitle": "Reset this password?",
+      "approveMessage": "The password of {name} ({phone}) will be replaced with a random temporary password and they will be logged out everywhere. Anyone can send a request for any number, so call {phone} and confirm it is the account owner before you approve.",
+      "adminAccount": "Admin accounts can't be reset here. Reset them in the Firebase console.",
+      "issuedTitle": "Temporary password",
+      "issuedMessage": "Read this password to the owner of {phone}. It is shown only once. They log in with it and must choose a new password right away.",
+      "issuedDone": "Done",
+      "rejectTitle": "Reject this request?",
+      "rejectMessage": "The password of {phone} will not change."
     }
   },
   "reports": {

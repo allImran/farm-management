@@ -22,16 +22,13 @@ import { COLLECTIONS, CONFIG_DOCS } from '~/constants/collections'
 import type { PaymentRequest, PaymentRequestStatus, PlanConfig, Subscription } from '~/types/models'
 import type { PageRequest } from '~/types/pagination'
 import type { SubscriptionPeriod } from '~/utils/subscription'
-import { db, fetchPage, toDate, toTimestamp } from './firestore'
+import { db, fetchPage, inQueryChunks, toDate, toTimestamp } from './firestore'
 import { request } from './network'
 
 /**
  * Subscriptions, bKash payment requests and plan settings.
  * Approving/granting/revoking is admin-only and enforced by `firestore.rules`.
  */
-
-/** Firestore's `in` filter accepts at most 30 values. */
-const IN_QUERY_LIMIT = 30
 
 const toSubscription = (snapshot: DocumentSnapshot<DocumentData>): Subscription => {
   const data = snapshot.data() ?? {}
@@ -74,10 +71,8 @@ export const fetchSubscription = (uid: string) =>
 /** Admin only: subscriptions for a page of users, keyed by user id. */
 export const fetchSubscriptionsByUserIds = (userIds: string[]) =>
   request(async () => {
-    const chunks: string[][] = []
-    for (let i = 0; i < userIds.length; i += IN_QUERY_LIMIT) chunks.push(userIds.slice(i, i + IN_QUERY_LIMIT))
     const snapshots = await Promise.all(
-      chunks.map((ids) =>
+      inQueryChunks(userIds).map((ids) =>
         getDocs(query(collection(db(), COLLECTIONS.subscriptions), where(documentId(), 'in', ids), limit(ids.length))),
       ),
     )

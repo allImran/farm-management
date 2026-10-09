@@ -1,6 +1,7 @@
 <script setup lang="ts">
 /** Account page card for changing the password. */
 const { t } = useI18n()
+const { mustChangePassword } = storeToRefs(useAuthStore())
 const { values, errors, error, isSubmitting, isSaved, handleSubmit } = useChangePasswordForm()
 </script>
 
@@ -9,6 +10,9 @@ const { values, errors, error, isSubmitting, isSaved, handleSubmit } = useChange
     <template #header>
       <h2 class="text-lg font-bold text-slate-900 dark:text-white">{{ t('account.password.title') }}</h2>
     </template>
+    <BaseAlert v-if="mustChangePassword" variant="warning" class="mb-4">
+      {{ t('account.password.mustChange') }}
+    </BaseAlert>
     <form class="space-y-4" novalidate @submit.prevent="handleSubmit">
       <BaseInput
         v-model="values.currentPassword"

@@ -33,6 +33,7 @@ const MESSAGE_KEYS: Record<string, string> = {
   'resource-exhausted': 'tooManyRequests',
   'failed-precondition': 'failedPrecondition',
   'already-exists': 'alreadyExists',
+  'invalid-argument': 'invalidArgument',
   'auth/invalid-credential': 'invalidCredential',
   'auth/wrong-password': 'invalidCredential',
   'auth/user-not-found': 'invalidCredential',
@@ -64,8 +65,8 @@ const readCode = (error: unknown): string => {
   if (import.meta.client && !navigator.onLine) return 'offline'
   if (typeof error !== 'object' || error === null) return 'unknown'
   if ('code' in error && typeof error.code === 'string') {
-    // Firestore codes sometimes arrive prefixed, e.g. 'firestore/permission-denied'.
-    return error.code.replace(/^firestore\//, '')
+    // Firestore and Cloud Functions codes arrive prefixed, e.g. 'functions/permission-denied'.
+    return error.code.replace(/^(firestore|functions)\//, '')
   }
   if ('statusCode' in error && typeof error.statusCode === 'number') {
     return HTTP_CODES[error.statusCode] ?? 'unknown'
