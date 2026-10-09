@@ -11,6 +11,8 @@ export const COLLECTIONS = {
   /** `subscriptions/{uid}`: write access granted by the admin. */
   subscriptions: 'subscriptions',
   paymentRequests: 'paymentRequests',
+  /** `passwordResetRequests/{phone}`: written by signed-out users, approved by the admin. */
+  passwordResetRequests: 'passwordResetRequests',
   config: 'config',
 } as const
 

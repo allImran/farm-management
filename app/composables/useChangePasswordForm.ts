@@ -7,8 +7,8 @@ type PasswordField = 'currentPassword' | 'newPassword' | 'confirmPassword'
 const WRONG_PASSWORD_CODES = new Set(['auth/invalid-credential', 'auth/wrong-password'])
 
 /**
- * Change-password form on the account page. There is no SMS or email to reset a forgotten
- * password, so this needs the current one.
+ * Change-password form on the account page. Firebase needs the current password; after an
+ * admin reset that is the temporary password the admin gave the user, and saving also clears the "must change" flag.
  */
 export const useChangePasswordForm = () => {
   const { t } = useI18n()

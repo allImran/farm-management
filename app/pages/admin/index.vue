@@ -3,7 +3,7 @@ definePageMeta({ layout: 'app', middleware: ['auth', 'admin'] })
 
 const { t } = useI18n()
 
-const TABS = ['requests', 'users', 'plan'] as const
+const TABS = ['requests', 'resets', 'users', 'plan'] as const
 const activeTab = useQueryParam<(typeof TABS)[number]>('tab', TABS, 'requests')
 const tabs = computed(() => TABS.map((value) => ({ value, label: t(`admin.tabs.${value}`) })))
 
@@ -17,6 +17,7 @@ useSeoMeta({ title: () => t('admin.title') })
       <BaseTabs v-model="activeTab" :tabs="tabs" class="whitespace-nowrap" />
     </div>
     <AdminRequestsPanel v-if="activeTab === 'requests'" />
+    <AdminPasswordResetsPanel v-else-if="activeTab === 'resets'" />
     <AdminUsersPanel v-else-if="activeTab === 'users'" />
     <PlanSettingsPanel v-else />
   </div>

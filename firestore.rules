@@ -106,10 +106,13 @@ service cloud.firestore {
         && data().createdAt == request.time;
 
       // Phone is the login id and createdAt is history: neither can change.
+      // mustChangePassword is set by the password-reset Cloud Function (Admin SDK, bypasses
+      // these rules); the user may only clear it, after choosing a new password.
       allow update: if isSelf(uid)
-        && data().diff(resource.data).affectedKeys().hasOnly(['name', 'email'])
+        && data().diff(resource.data).affectedKeys().hasOnly(['name', 'email', 'mustChangePassword'])
         && isText(data().name, 1, 80)
-        && isNullableText('email', 120);
+        && isNullableText('email', 120)
+        && (!data().diff(resource.data).affectedKeys().hasAny(['mustChangePassword']) || data().mustChangePassword == false);
 
       allow delete: if false;
 
@@ -305,6 +308,42 @@ service cloud.firestore {
         && data().reviewedAt == request.time
         && data().reviewedBy == request.auth.uid
         && isNullableText('reviewNote', 200);
+
+      allow delete: if false;
+    }
+
+    // ---------- Password resets ----------
+
+    // Signed-out users ask for a reset of the account with this phone number (the doc id).
+    // Approving happens only in the approvePasswordReset Cloud Function, which sets a random
+    // temporary password.
+    function isFreshResetRequest(phone) {
+      return data().keys().hasOnly(['phone', 'status', 'createdAt', 'reviewedAt', 'reviewedBy'])
+        && phone.matches('^01[3-9][0-9]{8}$')
+        && data().phone == phone
+        && data().status == 'pending'
+        && data().createdAt == request.time
+        && data().reviewedAt == null
+        && data().reviewedBy == null;
+    }
+
+    match /passwordResetRequests/{phone} {
+      allow get: if isAdmin();
+      allow list: if isAdmin() && isBoundedQuery();
+
+      allow create: if isFreshResetRequest(phone);
+      // Asking again replaces the old request with a fresh pending one, but only after a cool-down,
+      // so anonymous visitors can't keep rewriting requests (or wipe a recent review's record).
+      allow update: if isFreshResetRequest(phone)
+        && request.time > resource.data.createdAt + duration.value(15, 'm');
+
+      // The admin may reject a pending request (approving goes through the Cloud Function).
+      allow update: if isAdmin()
+        && resource.data.status == 'pending'
+        && data().diff(resource.data).affectedKeys().hasOnly(['status', 'reviewedAt', 'reviewedBy'])
+        && data().status == 'rejected'
+        && data().reviewedAt == request.time
+        && data().reviewedBy == request.auth.uid;
 
       allow delete: if false;
     }

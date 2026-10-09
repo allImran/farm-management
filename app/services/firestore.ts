@@ -74,6 +74,16 @@ export const fetchAll = async <T>(
   return items
 }
 
+/** Firestore's `in` filter accepts at most 30 values. */
+const IN_QUERY_LIMIT = 30
+
+/** Splits values into groups small enough for one `in` filter each. */
+export const inQueryChunks = <T>(values: T[]): T[][] => {
+  const chunks: T[][] = []
+  for (let i = 0; i < values.length; i += IN_QUERY_LIMIT) chunks.push(values.slice(i, i + IN_QUERY_LIMIT))
+  return chunks
+}
+
 /** A subcollection of `users/{uid}` (see `USER_COLLECTIONS`). */
 export const userCollection = (uid: string, name: string) => collection(db(), COLLECTIONS.users, uid, name)
 

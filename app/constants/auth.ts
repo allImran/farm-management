@@ -16,3 +16,8 @@ export const MAX_NAME_LENGTH = 80
 
 /** Loose shape check for the optional contact email; real validation isn't needed (unverified). */
 export const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+export const PASSWORD_RESET_STATUSES = ['pending', 'approved', 'rejected'] as const
+
+/** Cloud Functions region; must match `REGION` in `functions/src/index.ts`. */
+export const FUNCTIONS_REGION = 'asia-south1'

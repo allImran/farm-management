@@ -1,5 +1,6 @@
 import { EMAIL_PATTERN, MAX_NAME_LENGTH, MIN_PASSWORD_LENGTH } from '~/constants/auth'
 import { ROUTES } from '~/constants/routes'
+import { createPasswordResetRequest } from '~/services/passwordResets.service'
 import type { AppError } from '~/types/network'
 import { authEmailToPhone, normalizeBdPhone } from '~/utils/phone'
 
@@ -114,4 +115,26 @@ export const useSignupForm = () => {
   }
 
   return { values, errors, error, isSubmitting, isCompletingProfile, handleSubmit }
+}
+
+/**
+ * Forgot-password form: sends a reset request for a phone number to the admin. The answer is
+ * the same whether or not an account uses the number, so the form can't be used to find out.
+ *
+ * @returns form `values`, the field `error` for the phone, `status`, request `error` and `handleSubmit`.
+ */
+export const useForgotPasswordForm = () => {
+  const { t } = useI18n()
+  const values = reactive({ phone: '' })
+  const phoneError = ref<string | undefined>()
+  const { status, error, execute } = useAsyncState(createPasswordResetRequest)
+
+  const handleSubmit = async () => {
+    const phone = normalizeBdPhone(values.phone)
+    phoneError.value = phone ? undefined : t('validation.phone')
+    if (!phone) return
+    await execute(phone)
+  }
+
+  return { values, phoneError, status, error, handleSubmit }
 }

@@ -252,3 +252,53 @@ describe('billing', () => {
     await assertSucceeds(updateDoc(doc(admin(), 'paymentRequests', ref.id), review))
   })
 })
+
+describe('password resets', () => {
+  const guest = () => env.unauthenticatedContext().firestore()
+  const resetData = (phone: string) => ({ phone, status: 'pending', createdAt: serverTimestamp(), reviewedAt: null, reviewedBy: null })
+
+  it('lets signed-out users request a reset for a valid number, keyed by that number', async () => {
+    await assertSucceeds(setDoc(doc(guest(), 'passwordResetRequests', '01822222222'), resetData('01822222222')))
+    await assertFails(setDoc(doc(guest(), 'passwordResetRequests', '01822222222'), resetData('01711111111')))
+    await assertFails(setDoc(doc(guest(), 'passwordResetRequests', '12345'), resetData('12345')))
+    await assertFails(setDoc(doc(guest(), 'passwordResetRequests', '01822222222'), { ...resetData('01822222222'), status: 'approved' }))
+    await assertFails(setDoc(doc(guest(), 'passwordResetRequests', '01822222222'), { ...resetData('01822222222'), extra: true }))
+  })
+
+  it('hides requests from everyone but the admin', async () => {
+    await setDoc(doc(guest(), 'passwordResetRequests', '01822222222'), resetData('01822222222'))
+    await assertFails(getDoc(doc(guest(), 'passwordResetRequests', '01822222222')))
+    await assertFails(getDoc(doc(bob(), 'passwordResetRequests', '01822222222')))
+    await assertSucceeds(getDoc(doc(admin(), 'passwordResetRequests', '01822222222')))
+    const pending = query(collection(admin(), 'passwordResetRequests'), where('status', '==', 'pending'), orderBy('createdAt', 'desc'))
+    await assertSucceeds(getDocs(query(pending, limit(21))))
+    await assertFails(getDocs(pending))
+  })
+
+  it('lets only the admin reject, and never approve from the client', async () => {
+    await setDoc(doc(guest(), 'passwordResetRequests', '01822222222'), resetData('01822222222'))
+    const ref = doc(admin(), 'passwordResetRequests', '01822222222')
+    await assertFails(updateDoc(doc(bob(), 'passwordResetRequests', '01822222222'), { status: 'rejected', reviewedAt: serverTimestamp(), reviewedBy: BOB }))
+    await assertFails(updateDoc(ref, { status: 'approved', reviewedAt: serverTimestamp(), reviewedBy: ADMIN }))
+    await assertSucceeds(updateDoc(ref, { status: 'rejected', reviewedAt: serverTimestamp(), reviewedBy: ADMIN }))
+  })
+
+  it('lets a number be requested again only after the cool-down', async () => {
+    const ref = (context: ReturnType<typeof guest>) => doc(context, 'passwordResetRequests', '01822222222')
+    await assertSucceeds(setDoc(ref(guest()), resetData('01822222222')))
+    await assertFails(setDoc(ref(guest()), resetData('01822222222')))
+    // Backdate the request past the 15-minute cool-down.
+    await env.withSecurityRulesDisabled((context) =>
+      updateDoc(ref(context.firestore()), { createdAt: Timestamp.fromMillis(Date.now() - 16 * 60 * 1000) }),
+    )
+    await assertSucceeds(setDoc(ref(guest()), resetData('01822222222')))
+  })
+
+  it('lets users clear, but never set, the must-change-password flag', async () => {
+    await assertFails(updateDoc(doc(bob(), 'users', BOB), { mustChangePassword: true }))
+    await env.withSecurityRulesDisabled((context) => updateDoc(doc(context.firestore(), 'users', BOB), { mustChangePassword: true }))
+    await assertFails(updateDoc(doc(alice(), 'users', BOB), { mustChangePassword: false }))
+    await assertSucceeds(updateDoc(doc(bob(), 'users', BOB), { name: 'Robert' }))
+    await assertSucceeds(updateDoc(doc(bob(), 'users', BOB), { mustChangePassword: false }))
+  })
+})

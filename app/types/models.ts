@@ -1,3 +1,4 @@
+import type { PASSWORD_RESET_STATUSES } from '~/constants/auth'
 import type { PAYMENT_REQUEST_STATUSES, SUBSCRIPTION_TYPES } from '~/constants/billing'
 import type { BATCH_STATUSES, CONTACT_TYPES, EXPENSE_TYPES, MEDICINE_TYPES } from '~/constants/farm'
 
@@ -18,6 +19,8 @@ export interface UserProfile {
   phone: string
   email: string | null
   createdAt: Date | null
+  /** Set when the admin reset the password to the temporary one; cleared once the user changes it. */
+  mustChangePassword: boolean
 }
 
 export type SubscriptionType = (typeof SUBSCRIPTION_TYPES)[number]
@@ -45,6 +48,16 @@ export interface PaymentRequest {
   createdAt: Date | null
   reviewedAt: Date | null
   reviewNote: string | null
+}
+
+export type PasswordResetStatus = (typeof PASSWORD_RESET_STATUSES)[number]
+
+/** A signed-out user's request to have their password reset; the id is the phone number. */
+export interface PasswordResetRequest {
+  phone: string
+  status: PasswordResetStatus
+  createdAt: Date | null
+  reviewedAt: Date | null
 }
 
 export interface PlanConfig {
