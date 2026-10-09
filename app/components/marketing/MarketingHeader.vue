@@ -49,8 +49,8 @@ const handleNavigate = () => {
       <div class="flex items-center gap-1 sm:gap-2">
         <LanguageSwitcher />
         <ThemeToggle class="hidden sm:flex" />
-        <BaseButton :as="NuxtLink" :to="ROUTES.signup" class="hidden sm:inline-flex">
-          {{ t('nav.getStarted') }}
+        <BaseButton :as="NuxtLink" :to="ROUTES.login" class="hidden sm:inline-flex">
+          {{ t('nav.login') }}
         </BaseButton>
         <BaseButton
           variant="ghost"
@@ -81,8 +81,8 @@ const handleNavigate = () => {
         <LanguageSwitcher />
         <ThemeToggle />
       </div>
-      <BaseButton :as="NuxtLink" :to="ROUTES.signup" size="lg" class="mt-6 w-full" @click="handleNavigate">
-        {{ t('nav.getStarted') }}
+      <BaseButton :as="NuxtLink" :to="ROUTES.login" size="lg" class="mt-6 w-full" @click="handleNavigate">
+        {{ t('nav.login') }}
       </BaseButton>
     </BaseDrawer>
   </header>
