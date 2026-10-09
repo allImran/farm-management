@@ -19,6 +19,7 @@ export const useContactsStore = defineStore('contacts', () => {
   const ensureLoaded = async () => {
     if (!uid.value || status.value === 'loading' || status.value === 'success') return
     status.value = 'loading'
+    error.value = null
     const result = await fetchContactsPage(uid.value, { pageSize: MAX_PAGE_SIZE, cursor: null })
     if (result.error) {
       error.value = result.error

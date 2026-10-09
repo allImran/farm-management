@@ -2,7 +2,7 @@
 /** Account page card for changing the password. */
 const { t } = useI18n()
 const { mustChangePassword } = storeToRefs(useAuthStore())
-const { values, errors, error, isSubmitting, isSaved, handleSubmit } = useChangePasswordForm()
+const { values, errors, error, isLoading, isSaved, handleSubmit } = useChangePasswordForm()
 </script>
 
 <template>
@@ -41,7 +41,7 @@ const { values, errors, error, isSubmitting, isSaved, handleSubmit } = useChange
       <BaseAlert v-if="error" variant="error">{{ error.message }}</BaseAlert>
       <BaseAlert v-else-if="isSaved" variant="success">{{ t('account.password.saved') }}</BaseAlert>
       <div class="flex justify-end">
-        <BaseButton type="submit" :loading="isSubmitting">{{ t('account.password.submit') }}</BaseButton>
+        <BaseButton type="submit" :loading="isLoading">{{ t('account.password.submit') }}</BaseButton>
       </div>
     </form>
   </BaseCard>

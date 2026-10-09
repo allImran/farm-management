@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { MAX_GRANT_MONTHS } from '~/constants/billing'
-import type { useSubscriptionGrant } from '~/composables/useAdmin'
+import { lastAccessDay } from '~/utils/subscription'
+import type { useSubscriptionGrant } from '~/composables/useSubscriptionGrant'
 
 /** Approve a request / change a user's access: months, lifetime free, or a custom date range. */
 const props = defineProps<{
@@ -16,8 +17,7 @@ const MODES = ['months', 'lifetime', 'range'] as const
 const previewText = computed(() => {
   if (!preview.value) return ''
   if (preview.value.type === 'lifetime') return t('admin.grant.previewLifetime')
-  const lastDay = preview.value.endsAt ? new Date(preview.value.endsAt.getTime() - 1) : null
-  return t('admin.grant.previewPeriod', { start: formatDate(preview.value.startsAt), end: formatDate(lastDay) })
+  return t('admin.grant.previewPeriod', { start: formatDate(preview.value.startsAt), end: formatDate(lastAccessDay(preview.value.endsAt)) })
 })
 const isLoading = computed(() => status.value === 'loading')
 const title = computed(() => (target.value?.request ? t('admin.grant.approveTitle') : t('admin.grant.manageTitle')))
@@ -26,7 +26,7 @@ const title = computed(() => (target.value?.request ? t('admin.grant.approveTitl
 <template>
   <BaseModal v-model="isOpen" :title="title">
     <div v-if="target" class="space-y-5">
-      <div class="rounded-2xl bg-surface-light dark:bg-surface-dark p-4 text-sm space-y-1">
+      <BasePanel class="text-sm space-y-1">
         <p class="font-semibold text-slate-900 dark:text-white">{{ target.userName }} · {{ target.userPhone }}</p>
         <p v-if="target.request" class="text-slate-600 dark:text-slate-300">
           {{ t('admin.requests.paidFrom', { digits: target.request.bkashLast4 }) }}
@@ -36,7 +36,7 @@ const title = computed(() => (target.value?.request ? t('admin.grant.approveTitl
           <BaseSpinner v-if="currentStatus === 'loading'" size="sm" />
           <SubscriptionBadge v-else :subscription="current" />
         </div>
-      </div>
+      </BasePanel>
 
       <fieldset>
         <legend class="mb-2 text-sm font-medium text-slate-700 dark:text-slate-200">{{ t('admin.grant.mode') }}</legend>

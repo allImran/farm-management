@@ -18,6 +18,16 @@ export const CHART_COLORS = {
   slate: '#94a3b8',
 } as const
 
+/** Canvas colours for chart chrome (grid, ticks, tooltip), per theme where they differ. */
+export const CHART_THEME = {
+  grid: 'rgba(148, 163, 184, 0.15)',
+  tickLight: '#64748b',
+  tickDark: '#94a3b8',
+  tooltipBackground: '#0f172a',
+  tooltipTitle: '#e2e8f0',
+  tooltipBody: '#ffffff',
+} as const
+
 /** Fixed color per expense category, so a category looks the same on every chart. */
 export const EXPENSE_TYPE_COLORS: Record<ExpenseType, string> = {
   chicks: CHART_COLORS.yellow,

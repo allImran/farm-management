@@ -3,7 +3,7 @@ import { Bird, CalendarDays } from '@lucide/vue'
 import { NuxtLink } from '#components'
 import { ROUTES } from '~/constants/routes'
 import type { Batch } from '~/types/models'
-import { daysBetween, parseIsoDate } from '~/utils/date'
+import { daysSince } from '~/utils/date'
 
 const props = defineProps<{
   batch: Batch
@@ -13,7 +13,7 @@ const { t } = useI18n()
 const { formatNumber } = useLocaleNumber()
 const { formatDate } = useLocaleDate()
 
-const ageDays = computed(() => Math.max(0, daysBetween(parseIsoDate(props.batch.startDate), new Date())))
+const ageDays = computed(() => daysSince(props.batch.startDate))
 </script>
 
 <template>

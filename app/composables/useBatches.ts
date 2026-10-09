@@ -10,7 +10,7 @@ import {
   updateBatch,
   type BatchFilters,
 } from '~/services/batches.service'
-import type { Batch, BatchInput, BatchStatus } from '~/types/models'
+import type { Batch, BatchInput } from '~/types/models'
 import { todayIsoDate } from '~/utils/date'
 
 /**
@@ -20,9 +20,7 @@ import { todayIsoDate } from '~/utils/date'
  */
 export const useBatchList = (filters: () => BatchFilters, pageSize?: number) => {
   const uid = useSessionUid()
-  const list = usePagination((page) => fetchBatchesPage(uid(), page, filters()), { pageSize })
-  watch(filters, () => list.reset(), { immediate: true, deep: true })
-  return list
+  return usePagination((page) => fetchBatchesPage(uid(), page, filters()), { pageSize, filters })
 }
 
 /**
@@ -46,7 +44,8 @@ export const useBatch = (batchId: MaybeRefOrGetter<string>) => {
   return state
 }
 
-type BatchFormValues = Omit<BatchInput, 'farmId' | 'initialQuantity'> & { initialQuantity: string }
+/** Batch form fields; the chick count stays a string (what the input emits) until saving. */
+export type BatchFormValues = Omit<BatchInput, 'farmId' | 'initialQuantity'> & { initialQuantity: string }
 
 /**
  * Create/edit form for batches.
@@ -80,7 +79,7 @@ export const useBatchForm = (farmId: () => string, onSaved?: () => void) => {
         breed: values.breed.trim(),
         startDate: values.startDate,
         initialQuantity: Number(values.initialQuantity),
-        status: values.status as BatchStatus,
+        status: values.status,
         note: values.note.trim(),
       }
       return editing ? updateBatch(uid(), editing.id, input) : createBatch(uid(), { ...input, farmId: farmId() })

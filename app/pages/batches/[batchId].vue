@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import { Pencil, Trash2 } from '@lucide/vue'
 import { NuxtLink } from '#components'
 import { BATCH_RECORD_KINDS, BATCH_VIEWS } from '~/constants/records'
 import { ROUTES } from '~/constants/routes'
-import type { RecordKind } from '~/types/records'
 
 definePageMeta({ layout: 'app', middleware: 'auth' })
 
@@ -16,12 +14,8 @@ const batchId = computed(() => String(route.params.batchId))
 const { data: batch, status, error, execute: reloadBatch } = useBatch(batchId)
 const { stats, status: statsStatus, error: statsError, refresh: refreshStats } = useBatchStats(() => batch.value)
 
-type BatchView = (typeof BATCH_VIEWS)[number]
-const activeView = useQueryParam<BatchView>('view', BATCH_VIEWS, BATCH_VIEWS[0])
-const viewTabs = computed(() => BATCH_VIEWS.map((view) => ({ value: view, label: t(`batches.views.${view}`) })))
-
-const activeKind = useQueryParam<RecordKind>('tab', BATCH_RECORD_KINDS, BATCH_RECORD_KINDS[0]!)
-const tabs = computed(() => BATCH_RECORD_KINDS.map((kind) => ({ value: kind, label: t(`records.${kind}.title`) })))
+const { active: activeView, tabs: viewTabs } = useQueryTabs('view', BATCH_VIEWS, (view) => t(`batches.views.${view}`))
+const { active: activeKind, tabs: kindTabs } = useQueryTabs('tab', BATCH_RECORD_KINDS, (kind) => t(`records.${kind}.title`))
 const scope = computed(() => ({ farmId: batch.value?.farmId ?? '', batchId: batchId.value }))
 const financeScope = computed(() => (batch.value ? { farmId: batch.value.farmId, batchId: batch.value.id } : undefined))
 
@@ -33,6 +27,19 @@ const batchForm = useBatchForm(() => batch.value?.farmId ?? '', handleBatchSaved
 const batchDelete = useBatchDelete()
 const { isOpen: isFormOpen, values, errors } = batchForm
 const { isOpen: isDeleteOpen } = batchDelete
+
+// e.g. "Cobb 500 · Started 3 Oct 2026 · 1,000 chicks placed"
+const summary = computed(() =>
+  batch.value
+    ? [
+        batch.value.breed,
+        t('batches.startedOn', { date: formatDate(batch.value.startDate) }),
+        t('batches.placed', { count: formatNumber(batch.value.initialQuantity) }),
+      ]
+        .filter(Boolean)
+        .join(' · ')
+    : '',
+)
 
 useSeoMeta({ title: () => batch.value?.name ?? t('batches.title') })
 </script>
@@ -47,19 +54,13 @@ useSeoMeta({ title: () => batch.value?.name ?? t('batches.title') })
       <template v-if="batch">
         <PageHeader
           :title="batch.name"
-          :description="[batch.breed, t('batches.startedOn', { date: formatDate(batch.startDate) }), t('batches.placed', { count: formatNumber(batch.initialQuantity) })].filter(Boolean).join(' · ')"
+          :description="summary"
           :back-to="ROUTES.farm(batch.farmId)"
           :back-label="t('batches.backToFarm')"
         >
           <template #badge><BatchStatusBadge :status="batch.status" /></template>
           <template #actions>
-            <BaseButton variant="outline" @click="batchForm.openEdit(batch)">
-              <template #icon-left><Pencil class="w-4 h-4" /></template>
-              {{ t('common.edit') }}
-            </BaseButton>
-            <BaseButton variant="ghost" :aria-label="t('common.delete')" @click="batchDelete.open(batch)">
-              <Trash2 class="w-4 h-4 text-red-500" />
-            </BaseButton>
+            <BaseEditDeleteActions labeled @edit="batchForm.openEdit(batch)" @delete="batchDelete.open(batch)" />
           </template>
         </PageHeader>
         <p v-if="batch.note" class="-mt-3 mb-6 text-sm text-slate-600 dark:text-slate-300 whitespace-pre-line">{{ batch.note }}</p>
@@ -68,21 +69,17 @@ useSeoMeta({ title: () => batch.value?.name ?? t('batches.title') })
           <BaseAsyncState :status="statsStatus" :error="statsError" @retry="refreshStats">
             <template #loading>
               <div class="grid grid-cols-1 min-[400px]:grid-cols-2 xl:grid-cols-4 gap-4">
-                <BaseSkeleton v-for="i in 8" :key="i" variant="rect" height="6rem" />
+                <BaseSkeleton v-for="i in 8" :key="i" />
               </div>
             </template>
             <BatchStatsGrid v-if="stats" :stats="stats" />
           </BaseAsyncState>
         </div>
 
-        <div class="mb-6 -mx-4 px-4 overflow-x-auto scrollbar-none">
-          <BaseTabs v-model="activeView" :tabs="viewTabs" class="whitespace-nowrap" />
-        </div>
+        <BaseTabs v-model="activeView" :tabs="viewTabs" class="mb-6" />
 
         <template v-if="activeView === 'records'">
-          <div class="mb-5 -mx-4 px-4 overflow-x-auto scrollbar-none">
-            <BaseTabs v-model="activeKind" :tabs="tabs" class="whitespace-nowrap" />
-          </div>
+          <BaseTabs v-model="activeKind" :tabs="kindTabs" class="mb-5" />
           <RecordSection :key="activeKind" :kind="activeKind" :scope="scope" @changed="refreshStats" />
         </template>
         <BatchChartsSection v-else-if="activeView === 'charts'" :batch="batch" />
@@ -96,7 +93,7 @@ useSeoMeta({ title: () => batch.value?.name ?? t('batches.title') })
       :is-editing="true"
       :errors="errors"
       :error="batchForm.error.value"
-      :loading="batchForm.status.value === 'loading'"
+      :loading="batchForm.isLoading.value"
       @submit="batchForm.handleSubmit"
     />
     <BaseConfirmDialog

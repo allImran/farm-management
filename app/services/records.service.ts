@@ -4,8 +4,6 @@ import {
   doc,
   documentId,
   getAggregateFromServer,
-  getDocs,
-  limit,
   orderBy,
   query,
   serverTimestamp,
@@ -20,7 +18,7 @@ import { USER_COLLECTIONS } from '~/constants/collections'
 import type { IsoDate } from '~/types/models'
 import type { PageRequest } from '~/types/pagination'
 import type { FarmRecord, RecordKind, RecordScope, RecordValues } from '~/types/records'
-import { creationTimestamps, fetchAll, fetchPage, toDate, userCollection } from './firestore'
+import { creationTimestamps, fetchAll, fetchFirst, fetchPage, newestFirst, toDate, userCollection } from './firestore'
 import { request } from './network'
 
 /**
@@ -36,6 +34,10 @@ const records = (uid: string, kind: RecordKind) => userCollection(uid, USER_COLL
 /** Every record query filters on both ids; farm-level expenses have `batchId == null`. */
 const scoped = (uid: string, kind: RecordKind, scope: RecordScope) =>
   query(records(uid, kind), where('farmId', '==', scope.farmId), where('batchId', '==', scope.batchId))
+
+/** Records in scope, newest date first (served by the `(farmId, batchId, date)` composite index). */
+const scopedNewestFirst = (uid: string, kind: RecordKind, scope: RecordScope) =>
+  query(scoped(uid, kind, scope), ...newestFirst('date'))
 
 const toRecord = (snapshot: DocumentSnapshot<DocumentData>): FarmRecord => {
   const data = snapshot.data() ?? {}
@@ -55,17 +57,11 @@ const toRecord = (snapshot: DocumentSnapshot<DocumentData>): FarmRecord => {
 
 /** Newest date first. */
 export const fetchRecordsPage = (uid: string, kind: RecordKind, scope: RecordScope, page: PageRequest) =>
-  request(() =>
-    fetchPage(query(scoped(uid, kind, scope), orderBy('date', 'desc'), orderBy(documentId(), 'desc')), page, toRecord),
-  )
+  request(() => fetchPage(scopedNewestFirst(uid, kind, scope), page, toRecord))
 
 /** The most recent record of a kind, e.g. the latest weight sample. */
 export const fetchLatestRecord = (uid: string, kind: RecordKind, scope: RecordScope) =>
-  request(async () => {
-    const snapshot = await getDocs(query(scoped(uid, kind, scope), orderBy('date', 'desc'), orderBy(documentId(), 'desc'), limit(1)))
-    const first = snapshot.docs[0]
-    return first ? toRecord(first) : null
-  })
+  request(() => fetchFirst(scopedNewestFirst(uid, kind, scope), toRecord))
 
 /**
  * Sums numeric fields across all records in scope with one aggregate query.
@@ -89,13 +85,7 @@ export const sumRecordFields = <F extends string>(uid: string, kind: RecordKind,
  * weeks, so this stays small. Queried newest-first to reuse the list's composite index.
  */
 export const fetchAllRecordsInScope = (uid: string, kind: RecordKind, scope: RecordScope) =>
-  request(async () => {
-    const newestFirst = await fetchAll(
-      query(scoped(uid, kind, scope), orderBy('date', 'desc'), orderBy(documentId(), 'desc')),
-      toRecord,
-    )
-    return newestFirst.reverse()
-  })
+  request(async () => (await fetchAll(scopedNewestFirst(uid, kind, scope), toRecord)).reverse())
 
 /** Which records feed a profit & loss report: one batch, one farm (all its batches), or everything. */
 export type FinanceScope = { farmId: string; batchId: string } | { farmId: string; batchId?: undefined } | null
@@ -109,8 +99,7 @@ export const fetchFinanceRecords = (uid: string, scope: FinanceScope) =>
   request(async () => {
     const load = (kind: 'expenses' | 'sales') => {
       if (scope?.batchId) {
-        const batchScope = { farmId: scope.farmId, batchId: scope.batchId }
-        return fetchAll(query(scoped(uid, kind, batchScope), orderBy('date', 'desc'), orderBy(documentId(), 'desc')), toRecord)
+        return fetchAll(scopedNewestFirst(uid, kind, { farmId: scope.farmId, batchId: scope.batchId }), toRecord)
       }
       const filters = scope ? [where('farmId', '==', scope.farmId)] : []
       return fetchAll(query(records(uid, kind), ...filters, orderBy(documentId())), toRecord)

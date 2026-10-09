@@ -1,3 +1,9 @@
+/**
+ * App sidebar state shared by the shell, header and sidebar: collapsed to icons on desktop,
+ * and open/closed as an overlay on mobile.
+ *
+ * @returns `collapsed`, `mobileOpen`, `toggleCollapsed()`, `toggleMobile()` and `closeMobile()`.
+ */
 export const useSidebar = () => {
   const collapsed = useState<boolean>('sidebar-collapsed', () => false)
   const mobileOpen = useState<boolean>('sidebar-mobile-open', () => false)

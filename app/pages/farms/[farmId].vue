@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { Bird, MapPin, Pencil, Plus, Trash2 } from '@lucide/vue'
+import { Bird, MapPin, Plus } from '@lucide/vue'
 import { NuxtLink } from '#components'
 import { BATCH_STATUSES } from '~/constants/farm'
 import { ROUTES } from '~/constants/routes'
-import type { BatchStatus } from '~/types/models'
 
 definePageMeta({ layout: 'app', middleware: 'auth' })
 
@@ -13,16 +12,12 @@ const farmId = computed(() => String(route.params.farmId))
 
 const { data: farm, status, error, execute: reloadFarm } = useFarm(farmId)
 
-// 'all' keeps the filter out of the URL.
-const statusFilter = useQueryParam<BatchStatus | 'all'>('status', ['all', ...BATCH_STATUSES], 'all')
-const statusTabs = computed(() => [
-  { value: 'all', label: t('common.all') },
-  ...BATCH_STATUSES.map((value) => ({ value, label: t(`batches.status.${value}`) })),
-])
-const batches = useBatchList(() => ({
-  farmId: farmId.value,
-  status: statusFilter.value === 'all' ? null : statusFilter.value,
-}))
+const {
+  active: statusFilter,
+  tabs: statusTabs,
+  selected: selectedStatus,
+} = useQueryFilter('status', BATCH_STATUSES, (value) => t(`batches.status.${value}`))
+const batches = useBatchList(() => ({ farmId: farmId.value, status: selectedStatus.value }))
 
 // Every batch (not just the visible page) for the profit & loss batch picker.
 const allBatches = useAllFarmBatches(() => farmId.value)
@@ -64,13 +59,7 @@ useSeoMeta({ title: () => farm.value?.name ?? t('farms.title') })
       <template v-if="farm">
         <PageHeader :title="farm.name" :back-to="ROUTES.farms" :back-label="t('farms.title')">
           <template #actions>
-            <BaseButton variant="outline" @click="farmForm.openEdit(farm)">
-              <template #icon-left><Pencil class="w-4 h-4" /></template>
-              {{ t('common.edit') }}
-            </BaseButton>
-            <BaseButton variant="ghost" :aria-label="t('common.delete')" @click="farmDelete.open(farm)">
-              <Trash2 class="w-4 h-4 text-red-500" />
-            </BaseButton>
+            <BaseEditDeleteActions labeled @edit="farmForm.openEdit(farm)" @delete="farmDelete.open(farm)" />
           </template>
         </PageHeader>
         <p v-if="farm.address" class="-mt-3 mb-6 flex items-start gap-1.5 text-sm text-slate-500 dark:text-slate-400">
@@ -86,9 +75,7 @@ useSeoMeta({ title: () => farm.value?.name ?? t('farms.title') })
               {{ t('batches.add') }}
             </BaseButton>
           </div>
-          <div class="mb-4 overflow-x-auto scrollbar-none">
-            <BaseTabs v-model="statusFilter" :tabs="statusTabs" />
-          </div>
+          <BaseTabs v-model="statusFilter" :tabs="statusTabs" class="mb-4" />
           <BaseAsyncState
             :status="batches.status.value"
             :error="batches.error.value"
@@ -112,11 +99,7 @@ useSeoMeta({ title: () => farm.value?.name ?? t('farms.title') })
 
         <div class="mb-10">
           <BaseAsyncState :status="allBatches.status.value" :error="allBatches.error.value" @retry="allBatches.execute()">
-            <template #loading>
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <BaseSkeleton v-for="i in 3" :key="i" variant="rect" height="6rem" />
-              </div>
-            </template>
+            <template #loading><StatCardsSkeleton /></template>
             <ProfitLossSection
               ref="profitSection"
               :scope="financeScope"
@@ -142,7 +125,7 @@ useSeoMeta({ title: () => farm.value?.name ?? t('farms.title') })
       :is-editing="true"
       :errors="farmErrors"
       :error="farmForm.error.value"
-      :loading="farmForm.status.value === 'loading'"
+      :loading="farmForm.isLoading.value"
       @submit="farmForm.handleSubmit"
     />
     <BatchFormModal
@@ -151,7 +134,7 @@ useSeoMeta({ title: () => farm.value?.name ?? t('farms.title') })
       :is-editing="false"
       :errors="batchErrors"
       :error="batchForm.error.value"
-      :loading="batchForm.status.value === 'loading'"
+      :loading="batchForm.isLoading.value"
       @submit="batchForm.handleSubmit"
     />
     <BaseConfirmDialog

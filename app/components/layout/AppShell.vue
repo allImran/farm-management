@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { useSidebar } from '~/composables/useSidebar'
-
 const { collapsed, mobileOpen, closeMobile } = useSidebar()
 </script>
 

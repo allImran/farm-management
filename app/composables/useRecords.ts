@@ -29,9 +29,7 @@ const toFormValues = (fields: RecordFieldDef[], values: RecordValues): RecordFor
  */
 export const useRecordList = (kind: RecordKind, scope: () => RecordScope) => {
   const uid = useSessionUid()
-  const list = usePagination((page) => fetchRecordsPage(uid(), kind, scope(), page))
-  watch(scope, () => list.reset(), { immediate: true, deep: true })
-  return list
+  return usePagination((page) => fetchRecordsPage(uid(), kind, scope(), page), { filters: scope })
 }
 
 /**

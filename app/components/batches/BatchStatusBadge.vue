@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import type { BatchStatus } from '~/types/models'
+import type { Tone } from '~/types/ui'
 
 defineProps<{
   status: BatchStatus
 }>()
 
-const TONES = { active: 'green', completed: 'blue', cancelled: 'slate' } as const satisfies Record<BatchStatus, string>
+const TONES: Record<BatchStatus, Tone> = { active: 'green', completed: 'blue', cancelled: 'slate' }
 </script>
 
 <template>

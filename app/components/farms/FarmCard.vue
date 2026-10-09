@@ -16,9 +16,7 @@ defineProps<{
   >
     <BaseCard hover class="h-full">
       <div class="flex items-start gap-3">
-        <span class="flex items-center justify-center w-11 h-11 shrink-0 rounded-xl bg-primary-100 text-primary-700 dark:bg-primary-500/15 dark:text-primary-300">
-          <Warehouse class="w-5 h-5" />
-        </span>
+        <BaseIconTile :icon="Warehouse" tone="yellow" />
         <div class="min-w-0">
           <h3 class="font-semibold text-slate-900 dark:text-white truncate">{{ farm.name }}</h3>
           <p v-if="farm.address" class="mt-1 flex items-center gap-1 text-sm text-slate-500 dark:text-slate-400">

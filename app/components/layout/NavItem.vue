@@ -1,36 +1,25 @@
 <script setup lang="ts">
-import { type Component } from 'vue'
-import { NuxtLink } from '#components'
+import type { Component } from 'vue'
 
-const props = withDefaults(
+/** One sidebar link; when the sidebar is collapsed only the icon shows, with the label as a tooltip. */
+withDefaults(
   defineProps<{
     icon: Component
     label: string
-    to?: string
+    to: string
     active?: boolean
     collapsed?: boolean
   }>(),
   {
-    to: undefined,
     active: false,
     collapsed: false,
   }
 )
-
-const emit = defineEmits<{
-  click: []
-}>()
-
-const onClick = () => {
-  emit('click')
-}
 </script>
 
 <template>
-  <component
-    :is="to ? NuxtLink : 'button'"
+  <NuxtLink
     :to="to"
-    :type="to ? undefined : 'button'"
     class="group relative flex items-center rounded-xl transition-all duration-200 outline-none focus-visible:ring-4 focus-visible:ring-primary-300"
     :class="[
       collapsed ? 'justify-center px-3 py-3' : 'gap-3 px-3.5 py-2.5',
@@ -40,7 +29,6 @@ const onClick = () => {
     ]"
     :aria-label="label"
     :aria-current="active ? 'page' : undefined"
-    @click="onClick"
   >
     <component :is="icon" class="w-5 h-5 shrink-0" />
     <span
@@ -56,5 +44,5 @@ const onClick = () => {
     >
       {{ label }}
     </span>
-  </component>
+  </NuxtLink>
 </template>

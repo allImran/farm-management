@@ -47,7 +47,7 @@ useSeoMeta({ title: () => t('farms.title') })
       :is-editing="false"
       :errors="errors"
       :error="form.error.value"
-      :loading="form.status.value === 'loading'"
+      :loading="form.isLoading.value"
       @submit="form.handleSubmit"
     />
     <ExtraFarmConsentDialog

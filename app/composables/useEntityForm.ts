@@ -1,6 +1,6 @@
-import type { AppError, RequestStatus, Result } from '~/types/network'
-
-export type FormErrors = Record<string, string | undefined>
+import type { FormErrors } from '~/types/forms'
+import type { Result } from '~/types/network'
+import { hasErrors } from '~/utils/forms'
 
 interface EntityFormOptions<TValues extends object, TEntity extends { id: string }> {
   /** Values for a blank "create" form. */
@@ -18,7 +18,7 @@ interface EntityFormOptions<TValues extends object, TEntity extends { id: string
  * Create/edit modal form for one entity type (farm, batch, contact, record).
  * Write access is checked when the form opens; blocked users see the payment modal instead.
  *
- * @returns `isOpen`, `editing`, `values`, `errors`, `status`, `error`, `openCreate()`,
+ * @returns `isOpen`, `editing`, `values`, `errors`, `status`, `error`, `isLoading`, `openCreate()`,
  *          `openEdit(entity)` and `handleSubmit()`. Input is kept when saving fails.
  */
 export const useEntityForm = <TValues extends object, TEntity extends { id: string }>(
@@ -30,32 +30,22 @@ export const useEntityForm = <TValues extends object, TEntity extends { id: stri
   const editing = shallowRef<TEntity | null>(null)
   const values = ref(options.empty()) as Ref<TValues>
   const errors = ref<FormErrors>({})
-  const status = ref<RequestStatus>('idle')
-  const error = shallowRef<AppError | null>(null)
+  const { status, error, isLoading, execute, reset } = useAsyncState(options.save)
 
   const open = (entity: TEntity | null) =>
     guardWrite(() => {
       editing.value = entity
       values.value = entity ? options.fromEntity(entity) : options.empty()
       errors.value = {}
-      error.value = null
-      status.value = 'idle'
+      reset()
       isOpen.value = true
     })
 
   const handleSubmit = async () => {
     errors.value = options.validate(values.value)
-    if (Object.values(errors.value).some(Boolean)) return
-
-    status.value = 'loading'
-    error.value = null
-    const result = await options.save(values.value, editing.value)
-    if (result.error) {
-      error.value = result.error
-      status.value = 'error'
-      return
-    }
-    status.value = 'success'
+    if (hasErrors(errors.value)) return
+    const result = await execute(values.value, editing.value)
+    if (result.error) return
     isOpen.value = false
     options.onSaved?.()
   }
@@ -67,6 +57,7 @@ export const useEntityForm = <TValues extends object, TEntity extends { id: stri
     errors,
     status,
     error,
+    isLoading,
     isEditing: computed(() => editing.value !== null),
     openCreate: () => open(null),
     openEdit: (entity: TEntity) => open(entity),

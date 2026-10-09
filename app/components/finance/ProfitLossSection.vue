@@ -41,11 +41,7 @@ defineExpose({ reload })
       :empty-description="t('reports.emptyDescription')"
       @retry="reload"
     >
-      <template #loading>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <BaseSkeleton v-for="i in 3" :key="i" variant="rect" height="6rem" />
-        </div>
-      </template>
+      <template #loading><StatCardsSkeleton /></template>
       <template #empty-icon><ChartPie class="w-7 h-7" /></template>
       <ProfitLossPanel
         v-if="report"

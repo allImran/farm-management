@@ -1,6 +1,6 @@
 import { summarizeBatches } from '~/services/batches.service'
 import { countFarms } from '~/services/farms.service'
-import type { AppError, RequestStatus } from '~/types/network'
+import { combineResults, mapResult } from '~/utils/result'
 
 /** Number of active batches previewed on the dashboard. */
 const ACTIVE_BATCH_PREVIEW = 6
@@ -13,23 +13,11 @@ const ACTIVE_BATCH_PREVIEW = 6
  */
 export const useDashboard = () => {
   const uid = useSessionUid()
-  const summary = shallowRef<{ farms: number; activeBatches: number; birds: number } | null>(null)
-  const status = ref<RequestStatus>('idle')
-  const error = shallowRef<AppError | null>(null)
 
-  const reload = async () => {
-    status.value = 'loading'
-    error.value = null
-    const [farms, active] = await Promise.all([countFarms(uid()), summarizeBatches(uid(), { status: 'active' })])
-    const firstError = farms.error ?? active.error
-    if (firstError) {
-      error.value = firstError
-      status.value = 'error'
-      return
-    }
-    summary.value = { farms: farms.data!, activeBatches: active.data!.batches, birds: active.data!.birds }
-    status.value = 'success'
-  }
+  const { data: summary, status, error, execute: reload } = useAsyncState(async () => {
+    const results = await Promise.all([countFarms(uid()), summarizeBatches(uid(), { status: 'active' })])
+    return mapResult(combineResults(results), ([farms, active]) => ({ farms, activeBatches: active.batches, birds: active.birds }))
+  })
   reload()
 
   const activeBatches = useBatchList(() => ({ status: 'active' }), ACTIVE_BATCH_PREVIEW)

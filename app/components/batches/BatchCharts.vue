@@ -51,20 +51,14 @@ const feedDatasets = computed(() => [
 
 <template>
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <BaseCard class="lg:col-span-2">
-      <h3 class="mb-4 font-semibold text-slate-900 dark:text-white">{{ t('charts.growth') }}</h3>
-      <LineChart v-if="hasWeights" :labels="labels" :datasets="growthDatasets" filled height="16rem" />
-      <p v-else class="py-10 text-center text-sm text-slate-500 dark:text-slate-400">{{ t('charts.noWeights') }}</p>
-    </BaseCard>
-    <BaseCard>
-      <h3 class="mb-4 font-semibold text-slate-900 dark:text-white">{{ t('charts.mortality') }}</h3>
-      <BarChart v-if="hasDeaths" :labels="labels" :datasets="mortalityDatasets" show-legend height="16rem" />
-      <p v-else class="py-10 text-center text-sm text-slate-500 dark:text-slate-400">{{ t('charts.noMortality') }}</p>
-    </BaseCard>
-    <BaseCard>
-      <h3 class="mb-4 font-semibold text-slate-900 dark:text-white">{{ t('charts.feed') }}</h3>
-      <BarChart v-if="hasFeed" :labels="labels" :datasets="feedDatasets" show-legend height="16rem" />
-      <p v-else class="py-10 text-center text-sm text-slate-500 dark:text-slate-400">{{ t('charts.noFeed') }}</p>
-    </BaseCard>
+    <ChartCard class="lg:col-span-2" :title="t('charts.growth')" :is-empty="!hasWeights" :empty-text="t('charts.noWeights')">
+      <LineChart :labels="labels" :datasets="growthDatasets" filled height="16rem" />
+    </ChartCard>
+    <ChartCard :title="t('charts.mortality')" :is-empty="!hasDeaths" :empty-text="t('charts.noMortality')">
+      <BarChart :labels="labels" :datasets="mortalityDatasets" show-legend height="16rem" />
+    </ChartCard>
+    <ChartCard :title="t('charts.feed')" :is-empty="!hasFeed" :empty-text="t('charts.noFeed')">
+      <BarChart :labels="labels" :datasets="feedDatasets" show-legend height="16rem" />
+    </ChartCard>
   </div>
 </template>

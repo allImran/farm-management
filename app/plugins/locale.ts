@@ -1,5 +1,5 @@
-import { LOCALE_COOKIE } from '~/constants/i18n'
-import { isAppLocale } from '~/utils/locale'
+import { LOCALE_COOKIE, SUPPORTED_LOCALES } from '~/constants/i18n'
+import { isOneOf } from '~/utils/guards'
 
 /**
  * Restores the visitor's saved language before the first render.
@@ -15,7 +15,7 @@ export default defineNuxtPlugin({
     const saved = useCookie<string | null>(LOCALE_COOKIE).value
     const i18n = nuxtApp.$i18n
 
-    if (!isAppLocale(saved) || saved === i18n.locale.value) return
+    if (!isOneOf(SUPPORTED_LOCALES, saved) || saved === i18n.locale.value) return
     await i18n.setLocale(saved)
   },
 })

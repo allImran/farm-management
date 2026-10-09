@@ -1,6 +1,6 @@
 import type { PASSWORD_RESET_STATUSES } from '~/constants/auth'
 import type { PAYMENT_REQUEST_STATUSES, SUBSCRIPTION_TYPES } from '~/constants/billing'
-import type { BATCH_STATUSES, CONTACT_TYPES, EXPENSE_TYPES, MEDICINE_TYPES } from '~/constants/farm'
+import type { BATCH_STATUSES, CONTACT_TYPES, EXPENSE_TYPES } from '~/constants/farm'
 
 /** Calendar date stored as `YYYY-MM-DD` (no time zone, sorts lexically). */
 export type IsoDate = string
@@ -21,6 +21,13 @@ export interface UserProfile {
   createdAt: Date | null
   /** Set when the admin reset the password to the temporary one; cleared once the user changes it. */
   mustChangePassword: boolean
+}
+
+/** What a user enters about themselves when signing up. */
+export interface NewProfile {
+  name: string
+  phone: string
+  email: string | null
 }
 
 export type SubscriptionType = (typeof SUBSCRIPTION_TYPES)[number]
@@ -81,7 +88,6 @@ export type SubscriptionGrant =
 export type BatchStatus = (typeof BATCH_STATUSES)[number]
 export type ContactType = (typeof CONTACT_TYPES)[number]
 export type ExpenseType = (typeof EXPENSE_TYPES)[number]
-export type MedicineType = (typeof MEDICINE_TYPES)[number]
 
 export interface FarmInput {
   name: string

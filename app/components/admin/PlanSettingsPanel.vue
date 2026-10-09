@@ -33,19 +33,11 @@ const { values, errors, loadStatus, loadError, saveStatus, saveError, isSaved, r
             :error="errors.extraFarmPrice"
             required
           />
-          <BaseInput
-            v-model="values.bkashNumber"
-            type="tel"
-            inputmode="tel"
-            placeholder="01XXXXXXXXX"
-            :label="t('admin.plan.bkashNumber')"
-            :error="errors.bkashNumber"
-            required
-          />
+          <BasePhoneInput v-model="values.bkashNumber" :label="t('admin.plan.bkashNumber')" :error="errors.bkashNumber" required />
         </div>
         <BaseTextarea
           v-model="values.instructions"
-          :label="`${t('admin.plan.instructions')} (${t('common.optional')})`"
+          :label="t('admin.plan.instructions')" optional
           :placeholder="t('admin.plan.instructionsPlaceholder')"
           :error="errors.instructions"
           :rows="4"

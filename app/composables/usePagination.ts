@@ -1,3 +1,4 @@
+import type { WatchSource } from 'vue'
 import { MAX_PAGE_SIZE, PAGE_SIZE } from '~/constants/pagination'
 import type { AppError, RequestStatus } from '~/types/network'
 import type { PageCursor, PageFetcher } from '~/types/pagination'
@@ -11,6 +12,8 @@ interface PaginationOptions {
    * `pages`: numbered pages for admin tables, one page of items at a time.
    */
   mode?: PaginationMode
+  /** Filters the fetcher reads; the list loads right away and again from page one when they change. */
+  filters?: WatchSource
 }
 
 /**
@@ -20,7 +23,9 @@ interface PaginationOptions {
  * jump to any page already seen or the next one. `totalPages` is the number of pages known so
  * far; it grows by one while more data exists, which avoids paying for a count query.
  *
- * @param fetcher service call for one page; recreate the list (call `reset()`) when its filters change.
+ * @param fetcher service call for one page.
+ * @param options page size, mode and the `filters` to reload on. Without `filters`, call
+ *        `reset()` to load the first page.
  */
 export const usePagination = <T>(fetcher: PageFetcher<T>, options: PaginationOptions = {}) => {
   const pageSize = Math.min(options.pageSize ?? PAGE_SIZE, MAX_PAGE_SIZE)
@@ -102,6 +107,8 @@ export const usePagination = <T>(fetcher: PageFetcher<T>, options: PaginationOpt
 
   /** Re-fetches the current page in place (pages mode) or from the start (append mode). */
   const refresh = () => (mode === 'pages' ? loadPage(currentPage.value) : reset())
+
+  if (options.filters) watch(options.filters, reset, { immediate: true, deep: true })
 
   return {
     items,

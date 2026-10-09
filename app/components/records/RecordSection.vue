@@ -72,7 +72,7 @@ if (fields.some((field) => field.type === 'contact')) contactsStore.ensureLoaded
       :is-editing="isEditing"
       :errors="errors"
       :error="form.error.value"
-      :loading="form.status.value === 'loading'"
+      :loading="form.isLoading.value"
       @submit="form.handleSubmit"
     />
     <BaseConfirmDialog

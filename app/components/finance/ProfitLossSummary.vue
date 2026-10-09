@@ -18,15 +18,11 @@ const { t } = useI18n()
 const { formatMoney } = useLocaleNumber()
 
 // A loss reads better as "Loss ৳5,000" than "Profit ৳-5,000".
+const resultLabel = (profit: number) => t(profit < 0 ? 'reports.loss' : 'reports.profit')
 const isLoss = computed(() => props.totals.profit < 0)
-const resultLabel = computed(() => t(isLoss.value ? 'reports.loss' : 'reports.profit'))
-const resultValue = computed(() => formatMoney(Math.abs(props.totals.profit)))
-
-const actualResult = computed(() => {
-  if (!props.actualTotals) return ''
-  const { profit } = props.actualTotals
-  return `${t(profit < 0 ? 'reports.loss' : 'reports.profit')} ${formatMoney(Math.abs(profit))}`
-})
+const actualResult = computed(() =>
+  props.actualTotals ? `${resultLabel(props.actualTotals.profit)} ${formatMoney(Math.abs(props.actualTotals.profit))}` : '',
+)
 </script>
 
 <template>
@@ -34,7 +30,12 @@ const actualResult = computed(() => {
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
       <StatCard :label="t('reports.sales')" :value="formatMoney(totals.sales)" :icon="Banknote" tone="green" />
       <StatCard :label="t('reports.expenses')" :value="formatMoney(totals.expenses)" :icon="Wallet" tone="red" />
-      <StatCard :label="resultLabel" :value="resultValue" :icon="isLoss ? TrendingDown : TrendingUp" :tone="isLoss ? 'red' : 'green'" />
+      <StatCard
+        :label="resultLabel(totals.profit)"
+        :value="formatMoney(Math.abs(totals.profit))"
+        :icon="isLoss ? TrendingDown : TrendingUp"
+        :tone="isLoss ? 'red' : 'green'"
+      />
     </div>
     <BaseAlert v-if="isFiltered" variant="warning">
       <div class="flex flex-wrap items-center justify-between gap-3">

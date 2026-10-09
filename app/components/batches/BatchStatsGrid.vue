@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Bird, CalendarDays, HeartPulse, Scale, Skull, TrendingUp, Wallet, Wheat } from '@lucide/vue'
-import type { BatchStats } from '~/composables/useBatchStats'
+import type { BatchStats } from '~/utils/batchStats'
 
 const props = defineProps<{
   stats: BatchStats

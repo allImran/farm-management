@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { ChevronDown } from '@lucide/vue'
-import { EXPENSE_TYPE_COLORS, CHART_COLORS } from '~/constants/charts'
+import { CHART_COLORS, EXPENSE_TYPE_COLORS } from '~/constants/charts'
 import { EXPENSE_TYPES } from '~/constants/farm'
 import { FARM_LEVEL_KEY } from '~/constants/finance'
-import type { ExpenseType } from '~/types/models'
-import type { ProfitLossReport, ProfitLossTotals } from '~/utils/profitLoss'
 import type { ToggleItem } from '~/types/finance'
+import { isOneOf } from '~/utils/guards'
+import type { ProfitLossReport, ProfitLossTotals } from '~/utils/profitLoss'
 
 /**
  * Profit & loss report: totals, expense breakdown and "what if" toggles.
@@ -35,15 +35,14 @@ const { t } = useI18n()
 const { formatMoney } = useLocaleNumber()
 const { formatDate } = useLocaleDate()
 
-const categoryLabel = (category: string) =>
-  (EXPENSE_TYPES as readonly string[]).includes(category) ? t(`options.expenseTypes.${category}`) : t('options.expenseTypes.other')
-const categoryColor = (category: string) => EXPENSE_TYPE_COLORS[category as ExpenseType] ?? CHART_COLORS.slate
+// Unknown categories (e.g. from older data) are shown like `other`.
+const categoryLabel = (category: string) => t(`options.expenseTypes.${isOneOf(EXPENSE_TYPES, category) ? category : 'other'}`)
+const categoryColor = (category: string) => (isOneOf(EXPENSE_TYPES, category) ? EXPENSE_TYPE_COLORS[category] : CHART_COLORS.slate)
 
 // Fixed order keeps rows from jumping around while toggling. A category that is left out
 // stays listed even when the batch filter hides all its spending, so it can be ticked again.
 const categoryItems = computed<ToggleItem[]>(() =>
-  [...EXPENSE_TYPES, ...Object.keys(props.report.byCategory).filter((key) => !(EXPENSE_TYPES as readonly string[]).includes(key))]
-    .filter((category, index, all) => all.indexOf(category) === index)
+  [...new Set([...EXPENSE_TYPES, ...Object.keys(props.report.byCategory)])]
     .filter((category) => (props.report.byCategory[category] ?? 0) > 0 || excludedCategories.value.includes(category))
     .map((category) => ({
       key: category,
@@ -71,22 +70,24 @@ const donutSlices = computed(() =>
     .map((item) => ({ label: item.label, value: props.report.byCategory[item.key] ?? 0, color: item.color ?? CHART_COLORS.slate })),
 )
 
-const includedBatches = computed(() => batchItems.value.filter((item) => !excludedBatchKeys.value.includes(item.key)))
-const batchChart = computed(() => ({
-  labels: includedBatches.value.map((item) => item.label),
+/** Sales and expenses side by side, one bar group per labelled row. */
+const salesVsExpenses = (rows: { label: string; totals?: Pick<ProfitLossTotals, 'sales' | 'expenses'> }[]) => ({
+  labels: rows.map((row) => row.label),
   datasets: [
-    { label: t('reports.sales'), color: CHART_COLORS.green, format: formatMoney, data: includedBatches.value.map((item) => props.report.byBatch[item.key]?.sales ?? 0) },
-    { label: t('reports.expenses'), color: CHART_COLORS.red, format: formatMoney, data: includedBatches.value.map((item) => props.report.byBatch[item.key]?.expenses ?? 0) },
+    { label: t('reports.sales'), color: CHART_COLORS.green, format: formatMoney, data: rows.map((row) => row.totals?.sales ?? 0) },
+    { label: t('reports.expenses'), color: CHART_COLORS.red, format: formatMoney, data: rows.map((row) => row.totals?.expenses ?? 0) },
   ],
-}))
+})
 
-const monthChart = computed(() => ({
-  labels: props.report.byMonth.map((row) => formatDate(`${row.month}-01`, { month: 'short', year: 'numeric' })),
-  datasets: [
-    { label: t('reports.sales'), color: CHART_COLORS.green, format: formatMoney, data: props.report.byMonth.map((row) => row.sales) },
-    { label: t('reports.expenses'), color: CHART_COLORS.red, format: formatMoney, data: props.report.byMonth.map((row) => row.expenses) },
-  ],
-}))
+const includedBatches = computed(() => batchItems.value.filter((item) => !excludedBatchKeys.value.includes(item.key)))
+const batchChart = computed(() =>
+  salesVsExpenses(includedBatches.value.map((item) => ({ label: item.label, totals: props.report.byBatch[item.key] }))),
+)
+const monthChart = computed(() =>
+  salesVsExpenses(
+    props.report.byMonth.map((row) => ({ label: formatDate(`${row.month}-01`, { month: 'short', year: 'numeric' }), totals: row })),
+  ),
+)
 
 const includeAll = () => {
   excludedCategories.value = []
@@ -105,21 +106,15 @@ const includeAll = () => {
     </BaseCard>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <BaseCard>
-        <h3 class="mb-4 font-semibold text-slate-900 dark:text-white">{{ t('reports.expenseBreakdown') }}</h3>
-        <DonutChart v-if="donutSlices.length" :data="donutSlices" :format-value="formatMoney" height="14rem" />
-        <p v-else class="py-10 text-center text-sm text-slate-500 dark:text-slate-400">{{ t('reports.nothingToChart') }}</p>
-      </BaseCard>
-      <BaseCard v-if="batches">
-        <h3 class="mb-4 font-semibold text-slate-900 dark:text-white">{{ t('reports.byBatch') }}</h3>
-        <BarChart v-if="includedBatches.length" :labels="batchChart.labels" :datasets="batchChart.datasets" show-legend />
-        <p v-else class="py-10 text-center text-sm text-slate-500 dark:text-slate-400">{{ t('reports.nothingToChart') }}</p>
-      </BaseCard>
-      <BaseCard v-if="showMonthly">
-        <h3 class="mb-4 font-semibold text-slate-900 dark:text-white">{{ t('reports.byMonth') }}</h3>
-        <BarChart v-if="report.byMonth.length" :labels="monthChart.labels" :datasets="monthChart.datasets" show-legend />
-        <p v-else class="py-10 text-center text-sm text-slate-500 dark:text-slate-400">{{ t('reports.nothingToChart') }}</p>
-      </BaseCard>
+      <ChartCard :title="t('reports.expenseBreakdown')" :is-empty="!donutSlices.length" :empty-text="t('reports.nothingToChart')">
+        <DonutChart :data="donutSlices" :format-value="formatMoney" height="14rem" />
+      </ChartCard>
+      <ChartCard v-if="batches" :title="t('reports.byBatch')" :is-empty="!includedBatches.length" :empty-text="t('reports.nothingToChart')">
+        <BarChart :labels="batchChart.labels" :datasets="batchChart.datasets" show-legend />
+      </ChartCard>
+      <ChartCard v-if="showMonthly" :title="t('reports.byMonth')" :is-empty="!report.byMonth.length" :empty-text="t('reports.nothingToChart')">
+        <BarChart :labels="monthChart.labels" :datasets="monthChart.datasets" show-legend />
+      </ChartCard>
     </div>
 
     <details v-if="categoryItems.length" class="group rounded-2xl border border-slate-100 bg-white shadow-soft dark:border-slate-800 dark:bg-surface-dark-elevated">

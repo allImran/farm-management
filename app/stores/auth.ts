@@ -1,9 +1,16 @@
-import type { AuthUser } from '~/services/auth.service'
-import { changeUserPassword, signInWithPhone, signOutUser, signUpWithPhone, watchAuthUser } from '~/services/auth.service'
-import { clearMustChangePassword, createUserProfile, fetchIsAdmin, fetchUserProfile, updateUserProfile, type NewProfile } from '~/services/users.service'
-import type { UserProfile } from '~/types/models'
-import { phoneToAuthEmail } from '~/utils/phone'
+import {
+  changeUserPassword,
+  signInWithPhone,
+  signOutUser,
+  signUpWithPhone,
+  watchAuthUser,
+  type AuthUser,
+} from '~/services/auth.service'
+import { clearMustChangePassword, createUserProfile, fetchIsAdmin, fetchUserProfile, updateUserProfile } from '~/services/users.service'
+import { createAppError } from '~/services/network'
+import type { NewProfile, UserProfile } from '~/types/models'
 import type { AppError, RequestStatus } from '~/types/network'
+import { phoneToAuthEmail } from '~/utils/phone'
 
 /**
  * The signed-in account: Firebase user, profile doc and admin flag.
@@ -92,7 +99,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   const saveProfile = async (changes: Pick<NewProfile, 'name' | 'email'>) => {
-    if (!uid.value || !profile.value) return { data: null, error: null }
+    if (!uid.value || !profile.value) return { data: null, error: createAppError('unauthenticated') }
     const result = await updateUserProfile(uid.value, changes)
     if (!result.error) profile.value = { ...profile.value, ...changes }
     return result

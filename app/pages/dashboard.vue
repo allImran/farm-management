@@ -20,11 +20,7 @@ useSeoMeta({ title: () => t('dashboard.title') })
     <PageHeader :title="t('dashboard.greeting', { name: profile?.name ?? '' })" :description="t('dashboard.description')" />
 
     <BaseAsyncState :status="status" :error="error" @retry="reload">
-      <template #loading>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <BaseSkeleton v-for="i in 3" :key="i" variant="rect" height="6rem" />
-        </div>
-      </template>
+      <template #loading><StatCardsSkeleton /></template>
       <div v-if="summary" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <StatCard :label="t('dashboard.stats.farms')" :value="formatNumber(summary.farms)" :icon="Warehouse" tone="yellow" />
         <StatCard :label="t('dashboard.stats.activeBatches')" :value="formatNumber(summary.activeBatches)" :icon="Layers" tone="green" />
