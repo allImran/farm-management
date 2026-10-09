@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { Info, CheckCircle2, AlertTriangle, XCircle, X } from '@lucide/vue'
+import type { Component } from 'vue'
+import { AlertTriangle, CheckCircle2, Info, XCircle } from '@lucide/vue'
 
 type Variant = 'info' | 'success' | 'warning' | 'error'
 
@@ -7,19 +8,13 @@ withDefaults(
   defineProps<{
     variant?: Variant
     title?: string
-    dismissible?: boolean
   }>(),
   {
     variant: 'info',
-    dismissible: false,
   }
 )
 
-defineEmits<{
-  dismiss: []
-}>()
-
-const iconMap: Record<Variant, unknown> = {
+const iconMap: Record<Variant, Component> = {
   info: Info,
   success: CheckCircle2,
   warning: AlertTriangle,
@@ -55,13 +50,5 @@ const iconColorClasses: Record<Variant, string> = {
         <slot />
       </div>
     </div>
-    <button
-      v-if="dismissible"
-      type="button"
-      class="flex-shrink-0 p-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
-      @click="$emit('dismiss')"
-    >
-      <X class="w-4 h-4" />
-    </button>
   </div>
 </template>

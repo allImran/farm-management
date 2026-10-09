@@ -43,3 +43,6 @@ const startOfDay = (date: Date) => new Date(date.getFullYear(), date.getMonth(),
 /** Whole calendar days from `from` to `to`; rounding absorbs daylight-saving shifts. */
 export const daysBetween = (from: Date, to: Date) =>
   Math.round((startOfDay(to).getTime() - startOfDay(from).getTime()) / DAY_MS)
+
+/** Whole days since `date` (0 for today or a future date), e.g. a batch's age in days. */
+export const daysSince = (date: IsoDate, now = new Date()) => Math.max(0, daysBetween(parseIsoDate(date), now))

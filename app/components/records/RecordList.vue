@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Pencil, Trash2 } from '@lucide/vue'
 import { RECORD_KINDS } from '~/constants/records'
 import type { FarmRecord, RecordKind } from '~/types/records'
 
@@ -24,31 +23,27 @@ const columns = computed(() => [
   ...listedFields.value.map((field) => ({ key: field.key, label: fieldLabel(props.kind, field) })),
   { key: 'actions', label: t('common.actions') },
 ])
-type Row = { id: string; date: string; record: FarmRecord; cells: Record<string, string> }
 
-const rows = computed<Row[]>(() =>
-  props.records.map((record) => {
-    const cells = Object.fromEntries(listedFields.value.map((field) => [field.key, formatValue(field, record.values[field.key])]))
-    return { id: record.id, date: formatDate(record.date), record, cells }
-  }),
+/** Each record with its display values, formatted once for both layouts. */
+const rows = computed(() =>
+  props.records.map((record) => ({
+    id: record.id,
+    record,
+    date: formatDate(record.date),
+    cells: Object.fromEntries(listedFields.value.map((field) => [field.key, formatValue(field, record.values[field.key])])),
+  })),
 )
-// BaseTable reads cells by column key, so flatten the formatted cells onto each row.
-const tableRows = computed(() => rows.value.map((row) => ({ ...row.cells, id: row.id, date: row.date, record: row.record })))
 </script>
 
 <template>
   <div>
     <div class="hidden md:block">
-      <BaseTable :columns="columns" :rows="tableRows" row-key="id">
+      <BaseTable :columns="columns" :rows="rows" row-key="id">
+        <template v-for="field in listedFields" :key="field.key" #[`cell-${field.key}`]="{ row }">
+          {{ row.cells[field.key] }}
+        </template>
         <template #cell-actions="{ row }">
-          <div class="flex items-center gap-1">
-            <BaseButton variant="ghost" size="icon" :aria-label="t('common.edit')" @click="$emit('edit', row.record as FarmRecord)">
-              <Pencil class="w-4 h-4" />
-            </BaseButton>
-            <BaseButton variant="ghost" size="icon" :aria-label="t('common.delete')" @click="$emit('delete', row.record as FarmRecord)">
-              <Trash2 class="w-4 h-4 text-red-500" />
-            </BaseButton>
-          </div>
+          <BaseEditDeleteActions @edit="$emit('edit', row.record)" @delete="$emit('delete', row.record)" />
         </template>
       </BaseTable>
     </div>
@@ -58,14 +53,7 @@ const tableRows = computed(() => rows.value.map((row) => ({ ...row.cells, id: ro
         <BaseCard :padded="false" class="p-4">
           <div class="flex items-start justify-between gap-2">
             <p class="font-semibold text-slate-900 dark:text-white">{{ row.date }}</p>
-            <div class="flex items-center -mr-2 -mt-1">
-              <BaseButton variant="ghost" size="icon" :aria-label="t('common.edit')" @click="$emit('edit', row.record)">
-                <Pencil class="w-4 h-4" />
-              </BaseButton>
-              <BaseButton variant="ghost" size="icon" :aria-label="t('common.delete')" @click="$emit('delete', row.record)">
-                <Trash2 class="w-4 h-4 text-red-500" />
-              </BaseButton>
-            </div>
+            <BaseEditDeleteActions class="-mr-2 -mt-1" @edit="$emit('edit', row.record)" @delete="$emit('delete', row.record)" />
           </div>
           <dl class="mt-2 grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
             <div v-for="field in listedFields" :key="field.key" class="min-w-0">

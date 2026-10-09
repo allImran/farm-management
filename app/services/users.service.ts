@@ -1,6 +1,7 @@
 import {
   collection,
   doc,
+  documentId,
   getDoc,
   getDocs,
   limit,
@@ -10,14 +11,13 @@ import {
   setDoc,
   updateDoc,
   where,
-  documentId,
   type DocumentData,
   type DocumentSnapshot,
 } from 'firebase/firestore'
 import { COLLECTIONS } from '~/constants/collections'
-import type { UserProfile } from '~/types/models'
+import type { NewProfile, UserProfile } from '~/types/models'
 import type { PageRequest } from '~/types/pagination'
-import { db, fetchPage, inQueryChunks, toDate } from './firestore'
+import { db, fetchDocOrNull, fetchPage, inQueryChunks, newestFirst, toDate } from './firestore'
 import { request } from './network'
 
 /** Profile and admin-membership reads/writes for `users/{uid}` and `admins/{uid}`. */
@@ -37,17 +37,7 @@ const toProfile = (snapshot: DocumentSnapshot<DocumentData>): UserProfile => {
 const userRef = (uid: string) => doc(db(), COLLECTIONS.users, uid)
 
 /** @returns the profile, or `null` when the account has none yet. */
-export const fetchUserProfile = (uid: string) =>
-  request(async () => {
-    const snapshot = await getDoc(userRef(uid))
-    return snapshot.exists() ? toProfile(snapshot) : null
-  })
-
-export interface NewProfile {
-  name: string
-  phone: string
-  email: string | null
-}
+export const fetchUserProfile = (uid: string) => request(() => fetchDocOrNull(userRef(uid), toProfile))
 
 export const createUserProfile = (uid: string, profile: NewProfile) =>
   request(() => setDoc(userRef(uid), { ...profile, createdAt: serverTimestamp() }))
@@ -85,6 +75,6 @@ export const fetchUsersPage = (page: PageRequest, filters: { phone?: string | nu
   request(() => {
     const base = filters.phone
       ? query(collection(db(), COLLECTIONS.users), where('phone', '==', filters.phone), orderBy(documentId()))
-      : query(collection(db(), COLLECTIONS.users), orderBy('createdAt', 'desc'), orderBy(documentId(), 'desc'))
+      : query(collection(db(), COLLECTIONS.users), ...newestFirst('createdAt'))
     return fetchPage(base, page, toProfile)
   })

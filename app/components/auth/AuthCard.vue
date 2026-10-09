@@ -1,5 +1,5 @@
 <script setup lang="ts">
-/** Card frame shared by the login and sign-up pages. */
+/** Card frame shared by the auth pages (login, sign-up, forgot password) and the error page. */
 defineProps<{
   title: string
   subtitle?: string

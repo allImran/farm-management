@@ -9,6 +9,7 @@ import {
 import { countFarms } from '~/services/farms.service'
 import type { PaymentRequest, PlanConfig, Subscription } from '~/types/models'
 import type { AppError, RequestStatus } from '~/types/network'
+import { combineResults } from '~/utils/result'
 import { extraFarmCount, getSubscriptionState, hasWriteAccess, monthlyFee as calculateMonthlyFee, needsExtraFarmConsent } from '~/utils/subscription'
 
 /**
@@ -50,22 +51,23 @@ export const useBillingStore = defineStore('billing', () => {
     if (!uid.value) return
     status.value = 'loading'
     error.value = null
-    const [subscriptionResult, requestResult, planResult, farmCountResult] = await Promise.all([
+    const results = await Promise.all([
       fetchSubscription(uid.value),
       fetchLatestPaymentRequest(uid.value),
       fetchPlanConfig(),
       countFarms(uid.value),
     ])
-    const firstError = subscriptionResult.error ?? requestResult.error ?? planResult.error ?? farmCountResult.error
-    if (firstError) {
-      error.value = firstError
+    const result = combineResults(results)
+    if (result.error) {
+      error.value = result.error
       status.value = 'error'
       return
     }
-    subscription.value = subscriptionResult.data
-    latestRequest.value = requestResult.data
-    plan.value = planResult.data
-    farmCount.value = farmCountResult.data!
+    const [nextSubscription, nextRequest, nextPlan, nextFarmCount] = result.data
+    subscription.value = nextSubscription
+    latestRequest.value = nextRequest
+    plan.value = nextPlan
+    farmCount.value = nextFarmCount
     status.value = 'success'
   }
 
@@ -122,6 +124,7 @@ export const useBillingStore = defineStore('billing', () => {
     submitError,
     subscriptionState,
     canWrite,
+    isPaying,
     hasPendingRequest,
     load,
     refreshFarmCount,

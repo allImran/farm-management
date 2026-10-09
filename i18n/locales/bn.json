@@ -29,7 +29,10 @@
     "note": "নোট",
     "noData": "এখনো কিছু নেই",
     "increase": "বাড়ান",
-    "decrease": "কমান"
+    "decrease": "কমান",
+    "pagination": "পৃষ্ঠা নির্বাচন",
+    "previous": "আগের পৃষ্ঠা",
+    "next": "পরের পৃষ্ঠা"
   },
   "nav": {
     "technology": "প্রযুক্তি",

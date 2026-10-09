@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { Phone } from '@lucide/vue'
-import { NuxtLink } from '#components'
 import { ROUTES } from '~/constants/routes'
 
 definePageMeta({ layout: 'auth', middleware: 'guest' })
@@ -17,25 +15,14 @@ useSeoMeta({ title: () => t('auth.forgot.title') })
       {{ t('auth.forgot.sent') }}
     </BaseAlert>
     <form v-else class="space-y-4" novalidate @submit.prevent="handleSubmit">
-      <BaseInput
-        v-model="values.phone"
-        :label="t('auth.fields.phone')"
-        :error="phoneError"
-        type="tel"
-        inputmode="tel"
-        autocomplete="username"
-        placeholder="01XXXXXXXXX"
-        required
-      >
-        <template #icon-left><Phone class="w-4 h-4" /></template>
-      </BaseInput>
+      <BasePhoneInput v-model="values.phone" :label="t('auth.fields.phone')" :error="phoneError" autocomplete="username" required />
       <BaseAlert v-if="error" variant="error">{{ error.message }}</BaseAlert>
       <BaseButton type="submit" size="lg" class="w-full" :loading="status === 'loading'">{{ t('auth.forgot.submit') }}</BaseButton>
     </form>
     <template #footer>
-      <NuxtLink :to="ROUTES.login" class="font-semibold text-primary-700 dark:text-primary-400 hover:underline">
+      <BaseLink :to="ROUTES.login">
         {{ t('auth.forgot.backToLogin') }}
-      </NuxtLink>
+      </BaseLink>
     </template>
   </AuthCard>
 </template>

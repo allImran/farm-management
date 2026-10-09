@@ -1,5 +1,6 @@
 import { FARM_LEVEL_KEY } from '~/constants/finance'
 import type { FarmRecord } from '~/types/records'
+import { round, toFiniteNumber } from './number'
 
 /**
  * Profit & loss maths for the dashboard, farm and batch reports. Pure functions, so the
@@ -36,11 +37,9 @@ export interface ProfitLossReport {
 export const NO_FILTER: ProfitLossFilter = { excludedCategories: [], excludedBatchKeys: [] }
 
 /** Rounds to whole paisa so float noise (0.1 + 0.2) never shows up in money. */
-const roundMoney = (value: number) => Math.round(value * 100) / 100
+const roundMoney = (value: number) => round(value, 2)
 
-const toAmount = (value: unknown) => (typeof value === 'number' && Number.isFinite(value) ? value : 0)
-
-export const batchKeyOf = (record: Pick<FarmRecord, 'batchId'>) => record.batchId ?? FARM_LEVEL_KEY
+const batchKeyOf = (record: Pick<FarmRecord, 'batchId'>) => record.batchId ?? FARM_LEVEL_KEY
 
 /** Category of an expense; anything unexpected is reported as `other` rather than dropped. */
 const categoryOf = (expense: FarmRecord) => (typeof expense.values.type === 'string' ? expense.values.type : 'other')
@@ -77,7 +76,7 @@ export const buildProfitLoss = (
   const monthTotals = (date: string) => (byMonth[date.slice(0, 7)] ??= emptyTotals())
 
   for (const expense of expenses) {
-    const amount = toAmount(expense.values.amount)
+    const amount = toFiniteNumber(expense.values.amount)
     const category = categoryOf(expense)
     const batchKey = batchKeyOf(expense)
     const isCategoryIncluded = !excludedCategories.has(category)
@@ -93,7 +92,7 @@ export const buildProfitLoss = (
 
   // Sales have no category, so only the batch filter applies to them.
   for (const sale of sales) {
-    const amount = toAmount(sale.values.totalAmount)
+    const amount = toFiniteNumber(sale.values.totalAmount)
     const batchKey = batchKeyOf(sale)
     batchTotals(batchKey).sales += amount
     if (!excludedBatches.has(batchKey)) {

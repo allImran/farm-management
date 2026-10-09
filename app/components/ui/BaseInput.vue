@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { Eye, EyeOff } from '@lucide/vue'
 
-type Size = 'sm' | 'md' | 'lg'
-
 const props = withDefaults(
   defineProps<{
     modelValue?: string | number
@@ -10,11 +8,11 @@ const props = withDefaults(
     type?: string
     placeholder?: string
     error?: string
+    hint?: string
+    optional?: boolean
     disabled?: boolean
     readonly?: boolean
     required?: boolean
-    size?: Size
-    hint?: string
     autocomplete?: string
     inputmode?: 'text' | 'numeric' | 'decimal' | 'tel' | 'email'
     min?: string | number
@@ -25,10 +23,6 @@ const props = withDefaults(
   {
     modelValue: '',
     type: 'text',
-    size: 'md',
-    disabled: false,
-    readonly: false,
-    required: false,
   }
 )
 
@@ -40,30 +34,16 @@ defineEmits<{
 const isPassword = computed(() => props.type === 'password')
 const isPasswordVisible = ref(false)
 const inputType = computed(() => (isPassword.value && isPasswordVisible.value ? 'text' : props.type))
-
-const sizeClasses: Record<Size, string> = {
-  sm: 'text-xs px-3 py-1.5',
-  md: 'text-sm px-3.5 py-2.5',
-  lg: 'text-base px-4 py-3',
-}
 </script>
 
 <template>
-  <label class="block">
-    <span
-      v-if="label"
-      class="block mb-1.5 text-sm font-medium text-slate-700 dark:text-slate-200"
-    >
-      {{ label }}
-    </span>
+  <BaseField v-slot="{ id, describedBy, controlClass }" :label="label" :error="error" :hint="hint" :optional="optional">
     <div class="relative flex items-center">
-      <span
-        v-if="$slots['icon-left']"
-        class="absolute left-3 flex items-center text-slate-400 dark:text-slate-500"
-      >
+      <span v-if="$slots['icon-left']" class="absolute left-3 flex items-center text-slate-400 dark:text-slate-500">
         <slot name="icon-left" />
       </span>
       <input
+        :id="id"
         :value="modelValue"
         :type="inputType"
         :placeholder="placeholder"
@@ -77,16 +57,9 @@ const sizeClasses: Record<Size, string> = {
         :step="step"
         :maxlength="maxlength"
         :aria-invalid="error ? true : undefined"
-        class="w-full rounded-xl border read-only:bg-slate-50 dark:read-only:bg-slate-800/60 bg-white dark:bg-surface-dark-elevated text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 shadow-soft transition-colors focus:outline-none focus:ring-4 focus:ring-primary-300/50 focus:border-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
-        :class="[
-          sizeClasses[size],
-          error
-            ? 'border-red-300 dark:border-red-500/50 focus:ring-red-200/50 focus:border-red-400'
-            : 'border-slate-200 dark:border-slate-700',
-          $slots['icon-left'] ? 'pl-10' : '',
-          $slots['icon-right'] ? 'pr-10' : '',
-          isPassword ? 'pr-11' : '',
-        ]"
+        :aria-describedby="describedBy"
+        class="read-only:bg-slate-50 dark:read-only:bg-slate-800/60"
+        :class="[controlClass, $slots['icon-left'] ? 'pl-10' : '', isPassword ? 'pr-11' : '']"
         @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"
       />
       <button
@@ -101,18 +74,6 @@ const sizeClasses: Record<Size, string> = {
         <EyeOff v-if="isPasswordVisible" class="w-4 h-4" />
         <Eye v-else class="w-4 h-4" />
       </button>
-      <span
-        v-else-if="$slots['icon-right']"
-        class="absolute right-3 flex items-center text-slate-400 dark:text-slate-500"
-      >
-        <slot name="icon-right" />
-      </span>
     </div>
-    <p v-if="error" class="mt-1.5 text-xs font-medium text-red-500 dark:text-red-400">
-      {{ error }}
-    </p>
-    <p v-else-if="hint" class="mt-1.5 text-xs text-slate-500 dark:text-slate-400">
-      {{ hint }}
-    </p>
-  </label>
+  </BaseField>
 </template>

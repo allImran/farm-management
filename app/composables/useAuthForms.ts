@@ -1,10 +1,10 @@
-import { EMAIL_PATTERN, MAX_NAME_LENGTH, MIN_PASSWORD_LENGTH } from '~/constants/auth'
+import { MAX_NAME_LENGTH } from '~/constants/auth'
 import { ROUTES } from '~/constants/routes'
 import { createPasswordResetRequest } from '~/services/passwordResets.service'
-import type { AppError } from '~/types/network'
+import type { FormErrors } from '~/types/forms'
+import type { NewProfile } from '~/types/models'
+import { hasErrors } from '~/utils/forms'
 import { authEmailToPhone, normalizeBdPhone } from '~/utils/phone'
-
-type FieldErrors<K extends string> = Partial<Record<K, string>>
 
 /** Where to go after signing in: the guarded page the user came from, else the dashboard. */
 const useRedirectTarget = () => {
@@ -19,102 +19,73 @@ const useRedirectTarget = () => {
 /**
  * Phone + password sign-in form.
  *
- * @returns form `values`, field `errors`, the request `error`, `isSubmitting` and `handleSubmit`.
+ * @returns form `values`, field `errors`, the request `error`, `isLoading` and `handleSubmit`.
  */
 export const useLoginForm = () => {
-  const { t } = useI18n()
   const authStore = useAuthStore()
+  const validators = useValidators()
   const redirectTarget = useRedirectTarget()
 
   const values = reactive({ phone: '', password: '' })
-  const errors = ref<FieldErrors<'phone' | 'password'>>({})
-  const error = shallowRef<AppError | null>(null)
-  const isSubmitting = ref(false)
+  const errors = ref<FormErrors<keyof typeof values>>({})
+  const { error, isLoading, execute } = useAsyncState(authStore.signIn)
 
   const handleSubmit = async () => {
     const phone = normalizeBdPhone(values.phone)
-    errors.value = {
-      phone: phone ? undefined : t('validation.phone'),
-      password: values.password ? undefined : t('validation.required'),
-    }
-    if (!phone || !values.password) return
-
-    isSubmitting.value = true
-    error.value = null
-    const result = await authStore.signIn(phone, values.password)
-    isSubmitting.value = false
-    if (result.error) {
-      error.value = result.error
-      return
-    }
-    await navigateTo(redirectTarget())
+    errors.value = { phone: validators.phone(values.phone), password: validators.required(values.password) }
+    if (!phone || hasErrors(errors.value)) return
+    const result = await execute(phone, values.password)
+    if (!result.error) await navigateTo(redirectTarget())
   }
 
-  return { values, errors, error, isSubmitting, handleSubmit }
+  return { values, errors, error, isLoading, handleSubmit }
 }
 
 /**
  * Sign-up form (name, phone, optional email, password). If the account exists but its profile
  * doc is missing (an interrupted sign-up), only the profile part is shown and submitted.
  *
- * @returns form `values`, `errors`, request `error`, `isSubmitting`, `isCompletingProfile` and `handleSubmit`.
+ * @returns form `values`, `errors`, request `error`, `isLoading`, `isCompletingProfile` and `handleSubmit`.
  */
 export const useSignupForm = () => {
-  const { t } = useI18n()
   const authStore = useAuthStore()
-  const { needsProfile, user } = storeToRefs(authStore)
+  const { needsProfile: isCompletingProfile, user } = storeToRefs(authStore)
+  const validators = useValidators()
   const redirectTarget = useRedirectTarget()
 
   const values = reactive({ name: '', phone: '', email: '', password: '', confirmPassword: '' })
-  const errors = ref<FieldErrors<keyof typeof values>>({})
-  const error = shallowRef<AppError | null>(null)
-  const isSubmitting = ref(false)
+  const errors = ref<FormErrors<keyof typeof values>>({})
+  const { error, isLoading, execute } = useAsyncState((profile: NewProfile) =>
+    isCompletingProfile.value && user.value
+      ? authStore.completeProfile(user.value.uid, profile)
+      : authStore.signUp({ ...profile, password: values.password }),
+  )
 
-  const isCompletingProfile = computed(() => needsProfile.value)
+  // The account already exists, so its phone number is fixed.
   watchEffect(() => {
     const phone = authEmailToPhone(user.value?.email ?? null)
     if (isCompletingProfile.value && phone) values.phone = phone
   })
 
-  const validate = () => {
-    const name = values.name.trim()
-    const email = values.email.trim()
-    const next: FieldErrors<keyof typeof values> = {}
-    if (!name) next.name = t('validation.required')
-    else if (name.length > MAX_NAME_LENGTH) next.name = t('validation.tooLong', { max: MAX_NAME_LENGTH })
-    if (!normalizeBdPhone(values.phone)) next.phone = t('validation.phone')
-    if (email && !EMAIL_PATTERN.test(email)) next.email = t('validation.email')
-    if (!isCompletingProfile.value) {
-      if (values.password.length < MIN_PASSWORD_LENGTH) next.password = t('validation.passwordLength', { min: MIN_PASSWORD_LENGTH })
-      if (values.confirmPassword !== values.password) next.confirmPassword = t('validation.passwordMatch')
-    }
-    errors.value = next
-    return Object.keys(next).length === 0
-  }
-
   const handleSubmit = async () => {
-    if (!validate()) return
-    const profile = {
-      name: values.name.trim(),
-      phone: normalizeBdPhone(values.phone) ?? '',
-      email: values.email.trim() || null,
+    const phone = normalizeBdPhone(values.phone)
+    errors.value = {
+      name: validators.text(values.name, { required: true, max: MAX_NAME_LENGTH }),
+      phone: validators.phone(values.phone),
+      email: validators.email(values.email),
+      ...(isCompletingProfile.value
+        ? {}
+        : {
+            password: validators.newPassword(values.password),
+            confirmPassword: validators.confirmation(values.confirmPassword, values.password),
+          }),
     }
-
-    isSubmitting.value = true
-    error.value = null
-    const result =
-      isCompletingProfile.value && user.value
-        ? await authStore.completeProfile(user.value.uid, profile)
-        : await authStore.signUp({ ...profile, password: values.password })
-    isSubmitting.value = false
-    if (result.error) {
-      error.value = result.error
-      return
-    }
-    await navigateTo(redirectTarget())
+    if (!phone || hasErrors(errors.value)) return
+    const result = await execute({ name: values.name.trim(), phone, email: values.email.trim() || null })
+    if (!result.error) await navigateTo(redirectTarget())
   }
 
-  return { values, errors, error, isSubmitting, isCompletingProfile, handleSubmit }
+  return { values, errors, error, isLoading, isCompletingProfile, handleSubmit }
 }
 
 /**
@@ -124,16 +95,15 @@ export const useSignupForm = () => {
  * @returns form `values`, the field `error` for the phone, `status`, request `error` and `handleSubmit`.
  */
 export const useForgotPasswordForm = () => {
-  const { t } = useI18n()
+  const validators = useValidators()
   const values = reactive({ phone: '' })
   const phoneError = ref<string | undefined>()
   const { status, error, execute } = useAsyncState(createPasswordResetRequest)
 
   const handleSubmit = async () => {
     const phone = normalizeBdPhone(values.phone)
-    phoneError.value = phone ? undefined : t('validation.phone')
-    if (!phone) return
-    await execute(phone)
+    phoneError.value = validators.phone(values.phone)
+    if (phone) await execute(phone)
   }
 
   return { values, phoneError, status, error, handleSubmit }

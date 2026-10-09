@@ -1,8 +1,6 @@
 import {
   collection,
   doc,
-  documentId,
-  orderBy,
   query,
   serverTimestamp,
   setDoc,
@@ -16,7 +14,7 @@ import { FUNCTIONS_REGION } from '~/constants/auth'
 import { COLLECTIONS } from '~/constants/collections'
 import type { PasswordResetRequest, PasswordResetStatus } from '~/types/models'
 import type { PageRequest } from '~/types/pagination'
-import { db, fetchPage, toDate } from './firestore'
+import { db, fetchPage, newestFirst, toDate } from './firestore'
 import { request } from './network'
 
 /**
@@ -56,12 +54,7 @@ export const createPasswordResetRequest = (phone: string) =>
 export const fetchPasswordResetRequestsPage = (page: PageRequest, status: PasswordResetStatus) =>
   request(() =>
     fetchPage(
-      query(
-        collection(db(), COLLECTIONS.passwordResetRequests),
-        where('status', '==', status),
-        orderBy('createdAt', 'desc'),
-        orderBy(documentId(), 'desc'),
-      ),
+      query(collection(db(), COLLECTIONS.passwordResetRequests), where('status', '==', status), ...newestFirst('createdAt')),
       page,
       toPasswordResetRequest,
     ),

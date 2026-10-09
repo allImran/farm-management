@@ -1,20 +1,17 @@
 <script setup lang="ts">
 import { Plus, Users } from '@lucide/vue'
 import { CONTACT_TYPES } from '~/constants/farm'
-import type { ContactType } from '~/types/models'
 
 definePageMeta({ layout: 'app', middleware: 'auth' })
 
 const { t } = useI18n()
 
-const typeFilter = useQueryParam<ContactType | 'all'>('type', ['all', ...CONTACT_TYPES], 'all')
-const tabs = computed(() => [
-  { value: 'all', label: t('common.all') },
-  ...CONTACT_TYPES.map((value) => ({ value, label: t(`options.contactTypes.${value}`) })),
-])
+const { active: typeFilter, tabs, selected: selectedType } = useQueryFilter('type', CONTACT_TYPES, (value) =>
+  t(`options.contactTypes.${value}`),
+)
 
-const { items, status, error, isEmpty, hasMore, loadMoreStatus, loadMoreError, loadMore, reset } = useContactList(() =>
-  typeFilter.value === 'all' ? null : typeFilter.value,
+const { items, status, error, isEmpty, hasMore, loadMoreStatus, loadMoreError, loadMore, reset } = useContactList(
+  () => selectedType.value,
 )
 const form = useContactForm(reset)
 const deletion = useContactDelete(reset)
@@ -35,9 +32,7 @@ useSeoMeta({ title: () => t('contacts.title') })
       </template>
     </PageHeader>
 
-    <div class="mb-5 -mx-4 px-4 overflow-x-auto scrollbar-none">
-      <BaseTabs v-model="typeFilter" :tabs="tabs" class="whitespace-nowrap" />
-    </div>
+    <BaseTabs v-model="typeFilter" :tabs="tabs" class="mb-5" />
 
     <BaseAsyncState
       :status="status"
@@ -62,7 +57,7 @@ useSeoMeta({ title: () => t('contacts.title') })
       :is-editing="form.isEditing.value"
       :errors="errors"
       :error="form.error.value"
-      :loading="form.status.value === 'loading'"
+      :loading="form.isLoading.value"
       @submit="form.handleSubmit"
     />
     <BaseConfirmDialog

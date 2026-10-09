@@ -1,15 +1,12 @@
 import {
   addDoc,
   count,
-  getAggregateFromServer,
-  sum,
   deleteDoc,
   doc,
-  documentId,
-  getDoc,
-  orderBy,
+  getAggregateFromServer,
   query,
   serverTimestamp,
+  sum,
   updateDoc,
   where,
   type DocumentData,
@@ -20,7 +17,7 @@ import { USER_COLLECTIONS } from '~/constants/collections'
 import { BATCH_RECORD_KINDS } from '~/constants/records'
 import type { Batch, BatchInput, BatchStatus } from '~/types/models'
 import type { PageRequest } from '~/types/pagination'
-import { countDocs, creationTimestamps, fetchAll, fetchPage, toDate, userCollection } from './firestore'
+import { countDocs, creationTimestamps, fetchAll, fetchDocOrNull, fetchPage, newestFirst, toDate, userCollection } from './firestore'
 import { request } from './network'
 
 /** CRUD for `users/{uid}/batches`. */
@@ -55,19 +52,11 @@ const filterConstraints = ({ farmId, status }: BatchFilters): QueryConstraint[] 
 
 /** Most recently started first. */
 export const fetchBatchesPage = (uid: string, page: PageRequest, filters: BatchFilters = {}) =>
-  request(() =>
-    fetchPage(
-      query(batches(uid), ...filterConstraints(filters), orderBy('startDate', 'desc'), orderBy(documentId(), 'desc')),
-      page,
-      toBatch,
-    ),
-  )
+  request(() => fetchPage(query(batches(uid), ...filterConstraints(filters), ...newestFirst('startDate')), page, toBatch))
 
 /** Every batch of a farm, newest first, for the profit & loss batch picker. */
 export const fetchAllFarmBatches = (uid: string, farmId: string) =>
-  request(() =>
-    fetchAll(query(batches(uid), where('farmId', '==', farmId), orderBy('startDate', 'desc'), orderBy(documentId(), 'desc')), toBatch),
-  )
+  request(() => fetchAll(query(batches(uid), where('farmId', '==', farmId), ...newestFirst('startDate')), toBatch))
 
 /**
  * Number of matching batches and the chicks placed in them, from one aggregate query.
@@ -84,11 +73,7 @@ export const summarizeBatches = (uid: string, filters: BatchFilters = {}) =>
   })
 
 /** @returns the batch, or `null` if it doesn't exist. */
-export const fetchBatch = (uid: string, batchId: string) =>
-  request(async () => {
-    const snapshot = await getDoc(doc(batches(uid), batchId))
-    return snapshot.exists() ? toBatch(snapshot) : null
-  })
+export const fetchBatch = (uid: string, batchId: string) => request(() => fetchDocOrNull(doc(batches(uid), batchId), toBatch))
 
 /** @returns the new batch's id. */
 export const createBatch = (uid: string, input: BatchInput) =>

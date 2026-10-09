@@ -38,12 +38,14 @@ const rows = computed(() => [
     :confirm-label="t('farms.extraFee.confirm')"
     @confirm="$emit('confirm')"
   >
-    <dl class="mt-4 space-y-2 rounded-2xl border border-slate-100 bg-surface-light p-4 dark:border-slate-800 dark:bg-surface-dark">
-      <div v-for="row in rows" :key="row.key" class="flex items-center justify-between gap-3">
-        <dt class="text-sm text-slate-500 dark:text-slate-400">{{ row.label }}</dt>
-        <dd class="font-semibold text-slate-900 dark:text-white" :class="row.key === 'next' ? 'text-lg' : ''">{{ row.value }}</dd>
-      </div>
-    </dl>
+    <BasePanel class="mt-4">
+      <dl class="space-y-2">
+        <div v-for="row in rows" :key="row.key" class="flex items-center justify-between gap-3">
+          <dt class="text-sm text-slate-500 dark:text-slate-400">{{ row.label }}</dt>
+          <dd class="font-semibold text-slate-900 dark:text-white" :class="row.key === 'next' ? 'text-lg' : ''">{{ row.value }}</dd>
+        </div>
+      </dl>
+    </BasePanel>
     <p class="mt-3 text-sm text-slate-600 dark:text-slate-300">{{ t('farms.extraFee.whenCharged') }}</p>
   </BaseConfirmDialog>
 </template>

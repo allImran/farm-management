@@ -1,14 +1,12 @@
 <script setup lang="ts">
-import { Check, KeyRound, X } from '@lucide/vue'
+import { KeyRound } from '@lucide/vue'
 import { PASSWORD_RESET_STATUSES } from '~/constants/auth'
-import type { PasswordResetRequest, PasswordResetStatus } from '~/types/models'
 
 /** Password-reset requests, filtered by status, with approve / reject actions. */
 const { t } = useI18n()
 const { formatDate } = useLocaleDate()
 
-const statusFilter = useQueryParam<PasswordResetStatus>('resetStatus', PASSWORD_RESET_STATUSES, 'pending')
-const tabs = computed(() => PASSWORD_RESET_STATUSES.map((value) => ({ value, label: t(`billing.requestStatus.${value}`) })))
+const { active: statusFilter, tabs } = useQueryTabs('resetStatus', PASSWORD_RESET_STATUSES, (value) => t(`billing.requestStatus.${value}`))
 
 const { items, status, error, isEmpty, currentPage, totalPages, goToPage, refresh, accounts, accountsStatus } =
   useAdminPasswordResets(() => statusFilter.value)
@@ -28,7 +26,6 @@ const columns = computed(() => [
   { key: 'createdAt', label: t('admin.requests.submitted') },
   ...(isPending.value ? [{ key: 'actions', label: t('common.actions') }] : [{ key: 'reviewedAt', label: t('admin.requests.reviewed') }]),
 ])
-const rows = computed(() => items.value.map((request) => ({ ...request, request })))
 
 /** The account's name, "…" while loading, or a note when no account uses the number. */
 const accountName = (phone: string) => {
@@ -58,39 +55,23 @@ const dialog = computed(() => {
 
 <template>
   <div>
-    <div class="mb-5 -mx-4 px-4 overflow-x-auto scrollbar-none">
-      <BaseTabs v-model="statusFilter" :tabs="tabs" class="whitespace-nowrap" />
-    </div>
+    <BaseTabs v-model="statusFilter" :tabs="tabs" class="mb-5" />
 
     <BaseAsyncState :status="status" :error="error" :is-empty="isEmpty" :empty-title="t('admin.requests.empty')" @retry="refresh">
       <template #empty-icon><KeyRound class="w-7 h-7" /></template>
-      <BaseTable :columns="columns" :rows="rows" row-key="phone">
-        <template #cell-account="{ row }">
-          <p class="font-semibold whitespace-nowrap">{{ accountName(row.phone as string) }}</p>
-          <p class="text-xs text-slate-500 dark:text-slate-400">{{ row.phone }}</p>
-        </template>
+      <BaseTable :columns="columns" :rows="items" row-key="phone">
+        <template #cell-account="{ row }"><AdminPersonCell :name="accountName(row.phone)" :phone="row.phone" /></template>
         <template #cell-createdAt="{ row }">
-          <span class="whitespace-nowrap">{{ formatDate(row.createdAt as Date, { dateStyle: 'medium', timeStyle: 'short' }) }}</span>
+          <span class="whitespace-nowrap">{{ formatDate(row.createdAt, { dateStyle: 'medium', timeStyle: 'short' }) }}</span>
         </template>
         <template #cell-reviewedAt="{ row }">
-          <span class="whitespace-nowrap">{{ formatDate(row.reviewedAt as Date) }}</span>
+          <span class="whitespace-nowrap">{{ formatDate(row.reviewedAt) }}</span>
         </template>
         <template #cell-actions="{ row }">
-          <div class="flex items-center gap-2">
-            <BaseButton size="sm" @click="review.open(row.request as PasswordResetRequest, 'approve')">
-              <template #icon-left><Check class="w-4 h-4" /></template>
-              {{ t('admin.grant.approve') }}
-            </BaseButton>
-            <BaseButton size="sm" variant="outline" @click="review.open(row.request as PasswordResetRequest, 'reject')">
-              <template #icon-left><X class="w-4 h-4" /></template>
-              {{ t('admin.requests.reject') }}
-            </BaseButton>
-          </div>
+          <AdminReviewActions @approve="review.open(row, 'approve')" @reject="review.open(row, 'reject')" />
         </template>
       </BaseTable>
-      <div v-if="totalPages > 1" class="mt-4 flex justify-center">
-        <BasePagination :current-page="currentPage" :total-pages="totalPages" @update:current-page="goToPage" />
-      </div>
+      <BasePagination :current-page="currentPage" :total-pages="totalPages" @update:current-page="goToPage" />
     </BaseAsyncState>
 
     <BaseConfirmDialog
@@ -99,7 +80,7 @@ const dialog = computed(() => {
       :message="dialog.message"
       :confirm-label="dialog.confirmLabel"
       :variant="dialog.variant"
-      :loading="review.status.value === 'loading'"
+      :loading="review.isLoading.value"
       :error="review.error.value"
       @confirm="review.confirm"
     />

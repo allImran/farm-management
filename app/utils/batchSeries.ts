@@ -2,6 +2,7 @@ import { MAX_SERIES_DAYS } from '~/constants/charts'
 import type { IsoDate } from '~/types/models'
 import type { FarmRecord } from '~/types/records'
 import { daysBetween, parseIsoDate } from './date'
+import { round, toFiniteNumber } from './number'
 
 /**
  * Day-by-day series for the batch charts, indexed by bird age in days (day 0 = placement).
@@ -29,9 +30,6 @@ export interface BatchSeriesInput {
   weights: readonly FarmRecord[]
 }
 
-const toNumber = (value: unknown) => (typeof value === 'number' && Number.isFinite(value) ? value : 0)
-const round = (value: number, digits: number) => Math.round(value * 10 ** digits) / 10 ** digits
-
 /**
  * Builds the chart series for one batch.
  *
@@ -51,10 +49,10 @@ export const buildBatchSeries = (input: BatchSeriesInput): BatchSeries => {
   const days = Array.from({ length: lastDay + 1 }, (_, day) => day)
 
   const deaths = days.map(() => 0)
-  for (const record of input.mortalities) deaths[ageOf(record)]! += toNumber(record.values.count)
+  for (const record of input.mortalities) deaths[ageOf(record)]! += toFiniteNumber(record.values.count)
 
   const feedKg = days.map(() => 0)
-  for (const record of input.feeds) feedKg[ageOf(record)]! += toNumber(record.values.consumption)
+  for (const record of input.feeds) feedKg[ageOf(record)]! += toFiniteNumber(record.values.consumption)
 
   // Several samples on one day are averaged.
   const weightSums = days.map(() => ({ total: 0, samples: 0 }))

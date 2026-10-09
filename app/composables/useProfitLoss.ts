@@ -1,6 +1,4 @@
 import { fetchFinanceRecords, type FinanceScope } from '~/services/records.service'
-import type { AppError, RequestStatus } from '~/types/network'
-import type { FarmRecord } from '~/types/records'
 import { buildProfitLoss, NO_FILTER } from '~/utils/profitLoss'
 
 /**
@@ -16,29 +14,13 @@ import { buildProfitLoss, NO_FILTER } from '~/utils/profitLoss'
  */
 export const useProfitLoss = (scope: () => FinanceScope | undefined) => {
   const uid = useSessionUid()
-  const records = shallowRef<{ expenses: FarmRecord[]; sales: FarmRecord[] } | null>(null)
-  const status = ref<RequestStatus>('idle')
-  const error = shallowRef<AppError | null>(null)
+  const { data: records, status, error, execute, reset } = useAsyncState((current: FinanceScope) => fetchFinanceRecords(uid(), current))
   const excludedCategories = ref<string[]>([])
   const excludedBatchKeys = ref<string[]>([])
-  let latestCall = 0
 
   const reload = async () => {
     const current = scope()
-    if (current === undefined) return
-    const call = ++latestCall
-    status.value = 'loading'
-    error.value = null
-    const result = await fetchFinanceRecords(uid(), current)
-    // A newer scope or reload has started; its result wins.
-    if (call !== latestCall) return
-    if (result.error) {
-      error.value = result.error
-      status.value = 'error'
-      return
-    }
-    records.value = result.data
-    status.value = 'success'
+    if (current !== undefined) await execute(current)
   }
 
   const includeAll = () => {
@@ -51,7 +33,7 @@ export const useProfitLoss = (scope: () => FinanceScope | undefined) => {
     () => JSON.stringify(scope() ?? 'pending'),
     () => {
       includeAll()
-      records.value = null
+      reset()
       reload()
     },
     { immediate: true },

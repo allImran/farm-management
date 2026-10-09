@@ -1,4 +1,6 @@
+import { EMAIL_PATTERN, MIN_PASSWORD_LENGTH } from '~/constants/auth'
 import { isIsoDate } from '~/utils/date'
+import { normalizeBdPhone } from '~/utils/phone'
 
 interface TextRule {
   required?: boolean
@@ -17,6 +19,8 @@ interface NumberRule {
  */
 export const useValidators = () => {
   const { t } = useI18n()
+
+  const required = (value: string) => (value ? undefined : t('validation.required'))
 
   const text = (value: string | null | undefined, rule: TextRule) => {
     const trimmed = (value ?? '').trim()
@@ -39,5 +43,24 @@ export const useValidators = () => {
     return isIsoDate(value) ? undefined : t('validation.date')
   }
 
-  return { text, number, date }
+  /** A Bangladeshi mobile number (see `normalizeBdPhone`); optional ones may be left blank. */
+  const phone = (value: string, { required: isRequired = true } = {}) => {
+    if (!isRequired && !value.trim()) return undefined
+    return normalizeBdPhone(value) ? undefined : t('validation.phone')
+  }
+
+  /** An optional email: blank is fine, anything else must look like an address. */
+  const email = (value: string) => {
+    const trimmed = value.trim()
+    return trimmed && !EMAIL_PATTERN.test(trimmed) ? t('validation.email') : undefined
+  }
+
+  /** A password the user is choosing (Firebase rejects short ones). */
+  const newPassword = (value: string) =>
+    value.length < MIN_PASSWORD_LENGTH ? t('validation.passwordLength', { min: MIN_PASSWORD_LENGTH }) : undefined
+
+  /** The "repeat password" field. */
+  const confirmation = (value: string, password: string) => (value === password ? undefined : t('validation.passwordMatch'))
+
+  return { required, text, number, date, phone, email, newPassword, confirmation }
 }

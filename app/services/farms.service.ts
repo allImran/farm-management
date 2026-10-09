@@ -3,9 +3,6 @@ import {
   deleteDoc,
   deleteField,
   doc,
-  documentId,
-  getDoc,
-  orderBy,
   query,
   serverTimestamp,
   updateDoc,
@@ -16,7 +13,7 @@ import {
 import { USER_COLLECTIONS } from '~/constants/collections'
 import type { Farm, FarmInput } from '~/types/models'
 import type { PageRequest } from '~/types/pagination'
-import { countDocs, creationTimestamps, fetchPage, toDate, userCollection } from './firestore'
+import { countDocs, creationTimestamps, fetchDocOrNull, fetchPage, newestFirst, toDate, userCollection } from './firestore'
 import { request } from './network'
 
 /** CRUD for `users/{uid}/farms`. */
@@ -46,14 +43,10 @@ const toFarm = (snapshot: DocumentSnapshot<DocumentData>): Farm => {
 
 /** Newest farms first. */
 export const fetchFarmsPage = (uid: string, page: PageRequest) =>
-  request(() => fetchPage(query(farms(uid), orderBy('createdAt', 'desc'), orderBy(documentId(), 'desc')), page, toFarm))
+  request(() => fetchPage(query(farms(uid), ...newestFirst('createdAt')), page, toFarm))
 
 /** @returns the farm, or `null` if it doesn't exist. */
-export const fetchFarm = (uid: string, farmId: string) =>
-  request(async () => {
-    const snapshot = await getDoc(doc(farms(uid), farmId))
-    return snapshot.exists() ? toFarm(snapshot) : null
-  })
+export const fetchFarm = (uid: string, farmId: string) => request(() => fetchDocOrNull(doc(farms(uid), farmId), toFarm))
 
 export const countFarms = (uid: string) => request(() => countDocs(farms(uid)))
 

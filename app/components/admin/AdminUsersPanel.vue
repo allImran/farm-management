@@ -36,25 +36,20 @@ const manage = (user: UserProfile) => grant.open({ userId: user.id, userName: us
     <BaseAlert v-if="subscriptionsError" variant="warning" class="mb-4">{{ subscriptionsError.message }}</BaseAlert>
     <BaseAsyncState :status="status" :error="error" :is-empty="isEmpty" :empty-title="t('admin.users.empty')" @retry="refresh">
       <template #empty-icon><Users class="w-7 h-7" /></template>
-      <BaseTable :columns="columns" :rows="items as unknown as Record<string, unknown>[]" row-key="id">
-        <template #cell-name="{ row }">
-          <p class="font-semibold whitespace-nowrap">{{ row.name }}</p>
-          <p class="text-xs text-slate-500 dark:text-slate-400">{{ row.phone }}</p>
-        </template>
+      <BaseTable :columns="columns" :rows="items" row-key="id">
+        <template #cell-name="{ row }"><AdminPersonCell :name="row.name" :phone="row.phone" /></template>
         <template #cell-email="{ row }">{{ row.email || '—' }}</template>
         <template #cell-createdAt="{ row }">
-          <span class="whitespace-nowrap">{{ formatDate(row.createdAt as Date) }}</span>
+          <span class="whitespace-nowrap">{{ formatDate(row.createdAt) }}</span>
         </template>
         <template #cell-subscription="{ row }">
-          <SubscriptionBadge :subscription="subscriptions[row.id as string] ?? null" />
+          <SubscriptionBadge :subscription="subscriptions[row.id] ?? null" />
         </template>
         <template #cell-actions="{ row }">
-          <BaseButton size="sm" variant="outline" @click="manage(row as unknown as UserProfile)">{{ t('admin.users.manage') }}</BaseButton>
+          <BaseButton size="sm" variant="outline" @click="manage(row)">{{ t('admin.users.manage') }}</BaseButton>
         </template>
       </BaseTable>
-      <div v-if="totalPages > 1" class="mt-4 flex justify-center">
-        <BasePagination :current-page="currentPage" :total-pages="totalPages" @update:current-page="goToPage" />
-      </div>
+      <BasePagination :current-page="currentPage" :total-pages="totalPages" @update:current-page="goToPage" />
     </BaseAsyncState>
 
     <SubscriptionGrantModal :grant="grant" />

@@ -1,39 +1,34 @@
-import { EMAIL_PATTERN, MAX_NAME_LENGTH } from '~/constants/auth'
-import type { AppError } from '~/types/network'
+import { MAX_NAME_LENGTH } from '~/constants/auth'
+import type { FormErrors } from '~/types/forms'
+import { hasErrors } from '~/utils/forms'
 
 /**
  * Edit name and optional email on the account page. The phone number is the login id and
  * cannot be changed.
+ *
+ * @returns form `values`, field `errors`, request `error`, `isLoading`, `isSaved`, the read-only
+ *          `phone` and `handleSubmit`.
  */
 export const useProfileForm = () => {
-  const { t } = useI18n()
   const authStore = useAuthStore()
   const { profile } = storeToRefs(authStore)
+  const validators = useValidators()
 
   const values = reactive({ name: profile.value?.name ?? '', email: profile.value?.email ?? '' })
-  const errors = ref<{ name?: string; email?: string }>({})
-  const error = shallowRef<AppError | null>(null)
-  const isSubmitting = ref(false)
-  const isSaved = ref(false)
+  const errors = ref<FormErrors<keyof typeof values>>({})
+  const { status, error, isLoading, execute, reset } = useAsyncState(authStore.saveProfile)
+  const isSaved = computed(() => status.value === 'success')
   const phone = computed(() => profile.value?.phone ?? '')
 
   const handleSubmit = async () => {
-    const name = values.name.trim()
-    const email = values.email.trim()
+    reset()
     errors.value = {
-      name: !name ? t('validation.required') : name.length > MAX_NAME_LENGTH ? t('validation.tooLong', { max: MAX_NAME_LENGTH }) : undefined,
-      email: email && !EMAIL_PATTERN.test(email) ? t('validation.email') : undefined,
+      name: validators.text(values.name, { required: true, max: MAX_NAME_LENGTH }),
+      email: validators.email(values.email),
     }
-    if (errors.value.name || errors.value.email) return
-
-    isSubmitting.value = true
-    isSaved.value = false
-    error.value = null
-    const result = await authStore.saveProfile({ name, email: email || null })
-    isSubmitting.value = false
-    if (result.error) error.value = result.error
-    else isSaved.value = true
+    if (hasErrors(errors.value)) return
+    await execute({ name: values.name.trim(), email: values.email.trim() || null })
   }
 
-  return { values, errors, error, isSubmitting, isSaved, phone, handleSubmit }
+  return { values, errors, error, isLoading, isSaved, phone, handleSubmit }
 }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { MapPin, Pencil, Phone, Trash2 } from '@lucide/vue'
+import { MapPin, Phone } from '@lucide/vue'
 import type { Contact } from '~/types/models'
 
 defineProps<{
@@ -24,10 +24,7 @@ const { t } = useI18n()
           <BaseBadge v-for="type in contact.types" :key="type" size="sm" tone="blue">{{ t(`options.contactTypes.${type}`) }}</BaseBadge>
         </div>
       </div>
-      <div class="flex items-center -mr-2 -mt-1">
-        <BaseButton variant="ghost" size="icon" :aria-label="t('common.edit')" @click="$emit('edit')"><Pencil class="w-4 h-4" /></BaseButton>
-        <BaseButton variant="ghost" size="icon" :aria-label="t('common.delete')" @click="$emit('delete')"><Trash2 class="w-4 h-4 text-red-500" /></BaseButton>
-      </div>
+      <BaseEditDeleteActions class="-mr-2 -mt-1" @edit="$emit('edit')" @delete="$emit('delete')" />
     </div>
     <div class="mt-3 space-y-1.5 text-sm text-slate-600 dark:text-slate-300">
       <a v-if="contact.phone" :href="`tel:${contact.phone}`" class="flex items-center gap-2 hover:text-primary-700 dark:hover:text-primary-400">

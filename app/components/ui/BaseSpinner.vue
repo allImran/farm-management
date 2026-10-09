@@ -6,11 +6,9 @@ type Size = 'sm' | 'md' | 'lg'
 withDefaults(
   defineProps<{
     size?: Size
-    color?: string
   }>(),
   {
     size: 'md',
-    color: 'currentColor',
   }
 )
 
@@ -22,9 +20,5 @@ const sizeClasses: Record<Size, string> = {
 </script>
 
 <template>
-  <Loader2
-    class="animate-spin"
-    :class="sizeClasses[size]"
-    :style="{ color: color }"
-  />
+  <Loader2 class="animate-spin" :class="sizeClasses[size]" />
 </template>

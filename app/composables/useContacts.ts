@@ -10,15 +10,12 @@ import { normalizeBdPhone } from '~/utils/phone'
  */
 export const useContactList = (type: () => ContactType | null) => {
   const uid = useSessionUid()
-  const list = usePagination((page) => fetchContactsPage(uid(), page, { type: type() }))
-  watch(type, () => list.reset(), { immediate: true })
-  return list
+  return usePagination((page) => fetchContactsPage(uid(), page, { type: type() }), { filters: type })
 }
 
 /** Create/edit form for contacts. Saving also refreshes the cached picker options. */
 export const useContactForm = (onSaved?: () => void) => {
   const uid = useSessionUid()
-  const { t } = useI18n()
   const validators = useValidators()
   const contactsStore = useContactsStore()
 
@@ -27,15 +24,14 @@ export const useContactForm = (onSaved?: () => void) => {
     fromEntity: ({ name, phone, address, types, notes }) => ({ name, phone, address, types: [...types], notes }),
     validate: (values) => ({
       name: validators.text(values.name, { required: true, max: TEXT_LIMITS.short }),
-      // Phone is optional for contacts, but must be a valid BD number when given.
-      phone: values.phone.trim() && !normalizeBdPhone(values.phone) ? t('validation.phone') : undefined,
+      phone: validators.phone(values.phone, { required: false }),
       address: validators.text(values.address, { max: TEXT_LIMITS.medium }),
       notes: validators.text(values.notes, { max: TEXT_LIMITS.note }),
     }),
     save: (values, editing) => {
       const input: ContactInput = {
         name: values.name.trim(),
-        phone: values.phone.trim() ? normalizeBdPhone(values.phone) ?? '' : '',
+        phone: normalizeBdPhone(values.phone) ?? '',
         address: values.address.trim(),
         types: values.types,
         notes: values.notes.trim(),

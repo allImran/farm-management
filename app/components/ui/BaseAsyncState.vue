@@ -25,7 +25,7 @@ defineEmits<{
   <div v-if="status === 'idle' || status === 'loading'" aria-busy="true">
     <slot name="loading">
       <div class="space-y-3">
-        <BaseSkeleton v-for="i in 3" :key="i" variant="rect" height="4.5rem" />
+        <BaseSkeleton v-for="i in 3" :key="i" height="4.5rem" />
       </div>
     </slot>
   </div>

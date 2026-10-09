@@ -16,8 +16,8 @@ const { series, hasWeights, hasDeaths, hasFeed, status, error, refresh } = useBa
     <BaseAsyncState :status="status" :error="error" @retry="refresh">
       <template #loading>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <BaseSkeleton variant="rect" height="18rem" class="lg:col-span-2" />
-          <BaseSkeleton v-for="i in 2" :key="i" variant="rect" height="18rem" />
+          <BaseSkeleton height="18rem" class="lg:col-span-2" />
+          <BaseSkeleton v-for="i in 2" :key="i" height="18rem" />
         </div>
       </template>
       <BatchCharts v-if="series" :series="series" :has-weights="hasWeights" :has-deaths="hasDeaths" :has-feed="hasFeed" />

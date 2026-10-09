@@ -1,14 +1,19 @@
 import {
   collection,
+  documentId,
   getCountFromServer,
-  getFirestore,
-  serverTimestamp,
+  getDoc,
   getDocs,
+  getFirestore,
   limit,
+  orderBy,
   query,
+  serverTimestamp,
   startAfter,
   Timestamp,
   type DocumentData,
+  type DocumentReference,
+  type DocumentSnapshot,
   type Query,
   type QueryDocumentSnapshot,
 } from 'firebase/firestore'
@@ -27,6 +32,24 @@ export const toDate = (value: unknown): Date | null => (value instanceof Timesta
 
 /** Converts an optional Date to a Firestore Timestamp. */
 export const toTimestamp = (value: Date | null) => (value ? Timestamp.fromDate(value) : null)
+
+/**
+ * Sorts newest first by `field`, with the document id as tie-breaker so paging is deterministic
+ * even when several docs share the same value.
+ */
+export const newestFirst = (field: string) => [orderBy(field, 'desc'), orderBy(documentId(), 'desc')]
+
+/** Reads one doc. @returns the mapped doc, or `null` if it doesn't exist. */
+export const fetchDocOrNull = async <T>(ref: DocumentReference, map: (snapshot: DocumentSnapshot<DocumentData>) => T) => {
+  const snapshot = await getDoc(ref)
+  return snapshot.exists() ? map(snapshot) : null
+}
+
+/** Reads the first doc of an ordered query (e.g. the latest one). @returns it mapped, or `null`. */
+export const fetchFirst = async <T>(baseQuery: Query<DocumentData>, map: (snapshot: QueryDocumentSnapshot<DocumentData>) => T) => {
+  const first = (await getDocs(query(baseQuery, limit(1)))).docs[0]
+  return first ? map(first) : null
+}
 
 /**
  * Reads one page of `baseQuery`, which must already carry its `where`/`orderBy` clauses.

@@ -29,7 +29,10 @@
     "note": "Note",
     "noData": "Nothing here yet",
     "increase": "Increase",
-    "decrease": "Decrease"
+    "decrease": "Decrease",
+    "pagination": "Pagination",
+    "previous": "Previous page",
+    "next": "Next page"
   },
   "nav": {
     "technology": "Technology",

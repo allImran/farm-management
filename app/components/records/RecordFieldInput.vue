@@ -15,9 +15,15 @@ const { fieldLabel } = useRecordFormat()
 const contactsStore = useContactsStore()
 const { options: contacts } = storeToRefs(contactsStore)
 
-const label = computed(() => {
-  const base = fieldLabel(props.kind, props.field)
-  return props.field.required || props.field.isDerived ? base : `${base} (${t('common.optional')})`
+const label = computed(() => fieldLabel(props.kind, props.field))
+// Derived fields are filled in automatically, so they never read as optional.
+const isOptional = computed(() => !props.field.required && !props.field.isDerived)
+
+// Numbers are typed as decimals (≥ 0), integers as whole counts (≥ 1).
+const numberAttrs = computed(() => {
+  if (props.field.type === 'number') return { type: 'number', inputmode: 'decimal' as const, step: 'any', min: 0 }
+  if (props.field.type === 'integer') return { type: 'number', inputmode: 'numeric' as const, step: 1, min: 1 }
+  return { type: 'text' }
 })
 
 // A record's saved contact stays listed even if its type no longer matches, so editing an
@@ -45,11 +51,12 @@ if (props.field.type === 'contact') contactsStore.ensureLoaded()
 </script>
 
 <template>
-  <BaseTextarea v-if="field.type === 'textarea'" v-model="value" :label="label" :error="error" :rows="2" />
+  <BaseTextarea v-if="field.type === 'textarea'" v-model="value" :label="label" :optional="isOptional" :error="error" :rows="2" />
   <BaseSelect
     v-else-if="field.type === 'select' || field.type === 'contact'"
     v-model="value"
     :label="label"
+    :optional="isOptional"
     :options="selectOptions"
     :placeholder="field.type === 'select' ? t('common.select') : undefined"
     :hint="field.type === 'contact' ? contactHint : undefined"
@@ -58,12 +65,10 @@ if (props.field.type === 'contact') contactsStore.ensureLoaded()
   <BaseInput
     v-else
     v-model="value"
+    v-bind="numberAttrs"
     :label="label"
+    :optional="isOptional"
     :error="error"
-    :type="field.type === 'number' || field.type === 'integer' ? 'number' : 'text'"
-    :inputmode="field.type === 'integer' ? 'numeric' : field.type === 'number' ? 'decimal' : undefined"
-    :step="field.type === 'number' ? 'any' : field.type === 'integer' ? 1 : undefined"
-    :min="field.type === 'number' ? 0 : field.type === 'integer' ? 1 : undefined"
     :readonly="field.isDerived"
     :required="field.required"
   />

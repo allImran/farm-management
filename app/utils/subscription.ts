@@ -11,6 +11,9 @@ export const getSubscriptionState = (subscription: Subscription | null, now = ne
   return now < subscription.endsAt ? 'active' : 'expired'
 }
 
+/** `endsAt` is exclusive, so the last day with access is the day before it (for display). */
+export const lastAccessDay = (endsAt: Date | null) => (endsAt ? new Date(endsAt.getTime() - 1) : null)
+
 /** Mirrors `hasActiveSubscription()` in `firestore.rules`; the rules are the real check. */
 export const hasWriteAccess = (state: SubscriptionState) => state === 'lifetime' || state === 'active'
 
