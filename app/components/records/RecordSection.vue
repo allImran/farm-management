@@ -43,7 +43,7 @@ if (fields.some((field) => field.type === 'contact')) contactsStore.ensureLoaded
   <section>
     <SectionHeader :title="title ?? t(`records.${kind}.title`)" :description="description">
       <template #actions>
-        <BaseButton @click="form.openCreate">
+        <BaseButton size="sm" @click="form.openCreate">
           <template #icon-left><Plus class="w-4 h-4" /></template>
           {{ t('records.add', { name: t(`records.${kind}.singular`) }) }}
         </BaseButton>

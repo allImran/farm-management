@@ -81,7 +81,7 @@ useSeoMeta({ title: () => farm.value?.name ?? t('farms.title') })
         <section class="mb-10">
           <SectionHeader :title="t('batches.title')">
             <template #actions>
-              <BaseButton @click="batchForm.openCreate">
+              <BaseButton size="sm" @click="batchForm.openCreate">
                 <template #icon-left><Plus class="w-4 h-4" /></template>
                 {{ t('batches.add') }}
               </BaseButton>

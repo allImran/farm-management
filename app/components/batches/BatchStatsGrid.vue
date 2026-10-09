@@ -37,7 +37,7 @@ const tiles = computed(() => {
 </script>
 
 <template>
-  <div class="grid grid-cols-1 min-[400px]:grid-cols-2 xl:grid-cols-4 gap-4">
+  <div class="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
     <StatCard v-for="tile in tiles" :key="tile.key" :label="tile.label" :value="tile.value" :icon="tile.icon" :tone="tile.tone" />
   </div>
 </template>

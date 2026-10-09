@@ -75,7 +75,7 @@ useSeoMeta({ title: () => batch.value?.name ?? t('batches.title') })
         <div class="mb-8">
           <BaseAsyncState :status="statsStatus" :error="statsError" @retry="refreshStats">
             <template #loading>
-              <div class="grid grid-cols-1 min-[400px]:grid-cols-2 xl:grid-cols-4 gap-4">
+              <div class="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
                 <BaseSkeleton v-for="i in 8" :key="i" />
               </div>
             </template>

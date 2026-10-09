@@ -27,10 +27,12 @@ const actualResult = computed(() =>
 
 <template>
   <div class="space-y-4">
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <!-- Two columns on mobile; the profit/loss result takes the full row underneath. -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
       <StatCard :label="t('reports.sales')" :value="formatMoney(totals.sales)" :icon="Banknote" tone="green" />
       <StatCard :label="t('reports.expenses')" :value="formatMoney(totals.expenses)" :icon="Wallet" tone="red" />
       <StatCard
+        class="col-span-2 sm:col-span-1"
         :label="resultLabel(totals.profit)"
         :value="formatMoney(Math.abs(totals.profit))"
         :icon="isLoss ? TrendingDown : TrendingUp"
