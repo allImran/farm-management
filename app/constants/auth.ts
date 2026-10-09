@@ -19,5 +19,5 @@ export const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export const PASSWORD_RESET_STATUSES = ['pending', 'approved', 'rejected'] as const
 
-/** Cloud Functions region; must match `REGION` in `functions/src/index.ts`. */
-export const FUNCTIONS_REGION = 'asia-south1'
+/** Digits only, because the admin reads the temporary password to the user over the phone. */
+export const TEMP_PASSWORD_LENGTH = 10

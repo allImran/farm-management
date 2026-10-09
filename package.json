@@ -7,13 +7,12 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare && npm --prefix functions install",
-    "emulators": "npm --prefix functions run build && npx firebase-tools emulators:start",
+    "postinstall": "nuxt prepare",
+    "emulators": "npx firebase-tools emulators:start",
     "deploy:firestore": "npx firebase-tools deploy --only firestore",
     "test:rules": "vitest run tests/firestore.rules.test.ts",
     "generate:prod": "NUXT_PUBLIC_FIREBASE_USE_EMULATORS=false nuxt generate",
-    "deploy": "npm run generate:prod && npx firebase-tools deploy --only hosting,firestore,functions",
-    "deploy:functions": "npx firebase-tools deploy --only functions",
+    "deploy": "npm run generate:prod && npx firebase-tools deploy --only hosting,firestore",
     "test:unit": "vitest run tests/unit"
   },
   "dependencies": {

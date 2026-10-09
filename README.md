@@ -47,15 +47,16 @@ medicine, mortality, weight, expenses, sales and contacts. Bangla by default, En
    Reload — the **Admin** item appears in the sidebar.
 6. In **Admin → Plan**, set the monthly price and the bKash number users should pay to.
 
-7. Deploy the Cloud Function that approves password resets (needs the **Blaze** plan, see below):
-   ```bash
-   npm run deploy:functions
-   ```
+7. To approve password resets, the admin confirms with the Google account that owns the
+   Firebase project. Create a web OAuth client in the Google Cloud console (Google Auth
+   Platform → Clients → Web application, JavaScript origins `https://farmxyz.web.app` and
+   `http://localhost:3000`), add the admin's Google account as a test user, and put the client
+   ID in `NUXT_PUBLIC_GOOGLE_OAUTH_CLIENT_ID`. Only the ID is needed, never the secret.
 
 ## Local emulators and rule tests
 
-Requires Java 11+ for the Firestore emulator. `npm run emulators` also builds and serves the
-Cloud Functions in `functions/`.
+Requires Java 11+ for the Firestore emulator. With emulators on, approving a password reset
+talks to the Auth emulator instead of Google, so no Google sign-in is needed.
 
 ```bash
 # Run the app against local emulators: set NUXT_PUBLIC_FIREBASE_USE_EMULATORS=true in .env
@@ -65,16 +66,15 @@ npm run emulators
 npx firebase-tools emulators:exec --only firestore "npm run test:rules"
 ```
 
-## Deploying (Firebase Blaze plan)
+## Deploying (free Spark plan)
 
-The app is a static site: `nuxt generate` prerenders the marketing page and serves every other
-route from the SPA fallback `200.html`. Its only backend is one Cloud Function in `functions/`
-(`approvePasswordReset`), because only the Admin SDK can set another user's password. Cloud
-Functions need the pay-as-you-go **Blaze** plan; at this app's scale usage stays inside the free
-tier, but a billing account must be attached.
+The app is a static site with no backend: `nuxt generate` prerenders the marketing page and
+serves every other route from the SPA fallback `200.html`. The one admin-only action Firestore
+can't do, setting another user's password, calls Google's Identity Toolkit API from the browser
+with the admin's Google credentials (see `app/services/authAdmin.service.ts`).
 
 ```bash
-npm run deploy   # nuxt generate + deploy hosting, rules, indexes and functions
+npm run deploy   # nuxt generate + deploy hosting, rules and indexes
 ```
 
 `.env` is read at generate time, so rebuild after changing it.

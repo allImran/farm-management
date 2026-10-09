@@ -65,8 +65,8 @@ const readCode = (error: unknown): string => {
   if (import.meta.client && !navigator.onLine) return 'offline'
   if (typeof error !== 'object' || error === null) return 'unknown'
   if ('code' in error && typeof error.code === 'string') {
-    // Firestore and Cloud Functions codes arrive prefixed, e.g. 'functions/permission-denied'.
-    return error.code.replace(/^(firestore|functions)\//, '')
+    // Firestore codes may arrive prefixed, e.g. 'firestore/permission-denied'.
+    return error.code.replace(/^firestore\//, '')
   }
   if ('statusCode' in error && typeof error.statusCode === 'number') {
     return HTTP_CODES[error.statusCode] ?? 'unknown'

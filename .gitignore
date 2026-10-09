@@ -25,4 +25,3 @@ logs
 
 # Firebase CLI cache and Cloud Functions build output
 .firebase
-functions/lib

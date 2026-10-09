@@ -283,12 +283,25 @@ describe('password resets', () => {
     await assertFails(getDocs(pending))
   })
 
-  it('lets only the admin reject, and never approve from the client', async () => {
+  it('lets only the admin approve or reject a pending request', async () => {
     await setDoc(doc(guest(), 'passwordResetRequests', '01822222222'), resetData('01822222222'))
     const ref = doc(admin(), 'passwordResetRequests', '01822222222')
-    await assertFails(updateDoc(doc(bob(), 'passwordResetRequests', '01822222222'), { status: 'rejected', reviewedAt: serverTimestamp(), reviewedBy: BOB }))
-    await assertFails(updateDoc(ref, { status: 'approved', reviewedAt: serverTimestamp(), reviewedBy: ADMIN }))
-    await assertSucceeds(updateDoc(ref, { status: 'rejected', reviewedAt: serverTimestamp(), reviewedBy: ADMIN }))
+    await assertFails(updateDoc(doc(bob(), 'passwordResetRequests', '01822222222'), { status: 'approved', reviewedAt: serverTimestamp(), reviewedBy: BOB }))
+    await assertFails(updateDoc(ref, { status: 'pending', reviewedAt: serverTimestamp(), reviewedBy: ADMIN }))
+    await assertFails(updateDoc(ref, { status: 'approved', reviewedAt: serverTimestamp(), reviewedBy: BOB }))
+    await assertSucceeds(updateDoc(ref, { status: 'approved', reviewedAt: serverTimestamp(), reviewedBy: ADMIN }))
+    // Reviewed requests are final.
+    await assertFails(updateDoc(ref, { status: 'rejected', reviewedAt: serverTimestamp(), reviewedBy: ADMIN }))
+  })
+
+  it('lets the admin only turn on mustChangePassword, and check admin status', async () => {
+    const profile = (context: ReturnType<typeof guest>) => doc(context, 'users', BOB)
+    await assertFails(updateDoc(profile(alice()), { mustChangePassword: true }))
+    await assertFails(updateDoc(profile(admin()), { mustChangePassword: false }))
+    await assertFails(updateDoc(profile(admin()), { mustChangePassword: true, name: 'Hacked' }))
+    await assertSucceeds(updateDoc(profile(admin()), { mustChangePassword: true }))
+    await assertSucceeds(getDoc(doc(admin(), 'admins', BOB)))
+    await assertFails(getDoc(doc(alice(), 'admins', BOB)))
   })
 
   it('lets a number be requested again only after the cool-down', async () => {
