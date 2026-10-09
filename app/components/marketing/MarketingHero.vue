@@ -45,8 +45,8 @@ const { t } = useI18n()
         </p>
 
         <div class="mt-10 flex flex-col justify-center gap-3 sm:flex-row">
-          <BaseButton :as="NuxtLink" :to="ROUTES.signup" size="lg">
-            {{ t('hero.primaryCta') }}
+          <BaseButton :as="NuxtLink" :to="ROUTES.login" size="lg">
+            {{ t('nav.login') }}
             <template #icon-right>
               <ArrowRight class="w-5 h-5" aria-hidden="true" />
             </template>

@@ -40,7 +40,7 @@
     "cattle": "Cattle",
     "impact": "Impact",
     "howItWorks": "How it works",
-    "getStarted": "Get started",
+    "login": "Log in",
     "primary": "Primary navigation",
     "guide": "User guide"
   },
@@ -49,7 +49,6 @@
     "titleLead": "See what the eye",
     "titleHighlight": "can't see",
     "subtitle": "Thermal imaging, digital livestock tracking and AI-powered farm management. Catch illness before it spreads and keep track of every bird and cow on one platform.",
-    "primaryCta": "Get started",
     "secondaryCta": "Explore the technology",
     "visual": {
       "label": "Live thermal camera view of a poultry shed, with one bird flagged for high body temperature",
@@ -380,6 +379,7 @@
       "address": "Address",
       "addressHint": "Village, upazila, district"
     },
+    "addAddress": "Add address",
     "emptyTitle": "No farms yet",
     "emptyDescription": "Add your first farm to start tracking batches.",
     "notFound": "Farm not found",
@@ -636,6 +636,7 @@
     "nothingToChart": "Nothing to show for the current selection."
   },
   "charts": {
+    "legendToggle": "Details ({count})",
     "title": "Batch progress",
     "day": "Day {day}",
     "growth": "Growth (average weight)",

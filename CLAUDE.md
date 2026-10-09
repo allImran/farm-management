@@ -167,6 +167,10 @@ errors, never lose user input on failure. Use a Nuxt `error.vue` page for fatal/
 - **Reuse UI primitives**: always use the `components/ui/Base*` components (`BaseButton`,
   `BaseInput`, `BaseCard`, `BaseModal`, `BaseTable`, `BaseAlert`, ...) instead of styling raw
   elements. If a pattern appears twice, extract a component.
+- **Page sections:** a page with more than one section (stats, lists, reports, ...) wraps each
+  one in `layout/PageSection`, alternating `tone="base"` / `tone="raised"` so neighbours get a
+  full-width contrasting band. Mark the band after `PageHeader` `first` and the final band `last`.
+  Don't space sections with ad-hoc `mb-*`/`space-y-*`.
 - Use `@lucide/vue` for icons.
 - Accessibility: semantic HTML, labels for inputs, `aria-*` on custom controls, visible focus
   rings, sufficient contrast in both themes.

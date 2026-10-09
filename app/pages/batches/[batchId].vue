@@ -59,31 +59,39 @@ useSeoMeta({ title: () => batch.value?.name ?? t('batches.title') })
           :back-label="t('batches.backToFarm')"
         >
           <template #badge><BatchStatusBadge :status="batch.status" /></template>
-          <template #actions>
-            <BaseEditDeleteActions labeled @edit="batchForm.openEdit(batch)" @delete="batchDelete.open(batch)" />
+          <template #menu>
+            <BaseEditDeleteActions
+              trigger-variant="overlay"
+              @edit="batchForm.openEdit(batch)"
+              @delete="batchDelete.open(batch)"
+            />
+          </template>
+          <template v-if="batch.note" #meta>
+            <p class="whitespace-pre-line">{{ batch.note }}</p>
           </template>
         </PageHeader>
-        <p v-if="batch.note" class="-mt-3 mb-6 text-sm text-slate-600 dark:text-slate-300 whitespace-pre-line">{{ batch.note }}</p>
 
-        <div class="mb-8">
+        <PageSection first>
           <BaseAsyncState :status="statsStatus" :error="statsError" @retry="refreshStats">
             <template #loading>
-              <div class="grid grid-cols-1 min-[400px]:grid-cols-2 xl:grid-cols-4 gap-4">
+              <div class="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
                 <BaseSkeleton v-for="i in 8" :key="i" />
               </div>
             </template>
             <BatchStatsGrid v-if="stats" :stats="stats" />
           </BaseAsyncState>
-        </div>
+        </PageSection>
 
-        <BaseTabs v-model="activeView" :tabs="viewTabs" class="mb-6" />
+        <PageSection tone="raised" last>
+          <BaseTabs v-model="activeView" :tabs="viewTabs" class="mb-6" />
 
-        <template v-if="activeView === 'records'">
-          <BaseTabs v-model="activeKind" :tabs="kindTabs" class="mb-5" />
-          <RecordSection :key="activeKind" :kind="activeKind" :scope="scope" @changed="refreshStats" />
-        </template>
-        <BatchChartsSection v-else-if="activeView === 'charts'" :batch="batch" />
-        <ProfitLossSection v-else :scope="financeScope" :description="t('reports.batchDescription')" />
+          <template v-if="activeView === 'records'">
+            <BaseTabs v-model="activeKind" :tabs="kindTabs" class="mb-5" />
+            <RecordSection :key="activeKind" :kind="activeKind" :scope="scope" @changed="refreshStats" />
+          </template>
+          <BatchChartsSection v-else-if="activeView === 'charts'" :batch="batch" />
+          <ProfitLossSection v-else :scope="financeScope" :description="t('reports.batchDescription')" />
+        </PageSection>
       </template>
     </BaseAsyncState>
 

@@ -13,6 +13,8 @@ const { t } = useI18n()
 const { formatNumber } = useLocaleNumber()
 const { formatDate } = useLocaleDate()
 
+// Active batches show their age as the headline; closed ones only have a start date worth showing.
+const isActive = computed(() => props.batch.status === 'active')
 const ageDays = computed(() => daysSince(props.batch.startDate))
 </script>
 
@@ -29,18 +31,22 @@ const ageDays = computed(() => daysSince(props.batch.startDate))
         </div>
         <BatchStatusBadge :status="batch.status" />
       </div>
-      <dl class="mt-4 grid grid-cols-2 gap-3 text-sm">
-        <div class="flex items-center gap-2 text-slate-600 dark:text-slate-300">
-          <Bird class="w-4 h-4 text-slate-400" />
-          <dt class="sr-only">{{ t('batches.fields.initialQuantity') }}</dt>
-          <dd>{{ formatNumber(batch.initialQuantity) }}</dd>
+      <!-- Two equal value-over-label columns keep both sides the same weight; dt stays first for valid markup. -->
+      <dl class="mt-4 grid grid-cols-2 divide-x divide-slate-100 border-t border-slate-100 pt-4 dark:divide-slate-800 dark:border-slate-800">
+        <div class="flex min-w-0 flex-col-reverse pr-4">
+          <dt class="mt-0.5 text-xs text-slate-500 dark:text-slate-400 truncate">{{ t('batches.fields.initialQuantity') }}</dt>
+          <dd class="flex items-center gap-1.5 text-lg font-semibold text-slate-900 dark:text-white">
+            <Bird class="w-4 h-4 shrink-0 text-slate-400" aria-hidden="true" />
+            {{ formatNumber(batch.initialQuantity) }}
+          </dd>
         </div>
-        <div class="flex items-center gap-2 text-slate-600 dark:text-slate-300">
-          <CalendarDays class="w-4 h-4 text-slate-400" />
-          <dt class="sr-only">{{ t('batches.fields.startDate') }}</dt>
-          <dd>
-            {{ formatDate(batch.startDate) }}
-            <span v-if="batch.status === 'active'" class="text-slate-400">· {{ t('batches.ageDays', { days: formatNumber(ageDays) }) }}</span>
+        <div class="flex min-w-0 flex-col-reverse pl-4">
+          <dt class="mt-0.5 text-xs text-slate-500 dark:text-slate-400 truncate">
+            {{ isActive ? t('batches.startedOn', { date: formatDate(batch.startDate) }) : t('batches.fields.startDate') }}
+          </dt>
+          <dd class="flex items-center gap-1.5 text-lg font-semibold text-slate-900 dark:text-white">
+            <CalendarDays class="w-4 h-4 shrink-0 text-slate-400" aria-hidden="true" />
+            <span class="truncate">{{ isActive ? t('batches.ageDays', { days: formatNumber(ageDays) }) : formatDate(batch.startDate) }}</span>
           </dd>
         </div>
       </dl>

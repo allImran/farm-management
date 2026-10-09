@@ -2,7 +2,7 @@
 import type { Component } from 'vue'
 import { Loader2 } from '@lucide/vue'
 
-type Variant = 'primary' | 'outline' | 'ghost' | 'danger' | 'glass'
+type Variant = 'primary' | 'outline' | 'ghost' | 'danger' | 'glass' | 'overlay'
 type Size = 'sm' | 'md' | 'lg' | 'icon'
 
 withDefaults(
@@ -32,6 +32,9 @@ const variantClasses: Record<Variant, string> = {
   danger: 'bg-red-500 text-white hover:bg-red-600 focus-visible:ring-red-300 shadow-soft',
   // For use on top of dark imagery/media panels, identical in both themes.
   glass: 'bg-white/10 text-white border border-white/25 backdrop-blur hover:bg-white/20 focus-visible:ring-white/40',
+  // For use on top of the theme-aware hero gradient: light frosted chip in light mode, glass in dark.
+  overlay:
+    'bg-white/40 text-slate-900 border border-white/60 backdrop-blur hover:bg-white/60 focus-visible:ring-slate-900/20 dark:bg-white/10 dark:text-white dark:border-white/20 dark:hover:bg-white/20 dark:focus-visible:ring-white/40',
 }
 
 const sizeClasses: Record<Size, string> = {

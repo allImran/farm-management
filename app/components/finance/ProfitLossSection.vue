@@ -31,8 +31,7 @@ defineExpose({ reload })
 
 <template>
   <section>
-    <h2 class="text-lg font-bold text-slate-900 dark:text-white">{{ t('reports.title') }}</h2>
-    <p class="mt-1 mb-4 text-sm text-slate-500 dark:text-slate-400">{{ description }}</p>
+    <SectionHeader :title="t('reports.title')" :description="description" />
     <BaseAsyncState
       :status="status"
       :error="error"

@@ -25,3 +25,6 @@ logs
 
 # Firebase CLI cache and Cloud Functions build output
 .firebase
+
+# Local emulator data (npm run emulators:data)
+.emulator-data

@@ -56,6 +56,12 @@ export default {
         },
       },
       backgroundImage: {
+        // Hero backdrop for detail pages, built from the primary (brand yellow) ramp. Light mode
+        // pairs with dark text (like primary buttons); dark mode sinks into surface-dark-elevated.
+        hero:
+          'radial-gradient(circle at 90% 0%, rgba(255, 255, 255, 0.45) 0%, transparent 45%), linear-gradient(135deg, #f5b700 0%, #ffca1f 50%, #ffd94d 100%)',
+        'hero-dark':
+          'radial-gradient(circle at 90% 0%, rgba(255, 202, 31, 0.18) 0%, transparent 45%), linear-gradient(135deg, #734c0d 0%, #432802 45%, #171c2c 100%)',
         'thermal-body':
           'radial-gradient(circle at center, #f9cb35 0%, #f98e09 18%, #e45a31 36%, #bc3754 52%, rgba(135, 33, 107, 0.5) 66%, transparent 74%)',
         'thermal-body-hot':

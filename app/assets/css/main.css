@@ -46,3 +46,36 @@ canvas {
 .scrollbar-none::-webkit-scrollbar {
   display: none;
 }
+
+/* Fades an element out towards its bottom edge; the last 4rem dissolve into whatever is behind. */
+.mask-fade-b {
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 4rem), transparent);
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 4rem), transparent);
+}
+
+/*
+ * Fades a horizontal scroller out at the edges where more content is hidden. Add
+ * `mask-fade-x-start` / `mask-fade-x-end` while there is overflow on that side; the registered
+ * properties let the fade animate in and out instead of popping.
+ */
+@property --mask-fade-start {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+@property --mask-fade-end {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+.mask-fade-x {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 var(--mask-fade-start), #000 calc(100% - var(--mask-fade-end)), transparent);
+  mask-image: linear-gradient(to right, transparent, #000 var(--mask-fade-start), #000 calc(100% - var(--mask-fade-end)), transparent);
+  transition: --mask-fade-start 150ms ease, --mask-fade-end 150ms ease;
+}
+.mask-fade-x-start {
+  --mask-fade-start: 3.5rem;
+}
+.mask-fade-x-end {
+  --mask-fade-end: 3.5rem;
+}
