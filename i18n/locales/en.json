@@ -323,7 +323,16 @@
     "phoneHint": "Your mobile number is your login and can't be changed.",
     "saved": "Profile saved.",
     "monthlyFee": "Monthly fee",
-    "farmsSummary": "{farms} farms: {included} included + {extra} extra × {price}"
+    "farmsSummary": "{farms} farms: {included} included + {extra} extra × {price}",
+    "password": {
+      "title": "Change password",
+      "current": "Current password",
+      "new": "New password",
+      "submit": "Change password",
+      "saved": "Password changed. Use the new one next time you log in.",
+      "wrongCurrent": "Current password is wrong.",
+      "sameAsCurrent": "Choose a password different from the current one."
+    }
   },
   "dashboard": {
     "title": "Dashboard",
@@ -787,7 +796,7 @@
         "steps": {
           "profile": {
             "title": "Profile",
-            "body": "Change your name on the Account page. Your mobile number is your login and can't be changed."
+            "body": "Change your name or password on the Account page. Your mobile number is your login and can't be changed."
           },
           "subscription": {
             "title": "Subscription status",
@@ -825,7 +834,7 @@
         },
         "password": {
           "question": "I forgot my password. What now?",
-          "answer": "Contact support and we'll reset it. Your mobile number stays the same."
+          "answer": "Contact support and we'll reset it. Your mobile number stays the same. If you're still logged in, you can set a new one yourself under Account → Change password."
         }
       }
     },

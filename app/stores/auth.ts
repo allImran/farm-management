@@ -1,5 +1,5 @@
 import type { AuthUser } from '~/services/auth.service'
-import { signInWithPhone, signOutUser, signUpWithPhone, watchAuthUser } from '~/services/auth.service'
+import { changeUserPassword, signInWithPhone, signOutUser, signUpWithPhone, watchAuthUser } from '~/services/auth.service'
 import { createUserProfile, fetchIsAdmin, fetchUserProfile, updateUserProfile, type NewProfile } from '~/services/users.service'
 import type { UserProfile } from '~/types/models'
 import { phoneToAuthEmail } from '~/utils/phone'
@@ -96,6 +96,8 @@ export const useAuthStore = defineStore('auth', () => {
     return result
   }
 
+  const changePassword = (currentPassword: string, newPassword: string) => changeUserPassword(currentPassword, newPassword)
+
   const signOut = async () => {
     const result = await signOutUser()
     if (!result.error) await loadSession(null)
@@ -117,6 +119,7 @@ export const useAuthStore = defineStore('auth', () => {
     signUp,
     completeProfile,
     saveProfile,
+    changePassword,
     signOut,
   }
 })
