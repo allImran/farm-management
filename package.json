@@ -9,6 +9,8 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "emulators": "npx firebase-tools emulators:start",
+    "emulators:data": "npx firebase-tools emulators:start --import=.emulator-data --export-on-exit=.emulator-data",
+    "emulators:seed": "node --experimental-strip-types --no-warnings scripts/seed-emulator.ts",
     "deploy:firestore": "npx firebase-tools deploy --only firestore",
     "test:rules": "vitest run tests/firestore.rules.test.ts",
     "generate:prod": "NUXT_PUBLIC_FIREBASE_USE_EMULATORS=false nuxt generate",
