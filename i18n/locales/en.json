@@ -4,6 +4,8 @@
     "description": "Thermal imaging, digital tracking for poultry and cattle, and AI-powered farm management — on one platform."
   },
   "common": {
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
     "toggleTheme": "Toggle theme",
     "changeLanguage": "Change language",
     "openMenu": "Open menu",
