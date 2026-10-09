@@ -380,6 +380,7 @@
       "address": "Address",
       "addressHint": "Village, upazila, district"
     },
+    "addAddress": "Add address",
     "emptyTitle": "No farms yet",
     "emptyDescription": "Add your first farm to start tracking batches.",
     "notFound": "Farm not found",

@@ -41,16 +41,14 @@ if (fields.some((field) => field.type === 'contact')) contactsStore.ensureLoaded
 
 <template>
   <section>
-    <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-      <div class="min-w-0">
-        <h2 class="text-lg font-bold text-slate-900 dark:text-white">{{ title ?? t(`records.${kind}.title`) }}</h2>
-        <p v-if="description" class="mt-1 max-w-2xl text-sm text-slate-500 dark:text-slate-400">{{ description }}</p>
-      </div>
-      <BaseButton @click="form.openCreate">
-        <template #icon-left><Plus class="w-4 h-4" /></template>
-        {{ t('records.add', { name: t(`records.${kind}.singular`) }) }}
-      </BaseButton>
-    </div>
+    <SectionHeader :title="title ?? t(`records.${kind}.title`)" :description="description">
+      <template #actions>
+        <BaseButton @click="form.openCreate">
+          <template #icon-left><Plus class="w-4 h-4" /></template>
+          {{ t('records.add', { name: t(`records.${kind}.singular`) }) }}
+        </BaseButton>
+      </template>
+    </SectionHeader>
 
     <BaseAsyncState
       :status="status"

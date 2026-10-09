@@ -58,23 +58,35 @@ useSeoMeta({ title: () => farm.value?.name ?? t('farms.title') })
 
       <template v-if="farm">
         <PageHeader :title="farm.name" :back-to="ROUTES.farms" :back-label="t('farms.title')">
-          <template #actions>
-            <BaseEditDeleteActions labeled @edit="farmForm.openEdit(farm)" @delete="farmDelete.open(farm)" />
+          <template #menu>
+            <BaseEditDeleteActions
+              menu
+              trigger-variant="overlay"
+              @edit="farmForm.openEdit(farm)"
+              @delete="farmDelete.open(farm)"
+            />
+          </template>
+          <template #meta>
+            <p v-if="farm.address" class="flex items-start gap-1.5">
+              <MapPin class="w-4 h-4 mt-0.5 shrink-0" />
+              <span class="whitespace-pre-line">{{ farm.address }}</span>
+            </p>
+            <BaseButton v-else variant="overlay" size="sm" class="-ml-0.5" @click="farmForm.openEdit(farm)">
+              <template #icon-left><MapPin class="w-3.5 h-3.5" /></template>
+              {{ t('farms.addAddress') }}
+            </BaseButton>
           </template>
         </PageHeader>
-        <p v-if="farm.address" class="-mt-3 mb-6 flex items-start gap-1.5 text-sm text-slate-500 dark:text-slate-400">
-          <MapPin class="w-4 h-4 mt-0.5 shrink-0" />
-          <span class="whitespace-pre-line">{{ farm.address }}</span>
-        </p>
 
         <section class="mb-10">
-          <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-            <h2 class="text-lg font-bold text-slate-900 dark:text-white">{{ t('batches.title') }}</h2>
-            <BaseButton @click="batchForm.openCreate">
-              <template #icon-left><Plus class="w-4 h-4" /></template>
-              {{ t('batches.add') }}
-            </BaseButton>
-          </div>
+          <SectionHeader :title="t('batches.title')">
+            <template #actions>
+              <BaseButton @click="batchForm.openCreate">
+                <template #icon-left><Plus class="w-4 h-4" /></template>
+                {{ t('batches.add') }}
+              </BaseButton>
+            </template>
+          </SectionHeader>
           <BaseTabs v-model="statusFilter" :tabs="statusTabs" class="mb-4" />
           <BaseAsyncState
             :status="batches.status.value"

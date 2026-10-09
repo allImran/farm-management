@@ -46,3 +46,9 @@ canvas {
 .scrollbar-none::-webkit-scrollbar {
   display: none;
 }
+
+/* Fades an element out towards its bottom edge; the last 4rem dissolve into whatever is behind. */
+.mask-fade-b {
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 4rem), transparent);
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 4rem), transparent);
+}
