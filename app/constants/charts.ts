@@ -3,7 +3,7 @@ import type { ExpenseType } from '~/types/models'
 /**
  * Chart colors as hex: charts draw on a canvas, which can't read Tailwind classes.
  * The first five mirror the `accent-*` tokens in `tailwind.config.ts`; the rest are Tailwind's
- * default 500/600 shades, needed so ten expense categories stay distinguishable.
+ * default 500-700 shades, needed so the batch and farm-level expense categories stay distinguishable.
  */
 export const CHART_COLORS = {
   blue: '#3b6ef6',
@@ -16,6 +16,11 @@ export const CHART_COLORS = {
   pink: '#ec4899',
   cyan: '#0891b2',
   slate: '#94a3b8',
+  amber: '#b45309',
+  indigo: '#6366f1',
+  sky: '#0ea5e9',
+  lime: '#65a30d',
+  fuchsia: '#c026d3',
 } as const
 
 /** Canvas colours for chart chrome (grid, ticks, tooltip), per theme where they differ. */
@@ -39,6 +44,11 @@ export const EXPENSE_TYPE_COLORS: Record<ExpenseType, string> = {
   litter: CHART_COLORS.teal,
   equipment: CHART_COLORS.cyan,
   rent: CHART_COLORS.pink,
+  construction: CHART_COLORS.amber,
+  electrical: CHART_COLORS.indigo,
+  water: CHART_COLORS.sky,
+  cleaning: CHART_COLORS.lime,
+  fees: CHART_COLORS.fuchsia,
   other: CHART_COLORS.slate,
 }
 

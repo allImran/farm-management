@@ -4,7 +4,14 @@ import type { EntityFormModalProps } from '~/types/forms'
 import type { RecordFieldDef, RecordKind } from '~/types/records'
 
 /** Create/edit modal for any record kind; fields come from `constants/records.ts`. */
-const props = defineProps<EntityFormModalProps & { kind: RecordKind; fields: RecordFieldDef[] }>()
+const props = defineProps<
+  EntityFormModalProps & {
+    kind: RecordKind
+    fields: RecordFieldDef[]
+    /** Farm-level record (no batch); some fields offer different options. */
+    isFarmLevel?: boolean
+  }
+>()
 
 const isOpen = defineModel<boolean>('open', { required: true })
 const values = defineModel<RecordFormValues>('values', { required: true })
@@ -26,6 +33,7 @@ const title = computed(() => t(props.isEditing ? 'records.edit' : 'records.add',
       :model-value="values[field.key] ?? ''"
       :kind="kind"
       :field="field"
+      :is-farm-level="isFarmLevel"
       :error="errors[field.key]"
       :class="field.type === 'textarea' ? 'sm:col-span-2' : ''"
       @update:model-value="values[field.key] = $event"

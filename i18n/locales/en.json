@@ -274,8 +274,13 @@
       "electricity": "Electricity",
       "transport": "Transport",
       "litter": "Litter / bedding",
-      "equipment": "Equipment",
+      "equipment": "Equipment (feeders, drinkers)",
       "rent": "Rent",
+      "construction": "Shed building / repair",
+      "electrical": "Fans, lights & wiring",
+      "water": "Water system (pump, tank)",
+      "cleaning": "Cleaning & disinfection",
+      "fees": "Licenses & fees",
       "other": "Other"
     },
     "medicineTypes": {

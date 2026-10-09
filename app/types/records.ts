@@ -36,6 +36,8 @@ export interface RecordFieldDef {
   /** For `select` fields: stored values; labels come from `options.<optionsKey>.<value>`. */
   options?: readonly string[]
   optionsKey?: string
+  /** For `select` fields: options offered instead of `options` on farm-level records (no batch). */
+  farmLevelOptions?: readonly string[]
   /** For `contact` fields: only contacts with one of these types are offered. */
   contactTypes?: readonly ContactType[]
   /** i18n key of a unit shown after the label, e.g. `units.kg`. */

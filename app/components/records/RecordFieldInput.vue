@@ -5,6 +5,8 @@ import type { RecordFieldDef, RecordKind } from '~/types/records'
 const props = defineProps<{
   kind: RecordKind
   field: RecordFieldDef
+  /** The record has no batch, so `field.farmLevelOptions` replace `field.options`. */
+  isFarmLevel?: boolean
   error?: string
 }>()
 
@@ -44,7 +46,10 @@ const selectOptions = computed(() => {
   if (props.field.type === 'contact') {
     return [{ value: '', label: t('common.none') }, ...allowedContacts.value.map((contact) => ({ value: contact.id, label: contact.name }))]
   }
-  return (props.field.options ?? []).map((option) => ({ value: option, label: t(`options.${props.field.optionsKey}.${option}`) }))
+  const listed = (props.isFarmLevel ? props.field.farmLevelOptions : undefined) ?? props.field.options ?? []
+  // Older records may hold a value this list no longer offers; keep it so editing doesn't drop it.
+  const options = value.value && !listed.includes(value.value) ? [...listed, value.value] : listed
+  return options.map((option) => ({ value: option, label: t(`options.${props.field.optionsKey}.${option}`) }))
 })
 
 if (props.field.type === 'contact') contactsStore.ensureLoaded()

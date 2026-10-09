@@ -181,6 +181,14 @@ describe('farm data', () => {
     await assertFails(addDoc(feeds, { ...base, consumption: 5, extra: true }))
     await assertFails(addDoc(feeds, { ...base, batchId: 'missing', consumption: 5 }))
   })
+
+  it('accepts batch and farm-level expense categories only', async () => {
+    const expenses = collection(alice(), 'users', ALICE, 'expenses')
+    const base = { farmId: 'farm1', batchId: null, date: '2026-09-10', amount: 5000, contactId: null, note: null, createdAt: serverTimestamp(), updatedAt: serverTimestamp() }
+    await assertSucceeds(addDoc(expenses, { ...base, type: 'construction' }))
+    await assertSucceeds(addDoc(expenses, { ...base, batchId: 'batch1', type: 'feed' }))
+    await assertFails(addDoc(expenses, { ...base, type: 'furniture' }))
+  })
 })
 
 describe('billing', () => {

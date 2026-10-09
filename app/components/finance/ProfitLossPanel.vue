@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ChevronDown } from '@lucide/vue'
 import { CHART_COLORS, EXPENSE_TYPE_COLORS } from '~/constants/charts'
-import { EXPENSE_TYPES } from '~/constants/farm'
+import { ALL_EXPENSE_TYPES } from '~/constants/farm'
 import { FARM_LEVEL_KEY } from '~/constants/finance'
 import type { ToggleItem } from '~/types/finance'
 import { isOneOf } from '~/utils/guards'
@@ -36,13 +36,13 @@ const { formatMoney } = useLocaleNumber()
 const { formatDate } = useLocaleDate()
 
 // Unknown categories (e.g. from older data) are shown like `other`.
-const categoryLabel = (category: string) => t(`options.expenseTypes.${isOneOf(EXPENSE_TYPES, category) ? category : 'other'}`)
-const categoryColor = (category: string) => (isOneOf(EXPENSE_TYPES, category) ? EXPENSE_TYPE_COLORS[category] : CHART_COLORS.slate)
+const categoryLabel = (category: string) => t(`options.expenseTypes.${isOneOf(ALL_EXPENSE_TYPES, category) ? category : 'other'}`)
+const categoryColor = (category: string) => (isOneOf(ALL_EXPENSE_TYPES, category) ? EXPENSE_TYPE_COLORS[category] : CHART_COLORS.slate)
 
 // Fixed order keeps rows from jumping around while toggling. A category that is left out
 // stays listed even when the batch filter hides all its spending, so it can be ticked again.
 const categoryItems = computed<ToggleItem[]>(() =>
-  [...new Set([...EXPENSE_TYPES, ...Object.keys(props.report.byCategory)])]
+  [...new Set([...ALL_EXPENSE_TYPES, ...Object.keys(props.report.byCategory)])]
     .filter((category) => (props.report.byCategory[category] ?? 0) > 0 || excludedCategories.value.includes(category))
     .map((category) => ({
       key: category,

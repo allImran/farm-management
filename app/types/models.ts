@@ -1,6 +1,6 @@
 import type { PASSWORD_RESET_STATUSES } from '~/constants/auth'
 import type { PAYMENT_REQUEST_STATUSES, SUBSCRIPTION_TYPES } from '~/constants/billing'
-import type { BATCH_STATUSES, CONTACT_TYPES, EXPENSE_TYPES } from '~/constants/farm'
+import type { ALL_EXPENSE_TYPES, BATCH_STATUSES, CONTACT_TYPES } from '~/constants/farm'
 
 /** Calendar date stored as `YYYY-MM-DD` (no time zone, sorts lexically). */
 export type IsoDate = string
@@ -87,7 +87,7 @@ export type SubscriptionGrant =
 
 export type BatchStatus = (typeof BATCH_STATUSES)[number]
 export type ContactType = (typeof CONTACT_TYPES)[number]
-export type ExpenseType = (typeof EXPENSE_TYPES)[number]
+export type ExpenseType = (typeof ALL_EXPENSE_TYPES)[number]
 
 export interface FarmInput {
   name: string

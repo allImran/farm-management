@@ -206,7 +206,9 @@ service cloud.firestore {
           && hasRecordBase(['type', 'amount', 'contactId'])
           && exists(farmPath(data().farmId))
           && (data().batchId == null || belongsToBatch())
-          && data().type in ['chicks', 'feed', 'medicine', 'labor', 'electricity', 'transport', 'litter', 'equipment', 'rent', 'other']
+          // Batch categories, then the farm-level ones (`ALL_EXPENSE_TYPES`).
+          && data().type in ['chicks', 'feed', 'medicine', 'labor', 'electricity', 'transport', 'litter', 'equipment', 'rent', 'other',
+                             'construction', 'electrical', 'water', 'cleaning', 'fees']
           && isNumberAtLeast(data().amount, 0)
           && isValidContactRef();
         allow delete: if canWriteFarmData(uid);
