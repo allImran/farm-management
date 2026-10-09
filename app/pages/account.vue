@@ -86,5 +86,7 @@ useSeoMeta({ title: () => t('account.title') })
         </div>
       </form>
     </BaseCard>
+
+    <ChangePasswordCard />
   </div>
 </template>

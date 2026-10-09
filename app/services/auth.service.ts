@@ -1,9 +1,12 @@
 import {
   createUserWithEmailAndPassword,
+  EmailAuthProvider,
   getAuth,
   onAuthStateChanged,
+  reauthenticateWithCredential,
   signInWithEmailAndPassword,
   signOut,
+  updatePassword,
   type User,
 } from 'firebase/auth'
 import { phoneToAuthEmail } from '~/utils/phone'
@@ -29,6 +32,18 @@ export const signInWithPhone = (phone: string, password: string) =>
   request(async () => toAuthUser((await signInWithEmailAndPassword(getAuth(), phoneToAuthEmail(phone), password)).user))
 
 export const signOutUser = () => request(() => signOut(getAuth()))
+
+/**
+ * Changes the signed-in user's password. Firebase only allows this right after a sign-in, so
+ * the current password is checked first; a wrong one fails with `auth/invalid-credential`.
+ */
+export const changeUserPassword = (currentPassword: string, newPassword: string) =>
+  request(async () => {
+    const user = getAuth().currentUser
+    if (!user?.email) throw Object.assign(new Error('Not signed in'), { code: 'unauthenticated' })
+    await reauthenticateWithCredential(user, EmailAuthProvider.credential(user.email, currentPassword))
+    await updatePassword(user, newPassword)
+  })
 
 /**
  * Subscribes to sign-in state. The callback fires once right away with the restored session.
