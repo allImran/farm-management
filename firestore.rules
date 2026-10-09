@@ -90,7 +90,8 @@ service cloud.firestore {
     // ---------- Accounts ----------
 
     match /admins/{uid} {
-      allow get: if isSelf(uid);
+      // The admin checks this before resetting a password, so admin accounts are never reset.
+      allow get: if isSelf(uid) || isAdmin();
       allow list, write: if false;
     }
 
@@ -106,13 +107,18 @@ service cloud.firestore {
         && data().createdAt == request.time;
 
       // Phone is the login id and createdAt is history: neither can change.
-      // mustChangePassword is set by the password-reset Cloud Function (Admin SDK, bypasses
-      // these rules); the user may only clear it, after choosing a new password.
+      // mustChangePassword is set by the admin when approving a password reset (below); the user
+      // may only clear it, after choosing a new password.
       allow update: if isSelf(uid)
         && data().diff(resource.data).affectedKeys().hasOnly(['name', 'email', 'mustChangePassword'])
         && isText(data().name, 1, 80)
         && isNullableText('email', 120)
         && (!data().diff(resource.data).affectedKeys().hasAny(['mustChangePassword']) || data().mustChangePassword == false);
+
+      // Approving a password reset: the admin may only turn the flag on.
+      allow update: if isAdmin()
+        && data().diff(resource.data).affectedKeys().hasOnly(['mustChangePassword'])
+        && data().mustChangePassword == true;
 
       allow delete: if false;
 
@@ -317,8 +323,8 @@ service cloud.firestore {
     // ---------- Password resets ----------
 
     // Signed-out users ask for a reset of the account with this phone number (the doc id).
-    // Approving happens only in the approvePasswordReset Cloud Function, which sets a random
-    // temporary password.
+    // Approving is done by the admin in the browser, which sets a random temporary password
+    // through Google's Identity Toolkit API with the admin's own Google credentials.
     function isFreshResetRequest(phone) {
       return data().keys().hasOnly(['phone', 'status', 'createdAt', 'reviewedAt', 'reviewedBy'])
         && phone.matches('^01[3-9][0-9]{8}$')
@@ -339,11 +345,11 @@ service cloud.firestore {
       allow update: if isFreshResetRequest(phone)
         && request.time > resource.data.createdAt + duration.value(15, 'm');
 
-      // The admin may reject a pending request (approving goes through the Cloud Function).
+      // The admin approves or rejects a pending request.
       allow update: if isAdmin()
         && resource.data.status == 'pending'
         && data().diff(resource.data).affectedKeys().hasOnly(['status', 'reviewedAt', 'reviewedBy'])
-        && data().status == 'rejected'
+        && data().status in ['approved', 'rejected']
         && data().reviewedAt == request.time
         && data().reviewedBy == request.auth.uid;
 

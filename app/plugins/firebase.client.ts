@@ -1,8 +1,6 @@
 import { initializeApp, getApps } from 'firebase/app'
 import { connectAuthEmulator, getAuth } from 'firebase/auth'
 import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore'
-import { connectFunctionsEmulator, getFunctions } from 'firebase/functions'
-import { FUNCTIONS_REGION } from '~/constants/auth'
 import { ROUTES } from '~/constants/routes'
 import { configureNetwork } from '~/services/network'
 
@@ -30,7 +28,6 @@ export default defineNuxtPlugin({
       if (String(config.firebaseUseEmulators) === 'true') {
         connectAuthEmulator(getAuth(), 'http://127.0.0.1:9099', { disableWarnings: true })
         connectFirestoreEmulator(getFirestore(), '127.0.0.1', 8080)
-        connectFunctionsEmulator(getFunctions(undefined, FUNCTIONS_REGION), '127.0.0.1', 5001)
       }
     }
 

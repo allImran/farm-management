@@ -34,6 +34,8 @@ export default defineNuxtConfig({
       firebaseAppId: '',
       // 'true' connects the client to the local Emulator Suite.
       firebaseUseEmulators: '',
+      // OAuth client ID (Google Cloud console) the admin signs in with to approve password resets.
+      googleOauthClientId: '',
       // Optional Slack incoming webhook for new payment requests. Empty = no notifications.
       slackWebhookUrl: '',
     },
