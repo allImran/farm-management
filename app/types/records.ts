@@ -46,6 +46,11 @@ export interface RecordFieldDef {
   isDerived?: boolean
   /** Shown as a column in the record list. */
   isListed?: boolean
+  /**
+   * Place on the mobile record card: `hero` is the one large headline value (what the record is
+   * about), `aside` a short descriptor shown opposite it. Other listed fields go in the details.
+   */
+  cardRole?: 'hero' | 'aside'
 }
 
 export interface RecordKindDef {

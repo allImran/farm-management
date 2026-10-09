@@ -20,8 +20,9 @@ export const RECORD_KINDS: Record<RecordKind, RecordKindDef> = {
         farmLevelOptions: FARM_EXPENSE_TYPES,
         optionsKey: 'expenseTypes',
         isListed: true,
+        cardRole: 'aside',
       },
-      { key: 'amount', type: 'number', required: true, unitKey: 'units.taka', isListed: true },
+      { key: 'amount', type: 'number', required: true, unitKey: 'units.taka', isListed: true, cardRole: 'hero' },
       { key: 'contactId', type: 'contact', isListed: true },
       { key: 'note', type: 'textarea' },
     ],
@@ -29,15 +30,15 @@ export const RECORD_KINDS: Record<RecordKind, RecordKindDef> = {
   feeds: {
     kind: 'feeds',
     fields: [
-      { key: 'consumption', type: 'number', required: true, unitKey: 'units.kg', isListed: true },
+      { key: 'consumption', type: 'number', required: true, unitKey: 'units.kg', isListed: true, cardRole: 'hero' },
       { key: 'note', type: 'textarea', isListed: true },
     ],
   },
   medicines: {
     kind: 'medicines',
     fields: [
-      { key: 'name', type: 'text', required: true, isListed: true },
-      { key: 'type', type: 'select', required: true, options: MEDICINE_TYPES, optionsKey: 'medicineTypes', isListed: true },
+      { key: 'name', type: 'text', required: true, isListed: true, cardRole: 'hero' },
+      { key: 'type', type: 'select', required: true, options: MEDICINE_TYPES, optionsKey: 'medicineTypes', isListed: true, cardRole: 'aside' },
       { key: 'disease', type: 'text', isListed: true },
       { key: 'quantity', type: 'text', required: true, isListed: true },
       { key: 'note', type: 'textarea' },
@@ -46,15 +47,15 @@ export const RECORD_KINDS: Record<RecordKind, RecordKindDef> = {
   mortalities: {
     kind: 'mortalities',
     fields: [
-      { key: 'count', type: 'integer', required: true, unitKey: 'units.birds', isListed: true },
-      { key: 'cause', type: 'text', isListed: true },
+      { key: 'count', type: 'integer', required: true, unitKey: 'units.birds', isListed: true, cardRole: 'hero' },
+      { key: 'cause', type: 'text', isListed: true, cardRole: 'aside' },
       { key: 'note', type: 'textarea' },
     ],
   },
   weights: {
     kind: 'weights',
     fields: [
-      { key: 'averageWeight', type: 'number', required: true, unitKey: 'units.gram', isListed: true },
+      { key: 'averageWeight', type: 'number', required: true, unitKey: 'units.gram', isListed: true, cardRole: 'hero' },
       { key: 'sampleSize', type: 'integer', unitKey: 'units.birds', isListed: true },
       { key: 'note', type: 'textarea' },
     ],
@@ -65,9 +66,9 @@ export const RECORD_KINDS: Record<RecordKind, RecordKindDef> = {
       { key: 'quantity', type: 'integer', required: true, unitKey: 'units.birds', isListed: true },
       { key: 'weight', type: 'number', required: true, unitKey: 'units.kg', isListed: true },
       { key: 'unitPrice', type: 'number', required: true, unitKey: 'units.takaPerKg' },
-      { key: 'totalAmount', type: 'number', unitKey: 'units.taka', isDerived: true, isListed: true },
+      { key: 'totalAmount', type: 'number', unitKey: 'units.taka', isDerived: true, isListed: true, cardRole: 'hero' },
       // Birds are sold to buyers, so only contacts marked as buyer (`customer`) are offered.
-      { key: 'contactId', type: 'contact', contactTypes: ['customer'], isListed: true },
+      { key: 'contactId', type: 'contact', contactTypes: ['customer'], isListed: true, cardRole: 'aside' },
       { key: 'note', type: 'textarea' },
     ],
     // Broilers are sold by live weight, so the total is weight (kg) × price per kg.
