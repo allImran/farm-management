@@ -72,7 +72,7 @@ useSeoMeta({ title: () => batch.value?.name ?? t('batches.title') })
           </template>
         </PageHeader>
 
-        <div class="mb-8">
+        <PageSection first>
           <BaseAsyncState :status="statsStatus" :error="statsError" @retry="refreshStats">
             <template #loading>
               <div class="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
@@ -81,16 +81,18 @@ useSeoMeta({ title: () => batch.value?.name ?? t('batches.title') })
             </template>
             <BatchStatsGrid v-if="stats" :stats="stats" />
           </BaseAsyncState>
-        </div>
+        </PageSection>
 
-        <BaseTabs v-model="activeView" :tabs="viewTabs" class="mb-6" />
+        <PageSection tone="raised" last>
+          <BaseTabs v-model="activeView" :tabs="viewTabs" class="mb-6" />
 
-        <template v-if="activeView === 'records'">
-          <BaseTabs v-model="activeKind" :tabs="kindTabs" class="mb-5" />
-          <RecordSection :key="activeKind" :kind="activeKind" :scope="scope" @changed="refreshStats" />
-        </template>
-        <BatchChartsSection v-else-if="activeView === 'charts'" :batch="batch" />
-        <ProfitLossSection v-else :scope="financeScope" :description="t('reports.batchDescription')" />
+          <template v-if="activeView === 'records'">
+            <BaseTabs v-model="activeKind" :tabs="kindTabs" class="mb-5" />
+            <RecordSection :key="activeKind" :kind="activeKind" :scope="scope" @changed="refreshStats" />
+          </template>
+          <BatchChartsSection v-else-if="activeView === 'charts'" :batch="batch" />
+          <ProfitLossSection v-else :scope="financeScope" :description="t('reports.batchDescription')" />
+        </PageSection>
       </template>
     </BaseAsyncState>
 

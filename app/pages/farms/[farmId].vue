@@ -78,38 +78,40 @@ useSeoMeta({ title: () => farm.value?.name ?? t('farms.title') })
           </template>
         </PageHeader>
 
-        <section class="mb-10">
-          <SectionHeader :title="t('batches.title')">
-            <template #actions>
-              <BaseButton size="sm" @click="batchForm.openCreate">
-                <template #icon-left><Plus class="w-4 h-4" /></template>
-                {{ t('batches.add') }}
-              </BaseButton>
-            </template>
-          </SectionHeader>
-          <BaseTabs v-model="statusFilter" :tabs="statusTabs" class="mb-4" />
-          <BaseAsyncState
-            :status="batches.status.value"
-            :error="batches.error.value"
-            :is-empty="batches.isEmpty.value"
-            :empty-title="t('batches.emptyTitle')"
-            :empty-description="t('batches.emptyDescription')"
-            @retry="batches.reset"
-          >
-            <template #empty-icon><Bird class="w-7 h-7" /></template>
-            <ul class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-              <li v-for="batch in batches.items.value" :key="batch.id"><BatchCard :batch="batch" /></li>
-            </ul>
-            <BaseLoadMore
-              :has-more="batches.hasMore.value"
-              :status="batches.loadMoreStatus.value"
-              :error="batches.loadMoreError.value"
-              @load-more="batches.loadMore"
-            />
-          </BaseAsyncState>
-        </section>
+        <PageSection first>
+          <section>
+            <SectionHeader :title="t('batches.title')">
+              <template #actions>
+                <BaseButton size="sm" @click="batchForm.openCreate">
+                  <template #icon-left><Plus class="w-4 h-4" /></template>
+                  {{ t('batches.add') }}
+                </BaseButton>
+              </template>
+            </SectionHeader>
+            <BaseTabs v-model="statusFilter" :tabs="statusTabs" class="mb-4" />
+            <BaseAsyncState
+              :status="batches.status.value"
+              :error="batches.error.value"
+              :is-empty="batches.isEmpty.value"
+              :empty-title="t('batches.emptyTitle')"
+              :empty-description="t('batches.emptyDescription')"
+              @retry="batches.reset"
+            >
+              <template #empty-icon><Bird class="w-7 h-7" /></template>
+              <ul class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                <li v-for="batch in batches.items.value" :key="batch.id"><BatchCard :batch="batch" /></li>
+              </ul>
+              <BaseLoadMore
+                :has-more="batches.hasMore.value"
+                :status="batches.loadMoreStatus.value"
+                :error="batches.loadMoreError.value"
+                @load-more="batches.loadMore"
+              />
+            </BaseAsyncState>
+          </section>
+        </PageSection>
 
-        <div class="mb-10">
+        <PageSection tone="raised">
           <BaseAsyncState :status="allBatches.status.value" :error="allBatches.error.value" @retry="allBatches.execute()">
             <template #loading><StatCardsSkeleton /></template>
             <ProfitLossSection
@@ -119,15 +121,17 @@ useSeoMeta({ title: () => farm.value?.name ?? t('farms.title') })
               :batches="batchOptions"
             />
           </BaseAsyncState>
-        </div>
+        </PageSection>
 
-        <RecordSection
-          kind="expenses"
-          :scope="expenseScope"
-          :title="t('farms.farmExpenses')"
-          :description="t('farms.expenseHint')"
-          @changed="reloadProfit"
-        />
+        <PageSection last>
+          <RecordSection
+            kind="expenses"
+            :scope="expenseScope"
+            :title="t('farms.farmExpenses')"
+            :description="t('farms.expenseHint')"
+            @changed="reloadProfit"
+          />
+        </PageSection>
       </template>
     </BaseAsyncState>
 
