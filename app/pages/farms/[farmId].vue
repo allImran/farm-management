@@ -60,7 +60,6 @@ useSeoMeta({ title: () => farm.value?.name ?? t('farms.title') })
         <PageHeader :title="farm.name" :back-to="ROUTES.farms" :back-label="t('farms.title')">
           <template #menu>
             <BaseEditDeleteActions
-              menu
               trigger-variant="overlay"
               @edit="farmForm.openEdit(farm)"
               @delete="farmDelete.open(farm)"

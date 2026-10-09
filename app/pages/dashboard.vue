@@ -22,7 +22,7 @@ useSeoMeta({ title: () => t('dashboard.title') })
     <PageSection first>
       <BaseAsyncState :status="status" :error="error" @retry="reload">
         <template #loading><StatCardsSkeleton /></template>
-        <div v-if="summary" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div v-if="summary" class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
           <StatCard :label="t('dashboard.stats.farms')" :value="formatNumber(summary.farms)" :icon="Warehouse" tone="yellow" />
           <StatCard :label="t('dashboard.stats.activeBatches')" :value="formatNumber(summary.activeBatches)" :icon="Layers" tone="green" />
           <StatCard :label="t('dashboard.stats.birds')" :value="formatNumber(summary.birds)" :icon="Bird" tone="blue" />

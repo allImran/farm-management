@@ -61,7 +61,6 @@ useSeoMeta({ title: () => batch.value?.name ?? t('batches.title') })
           <template #badge><BatchStatusBadge :status="batch.status" /></template>
           <template #menu>
             <BaseEditDeleteActions
-              menu
               trigger-variant="overlay"
               @edit="batchForm.openEdit(batch)"
               @delete="batchDelete.open(batch)"

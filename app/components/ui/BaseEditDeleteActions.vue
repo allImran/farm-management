@@ -1,16 +1,13 @@
 <script setup lang="ts">
 import { EllipsisVertical, Pencil, Trash2 } from '@lucide/vue'
 
-/** Edit and delete actions for a list row, card or page header. */
+/** Edit and delete actions for a card, table row or page header, collapsed into a "⋮" dropdown. */
 withDefaults(
   defineProps<{
-    /** Collapses both actions into a "⋮" dropdown (page headers); otherwise two icon buttons. */
-    menu?: boolean
     /** Style of the "⋮" trigger; `overlay` for use on the hero gradient. */
     triggerVariant?: 'ghost' | 'overlay'
   }>(),
   {
-    menu: false,
     triggerVariant: 'ghost',
   }
 )
@@ -22,7 +19,7 @@ defineEmits<{
 </script>
 
 <template>
-  <BaseDropdown v-if="menu" width="w-40">
+  <BaseDropdown width="w-40">
     <template #trigger="{ isOpen, toggle }">
       <BaseButton
         :variant="triggerVariant"
@@ -44,13 +41,4 @@ defineEmits<{
       {{ $t('common.delete') }}
     </BaseDropdownItem>
   </BaseDropdown>
-
-  <div v-else class="flex items-center gap-1">
-    <BaseButton variant="ghost" size="icon" :aria-label="$t('common.edit')" @click="$emit('edit')">
-      <Pencil class="w-4 h-4" />
-    </BaseButton>
-    <BaseButton variant="ghost" size="icon" :aria-label="$t('common.delete')" @click="$emit('delete')">
-      <Trash2 class="w-4 h-4 text-red-500" />
-    </BaseButton>
-  </div>
 </template>
