@@ -33,7 +33,7 @@ const controlClass = computed(() => [
       {{ fullLabel }}
     </label>
     <slot :id="id" :described-by="describedBy" :control-class="controlClass" />
-    <p v-if="error" :id="messageId" class="mt-1.5 text-xs font-medium text-red-500 dark:text-red-400">{{ error }}</p>
+    <p v-if="error" :id="messageId" class="mt-1.5 text-xs font-medium text-red-500 dark:text-red-400 animate-fade-in motion-reduce:animate-none">{{ error }}</p>
     <p v-else-if="hint" :id="messageId" class="mt-1.5 text-xs text-slate-500 dark:text-slate-400">{{ hint }}</p>
   </div>
 </template>

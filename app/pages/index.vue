@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { APP_URL } from '~/constants/app'
 
+// The marketing header is `position: fixed`, so this page fades without sliding (see main.css).
+definePageMeta({ pageTransition: { name: 'fade', mode: 'out-in' } })
+
 const { t } = useI18n()
 
 // Description and social tags come from the site-wide defaults in app.vue.

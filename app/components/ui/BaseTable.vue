@@ -29,7 +29,7 @@ defineSlots<Record<`cell-${string}`, (props: { row: T }) => unknown>>()
             </th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+        <TransitionGroup tag="tbody" name="list" class="divide-y divide-slate-100 dark:divide-slate-800">
           <tr
             v-for="row in rows"
             :key="String(row[rowKey])"
@@ -41,7 +41,7 @@ defineSlots<Record<`cell-${string}`, (props: { row: T }) => unknown>>()
               </slot>
             </td>
           </tr>
-        </tbody>
+        </TransitionGroup>
       </table>
     </div>
   </div>

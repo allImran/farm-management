@@ -43,11 +43,11 @@ useSeoMeta({ title: () => t('contacts.title') })
       @retry="reset"
     >
       <template #empty-icon><Users class="w-7 h-7" /></template>
-      <ul class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+      <TransitionGroup tag="ul" name="list" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
         <li v-for="contact in items" :key="contact.id">
           <ContactCard :contact="contact" @edit="form.openEdit(contact)" @delete="deletion.open(contact)" />
         </li>
-      </ul>
+      </TransitionGroup>
       <BaseLoadMore :has-more="hasMore" :status="loadMoreStatus" :error="loadMoreError" @load-more="loadMore" />
     </BaseAsyncState>
 

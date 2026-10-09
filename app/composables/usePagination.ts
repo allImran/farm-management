@@ -69,10 +69,12 @@ export const usePagination = <T>(fetcher: PageFetcher<T>, options: PaginationOpt
     status.value = 'success'
   }
 
-  /** Clears everything and loads the first page (call after filters change or data is edited). */
+  /**
+   * Starts over from the first page (call after filters change or data is edited). The current
+   * items stay until that page arrives, so the list is refreshed in place instead of blanking.
+   */
   const reset = () => {
     pageStarts.value = [null]
-    items.value = []
     hasMore.value = false
     nextCursor = null
     loadMoreStatus.value = 'idle'

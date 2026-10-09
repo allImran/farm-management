@@ -85,12 +85,14 @@ useSeoMeta({ title: () => batch.value?.name ?? t('batches.title') })
         <PageSection tone="raised" last>
           <BaseTabs v-model="activeView" :tabs="viewTabs" class="mb-6" />
 
-          <template v-if="activeView === 'records'">
-            <BaseTabs v-model="activeKind" :tabs="kindTabs" class="mb-5" />
-            <RecordSection :key="activeKind" :kind="activeKind" :scope="scope" @changed="refreshStats" />
-          </template>
-          <BatchChartsSection v-else-if="activeView === 'charts'" :batch="batch" />
-          <ProfitLossSection v-else :scope="financeScope" :description="t('reports.batchDescription')" />
+          <BaseTabPanel :active="`${activeView}:${activeKind}`">
+            <template v-if="activeView === 'records'">
+              <BaseTabs v-model="activeKind" :tabs="kindTabs" class="mb-5" />
+              <RecordSection :key="activeKind" :kind="activeKind" :scope="scope" @changed="refreshStats" />
+            </template>
+            <BatchChartsSection v-else-if="activeView === 'charts'" :batch="batch" />
+            <ProfitLossSection v-else :scope="financeScope" :description="t('reports.batchDescription')" />
+          </BaseTabPanel>
         </PageSection>
       </template>
     </BaseAsyncState>

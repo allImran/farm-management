@@ -48,10 +48,10 @@ const rows = computed(() =>
       </BaseTable>
     </div>
 
-    <ul class="md:hidden space-y-3">
+    <TransitionGroup tag="ul" name="list" class="md:hidden space-y-3">
       <li v-for="row in rows" :key="row.id">
         <RecordCard :kind="kind" :record="row.record" @edit="$emit('edit', row.record)" @delete="$emit('delete', row.record)" />
       </li>
-    </ul>
+    </TransitionGroup>
   </div>
 </template>
