@@ -4,6 +4,9 @@ import { APP_URL } from '~/constants/app'
 import { GUIDE_FAQ_ID } from '~/constants/guide'
 import { ROUTES } from '~/constants/routes'
 
+// The marketing header is `position: fixed`, so this page fades without sliding (see main.css).
+definePageMeta({ pageTransition: { name: 'fade', mode: 'out-in' } })
+
 const { t } = useI18n()
 const { sections, faq, tocLinks } = useGuideContent()
 const { activeId } = useScrollSpy(() => tocLinks.value.map((link) => link.id))

@@ -6,14 +6,7 @@ const { collapsed, mobileOpen, closeMobile } = useSidebar()
   <div class="min-h-screen bg-surface-light dark:bg-surface-dark">
     <AppSidebar />
 
-    <Transition
-      enter-active-class="transition-opacity duration-200"
-      enter-from-class="opacity-0"
-      enter-to-class="opacity-100"
-      leave-active-class="transition-opacity duration-150"
-      leave-from-class="opacity-100"
-      leave-to-class="opacity-0"
-    >
+    <Transition name="fade">
       <div
         v-if="mobileOpen"
         class="fixed inset-0 z-40 bg-slate-900/50 lg:hidden"

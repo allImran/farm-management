@@ -35,9 +35,9 @@ useSeoMeta({ title: () => t('farms.title') })
       <template #empty-action>
         <BaseButton :loading="isCheckingFarms" @click="form.openCreate">{{ t('farms.add') }}</BaseButton>
       </template>
-      <ul class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+      <TransitionGroup tag="ul" name="list" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
         <li v-for="farm in items" :key="farm.id"><FarmCard :farm="farm" /></li>
-      </ul>
+      </TransitionGroup>
       <BaseLoadMore :has-more="hasMore" :status="loadMoreStatus" :error="loadMoreError" @load-more="loadMore" />
     </BaseAsyncState>
 

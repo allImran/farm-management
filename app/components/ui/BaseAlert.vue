@@ -40,7 +40,7 @@ const iconColorClasses: Record<Variant, string> = {
 
 <template>
   <div
-    class="flex gap-3 rounded-2xl border p-4"
+    class="flex gap-3 rounded-2xl border p-4 animate-fade-in motion-reduce:animate-none"
     :class="variantClasses[variant]"
   >
     <component :is="iconMap[variant]" class="w-5 h-5 flex-shrink-0 mt-0.5" :class="iconColorClasses[variant]" />

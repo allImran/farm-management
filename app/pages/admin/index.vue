@@ -13,9 +13,11 @@ useSeoMeta({ title: () => t('admin.title') })
   <div class="max-w-6xl mx-auto">
     <PageHeader :title="t('admin.title')" :description="t('admin.description')" />
     <BaseTabs v-model="activeTab" :tabs="tabs" class="mb-6" />
-    <AdminRequestsPanel v-if="activeTab === 'requests'" />
-    <AdminPasswordResetsPanel v-else-if="activeTab === 'resets'" />
-    <AdminUsersPanel v-else-if="activeTab === 'users'" />
-    <PlanSettingsPanel v-else />
+    <BaseTabPanel :active="activeTab">
+      <AdminRequestsPanel v-if="activeTab === 'requests'" />
+      <AdminPasswordResetsPanel v-else-if="activeTab === 'resets'" />
+      <AdminUsersPanel v-else-if="activeTab === 'users'" />
+      <PlanSettingsPanel v-else />
+    </BaseTabPanel>
   </div>
 </template>

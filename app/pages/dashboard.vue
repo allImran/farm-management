@@ -64,9 +64,9 @@ useSeoMeta({ title: () => t('dashboard.title') })
             :empty-description="t('dashboard.noActiveDescription')"
             @retry="activeBatches.reset"
           >
-            <ul class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+            <TransitionGroup tag="ul" name="list" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
               <li v-for="batch in activeBatches.items.value" :key="batch.id"><BatchCard :batch="batch" /></li>
-            </ul>
+            </TransitionGroup>
           </BaseAsyncState>
         </section>
       </PageSection>

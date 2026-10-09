@@ -20,9 +20,27 @@ export const useTheme = () => {
     }
   }
 
+  const commit = (dark: boolean) => {
+    isDark.value = dark
+    apply(dark)
+  }
+
+  /**
+   * Cross-fades the whole page into the other theme with the View Transitions API, so colors
+   * don't flip piecemeal. Browsers without it, and reduced-motion users, switch instantly.
+   */
   const toggle = () => {
-    isDark.value = !isDark.value
-    apply(isDark.value)
+    const next = !isDark.value
+    const canAnimate =
+      import.meta.client &&
+      'startViewTransition' in document &&
+      !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (!canAnimate) return commit(next)
+    // Wait for Vue to re-render (e.g. the toggle's icon) before the browser captures the new state.
+    document.startViewTransition(async () => {
+      commit(next)
+      await nextTick()
+    })
   }
 
   const init = () => {

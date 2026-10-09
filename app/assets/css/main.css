@@ -79,3 +79,86 @@ canvas {
 .mask-fade-x-end {
   --mask-fade-end: 3.5rem;
 }
+
+/*
+ * Shared Vue transitions, used by name (`<Transition name="fade">`) so every surface moves the
+ * same way. `page` / `layout` are wired up in nuxt.config.ts for route changes.
+ *
+ * Pages only slide on enter, and only by opacity on leave: a transform on the page root would
+ * turn it into the containing block for `position: fixed` children (the marketing header), so
+ * pages with fixed children use `fade` instead (see their `definePageMeta`).
+ */
+.page-enter-active,
+.layout-enter-active,
+.fade-enter-active {
+  transition: opacity 200ms ease-out, transform 200ms ease-out;
+}
+.page-leave-active,
+.layout-leave-active,
+.fade-leave-active {
+  transition: opacity 120ms ease-in;
+}
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(8px);
+}
+.page-leave-to,
+.layout-enter-from,
+.layout-leave-to,
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* Items appended to or removed from a list (`<TransitionGroup name="list">`). Removed items go at
+ * once (a fading item would hold its grid cell) and `move` slides the rest into the gap. */
+.list-enter-active {
+  transition: opacity 250ms ease-out, transform 250ms ease-out;
+}
+.list-move {
+  transition: transform 250ms ease-out;
+}
+.list-enter-from {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+/* Native <details> open/close. Progressive: browsers without `::details-content` just toggle. */
+@supports selector(::details-content) {
+  :root {
+    interpolate-size: allow-keywords;
+  }
+  details::details-content {
+    block-size: 0;
+    overflow: hidden;
+    transition: block-size 200ms ease-out, content-visibility 200ms allow-discrete;
+  }
+  details[open]::details-content {
+    block-size: auto;
+  }
+}
+
+/* Theme switch cross-fade (see useTheme); the browser default is a bit slow for a toggle. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 200ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-enter-active,
+  .page-leave-active,
+  .layout-enter-active,
+  .layout-leave-active,
+  .fade-enter-active,
+  .fade-leave-active,
+  .list-enter-active,
+  .list-move,
+  details::details-content {
+    transition: none;
+  }
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none;
+  }
+}

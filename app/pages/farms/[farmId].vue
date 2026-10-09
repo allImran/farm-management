@@ -97,9 +97,9 @@ useSeoMeta({ title: () => farm.value?.name ?? t('farms.title') })
               @retry="batches.reset"
             >
               <template #empty-icon><Bird class="w-7 h-7" /></template>
-              <ul class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+              <TransitionGroup tag="ul" name="list" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
                 <li v-for="batch in batches.items.value" :key="batch.id"><BatchCard :batch="batch" /></li>
-              </ul>
+              </TransitionGroup>
               <BaseLoadMore
                 :has-more="batches.hasMore.value"
                 :status="batches.loadMoreStatus.value"

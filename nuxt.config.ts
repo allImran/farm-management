@@ -53,6 +53,9 @@ export default defineNuxtConfig({
     ],
   },
   app: {
+    // Styles live in main.css; pages with fixed children opt into `fade` via definePageMeta.
+    pageTransition: { name: 'page', mode: 'out-in' },
+    layoutTransition: { name: 'layout', mode: 'out-in' },
     head: {
       // Per-page titles, descriptions and social tags are set in app.vue and the pages.
       title: APP_NAME,
