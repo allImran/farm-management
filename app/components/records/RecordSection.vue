@@ -70,6 +70,7 @@ if (fields.some((field) => field.type === 'contact')) contactsStore.ensureLoaded
       :kind="kind"
       :fields="fields"
       :is-editing="isEditing"
+      :is-farm-level="props.scope.batchId === null"
       :errors="errors"
       :error="form.error.value"
       :loading="form.status.value === 'loading'"

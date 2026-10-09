@@ -9,6 +9,8 @@ const props = defineProps<{
   kind: RecordKind
   fields: RecordFieldDef[]
   isEditing: boolean
+  /** Farm-level record (no batch); some fields offer different options. */
+  isFarmLevel?: boolean
   errors: FormErrors
   error: AppError | null
   loading: boolean
@@ -37,6 +39,7 @@ const title = computed(() => t(props.isEditing ? 'records.edit' : 'records.add',
         @update:model-value="values[field.key] = $event"
         :kind="kind"
         :field="field"
+        :is-farm-level="isFarmLevel"
         :error="errors[field.key]"
         :class="field.type === 'textarea' ? 'sm:col-span-2' : ''"
       />

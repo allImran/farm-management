@@ -16,7 +16,7 @@ export interface ProfitLossTotals {
 }
 
 export interface ProfitLossFilter {
-  /** Expense categories (`EXPENSE_TYPES`) left out of the result. */
+  /** Expense categories (`ALL_EXPENSE_TYPES`) left out of the result. */
   excludedCategories: readonly string[]
   /** Batch ids (or `FARM_LEVEL_KEY`) left out of the result. */
   excludedBatchKeys: readonly string[]

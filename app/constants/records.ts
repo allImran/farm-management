@@ -1,5 +1,5 @@
 import type { RecordKind, RecordKindDef, RecordValues } from '~/types/records'
-import { EXPENSE_TYPES, MEDICINE_TYPES } from './farm'
+import { EXPENSE_TYPES, FARM_EXPENSE_TYPES, MEDICINE_TYPES } from './farm'
 
 const toAmount = (value: RecordValues[string] | undefined) => (typeof value === 'number' ? value : Number(value) || 0)
 
@@ -12,7 +12,15 @@ export const RECORD_KINDS: Record<RecordKind, RecordKindDef> = {
   expenses: {
     kind: 'expenses',
     fields: [
-      { key: 'type', type: 'select', required: true, options: EXPENSE_TYPES, optionsKey: 'expenseTypes', isListed: true },
+      {
+        key: 'type',
+        type: 'select',
+        required: true,
+        options: EXPENSE_TYPES,
+        farmLevelOptions: FARM_EXPENSE_TYPES,
+        optionsKey: 'expenseTypes',
+        isListed: true,
+      },
       { key: 'amount', type: 'number', required: true, unitKey: 'units.taka', isListed: true },
       { key: 'contactId', type: 'contact', isListed: true },
       { key: 'note', type: 'textarea' },
